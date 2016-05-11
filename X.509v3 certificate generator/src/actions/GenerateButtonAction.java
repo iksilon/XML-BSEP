@@ -37,7 +37,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import application.IssuerData;
 import application.SubjectData;
 import gui.MainFrame;
-//import security.KeyStoreWriter;
+import security.KeyStoreWriter;
 
 /**
  * @author ILA
@@ -101,7 +101,10 @@ public class GenerateButtonAction extends AbstractAction {
 			
 			//TODO sačuvaj keystore subject-u
 			//za ovo nam je potreban keystore writer
-			//KeyStoreWriter ksw = new KeyStoreWriter();
+			KeyStoreWriter keyStoreWriter = new KeyStoreWriter();
+			keyStoreWriter.loadKeyStore(null, "test".toCharArray());
+			keyStoreWriter.write("test", keyPair.getPrivate(), "test10".toCharArray(), cert);
+			keyStoreWriter.saveKeyStore("./certificates/" + MainFrame.getInstance().getGivenName() + ".jks", "test10".toCharArray());			
 			
 			
 			
