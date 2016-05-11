@@ -16,9 +16,15 @@ import java.security.Security;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.AbstractAction;
 
+import org.bouncycastle.asn1.x500.X500NameBuilder;
+import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -30,6 +36,8 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 import application.IssuerData;
 import application.SubjectData;
+import gui.MainFrame;
+//import security.KeyStoreWriter;
 
 /**
  * @author ILA
@@ -48,10 +56,67 @@ public class GenerateButtonAction extends AbstractAction {
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 		
+		try {
+			MainFrame.getInstance().statusLabelSetVisible(true);
+			MainFrame.getInstance().statusLabelSetText("Generating...");	//TODO Bug, ovo se ne pojavljuje...
+			
+			KeyPair keyPair = generateKeyPair();	//keypair value for the Subject
+			
+			//Datumi
+			SimpleDateFormat iso8601Formater = new SimpleDateFormat("yyyy-MM-dd");
+			Date startDate = iso8601Formater.parse("2007-12-31");
+			Date endDate = iso8601Formater.parse("2017-12-31");	//TODO napraviti da datum bude od danas
+						
+			//Subject info
+			//klasa X500NameBuilder pravi X500Name objekat koji nam treba
+			X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
+			builder.addRDN(BCStyle.CN, MainFrame.getInstance().getCN());
+		    builder.addRDN(BCStyle.SURNAME, MainFrame.getInstance().getSurname());
+		    builder.addRDN(BCStyle.GIVENNAME, MainFrame.getInstance().getGivenName());
+		    builder.addRDN(BCStyle.O, MainFrame.getInstance().getO());
+		    builder.addRDN(BCStyle.C, MainFrame.getInstance().getC());
+		    builder.addRDN(BCStyle.E, MainFrame.getInstance().getE());
+		    
+		    
+			//TODO odraditi serijski broj valjano
+		    String sn = String.valueOf(ThreadLocalRandom.current().nextInt(0, Integer.MAX_VALUE)); //Oh God why? verzija
+		    
+		    //kreiraju se podaci za issuer-a
+		    //TODO ovo čitaš iz keystore-a (treba ti private key)
+		    //TODO proveriti da li je potreban ceo issuerData ili je dovoljan samo private key
+		    //DONE provereno. Potrebni su nam samo Issuer name i njegov private key. (fak, treba nam za ovo i certificate reader...)
+		    //ovo je self signed sertifikat pa issuer ima iste podatke kao i subject
+			IssuerData issuerData = new IssuerData(keyPair.getPrivate(), builder.build());
+		    
+			//kreiraju se podaci za vlasnika
+			SubjectData subjectData = new SubjectData(keyPair.getPublic(), builder.build(), sn, startDate, endDate);
+			
+			//generise se sertifikat
+			X509Certificate cert = generateCertificate(issuerData, subjectData);
+			
+			//sertifikat se čuva u .cer fajlu
+			saveCertificateToFile(cert, MainFrame.getInstance().getGivenName());
+			
+			MainFrame.getInstance().statusLabelSetText("Done!");
+			
+			//TODO sačuvaj keystore subject-u
+			//za ovo nam je potreban keystore writer
+			//KeyStoreWriter ksw = new KeyStoreWriter();
+			
+			
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		
 		
 	}
 	
-	static {	//do this initially
+	static {	//do this initially and only once
 		Security.addProvider(new BouncyCastleProvider());
 	}
 	
@@ -111,7 +176,7 @@ public class GenerateButtonAction extends AbstractAction {
 			//generator para kljuceva
 			KeyPairGenerator   keyGen = KeyPairGenerator.getInstance("RSA");
 			//inicijalizacija generatora, 1024 bitni kljuc
-			keyGen.initialize(1024);	//TODO promeniti na 4096
+			keyGen.initialize(4096);	//Done promeniti na 4096 sa 1024
 			
 			//generise par kljuceva
 			KeyPair pair = keyGen.generateKeyPair();
@@ -124,8 +189,8 @@ public class GenerateButtonAction extends AbstractAction {
 		}
 	}
 	
-	public void saveCertificateToFile(X509Certificate cert) {
-		String certificatePath = "../certificates/" + cert.getSubjectX500Principal().getName() + ".cer";
+	public void saveCertificateToFile(X509Certificate cert, String subjectName) {
+		String certificatePath = "./certificates/" + subjectName + ".cer";
 		File certFile = new File(certificatePath);
 		
 		try {

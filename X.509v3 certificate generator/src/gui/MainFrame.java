@@ -3,10 +3,10 @@
  */
 package gui;
 
-import java.awt.Dimension;
+//import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Toolkit;
+//import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -16,6 +16,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import actions.GenerateButtonAction;
 
 /**
  * @author ILA
@@ -34,11 +36,12 @@ public class MainFrame extends JFrame {
 	private JLabel localityLabel = new JLabel("Locality: ");
 	private JLabel emailLabel = new JLabel("email: ");
 	private JLabel yearsActiveLabel = new JLabel("Years active: ");
+	private JLabel statusLabel = new JLabel("");
 
 	private JTextField nameTextField = new JTextField(15);
-	private JTextField sernameTextField = new JTextField(15);
+	private JTextField surnameTextField = new JTextField(15);
 	private JTextField organizationTextField = new JTextField(15);
-	private JTextField stateTextField = new JTextField(15);
+	private JTextField countryTextField = new JTextField(15);
 	private JTextField localityTextField = new JTextField(15);
 	private JTextField emailTextField = new JTextField(15);
 	private JTextField yearActiveTextField = new JTextField(1);
@@ -59,8 +62,8 @@ public class MainFrame extends JFrame {
 	}
 
 	private void initialize() {
-		Toolkit toolkit = Toolkit.getDefaultToolkit();	//used to gather details of the display
-		Dimension screenDimension = toolkit.getScreenSize();
+		//Toolkit toolkit = Toolkit.getDefaultToolkit();	//used to gather details of the display
+		//Dimension screenDimension = toolkit.getScreenSize();
 		
 		//this.setSize(screenDimension.width*2/3, screenDimension.height*2/3);
 		setTitle("Certificate generator");
@@ -118,6 +121,10 @@ public class MainFrame extends JFrame {
 		yearsActiveLabel.setVisible(true);
 		mainFormPanel.add(yearsActiveLabel,gbc);
 		
+		gbc.gridy++;
+		statusLabel.setVisible(true);
+		mainFormPanel.add(statusLabel, gbc);
+		
 		
 		//next column
 		gbc.gridy = 1;	//at the 0th row is the header
@@ -128,16 +135,16 @@ public class MainFrame extends JFrame {
 		mainFormPanel.add(nameTextField, gbc);
 		
 		gbc.gridy++;
-		sernameTextField.setVisible(true);
-		mainFormPanel.add(sernameTextField, gbc);
+		surnameTextField.setVisible(true);
+		mainFormPanel.add(surnameTextField, gbc);
 		
 		gbc.gridy++;
 		organizationTextField.setVisible(true);
 		mainFormPanel.add(organizationTextField, gbc);
 		
 		gbc.gridy++;
-		stateTextField.setVisible(true);
-		mainFormPanel.add(stateTextField, gbc);
+		countryTextField.setVisible(true);
+		mainFormPanel.add(countryTextField, gbc);
 		
 		gbc.gridy++;
 		localityTextField.setVisible(true);
@@ -157,12 +164,78 @@ public class MainFrame extends JFrame {
 		//gbc.insets.set(5, 5, 5, 5);	//some padding
 		
 		generateButton = new JButton("Generate");
+		generateButton.setAction(new GenerateButtonAction());
 		mainFormPanel.add(generateButton, gbc);
 		
 		this.pack();	//set window size so that it just fits.
 		this.setLocationRelativeTo(null);	//front and center
 		
 	}
+	
+	public String getGivenName(){
+		if (nameTextField.getText().isEmpty())
+			return "";
+		else
+			return nameTextField.getText();
+	}
+	
+	public String getSurname(){
+		if(surnameTextField.getText().isEmpty())
+			return "";
+		else
+			return surnameTextField.getText();
+	}
+	
+	public String getO(){
+		if (organizationTextField.getText().isEmpty())
+			return "";
+		else
+			return organizationTextField.getText();		
+	}
+	
+	public String getC() {
+		if (countryTextField.getText().isEmpty())
+			return "";
+		else
+			return countryTextField.getText();
+	}
+	
+	public String getL() {
+		if (localityTextField.getText().isEmpty())
+			return "";
+		else 
+			return localityTextField.getText();
+	}
+	
+	public String getE() {
+		if (emailTextField.getText().isEmpty())
+			return "";
+		else
+			return emailTextField.getText();
+	}
+	
+	public int getYear(){	//HACK no checks here, so please be gentle
+		if (yearActiveTextField.getText().isEmpty())
+			return 0;
+		else
+			return Integer.parseInt(yearActiveTextField.getText());
+	}
+	
+	public String getCN(){
+		if (nameTextField.getText().isEmpty() || surnameTextField.getText().isEmpty())
+			return "";
+		else
+			return (nameTextField.getText() + " " + surnameTextField.getText());
+	}
+	
+	public void statusLabelSetVisible(Boolean b) {
+		statusLabel.setVisible(b);
+	}
+	
+	public void statusLabelSetText(String s) {
+		statusLabel.setText(s);
+	}
+	
 
 	/**
 	 * adds the close action to the "x" of the window of the {@code MainFrame}.
