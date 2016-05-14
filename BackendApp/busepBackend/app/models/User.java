@@ -4,6 +4,7 @@ import play.db.jpa.Model;
 
 public class User extends Model {
 	
+	public int id;
 	public String username;
 	public String password;
 	public String name;
