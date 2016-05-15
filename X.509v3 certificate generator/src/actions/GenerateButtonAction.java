@@ -34,10 +34,9 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
-import application.IssuerData;
-import application.SubjectData;
+import data.IssuerData;
+import data.SubjectData;
 import gui.MainFrame;
-import security.KeyStoreWriter;
 
 /**
  * @author ILA
@@ -82,7 +81,7 @@ public class GenerateButtonAction extends AbstractAction {
 		    String sn = String.valueOf(ThreadLocalRandom.current().nextInt(0, Integer.MAX_VALUE)); //Oh God why? verzija
 		    
 		    //kreiraju se podaci za issuer-a
-		    //TODO ovo čitaš iz keystore-a (treba ti private key)
+		    //TODO ovo Ä�itaÅ¡ iz keystore-a (treba ti private key)
 		    //TODO proveriti da li je potreban ceo issuerData ili je dovoljan samo private key
 		    //DONE provereno. Potrebni su nam samo Issuer name i njegov private key. (fak, treba nam za ovo i certificate reader...)
 		    //ovo je self signed sertifikat pa issuer ima iste podatke kao i subject
@@ -94,12 +93,12 @@ public class GenerateButtonAction extends AbstractAction {
 			//generise se sertifikat
 			X509Certificate cert = generateCertificate(issuerData, subjectData);
 			
-			//sertifikat se čuva u .cer fajlu
+			//sertifikat se Ä�uva u .cer fajlu
 			saveCertificateToFile(cert, MainFrame.getInstance().getGivenName());
 			
 			MainFrame.getInstance().statusLabelSetText("Done!");
 			
-			//TODO sačuvaj keystore subject-u
+			//TODO saÄ�uvaj keystore subject-u
 			//za ovo nam je potreban keystore writer
 			KeyStoreWriter keyStoreWriter = new KeyStoreWriter();
 			keyStoreWriter.loadKeyStore(null, "test".toCharArray());

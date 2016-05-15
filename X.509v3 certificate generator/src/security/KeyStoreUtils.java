@@ -11,6 +11,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 
+/**
+ * Utility class for {@link KeyStore} managing.
+ * {@code KeyStores} can be loaded from files, created and saved into files.
+ * All methods are static.
+ *
+ */
 public class KeyStoreUtils {
 	
 	/**
@@ -39,19 +45,24 @@ public class KeyStoreUtils {
 			
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
+			return keystore;
 		} catch (NoSuchProviderException e) {
 			e.printStackTrace();
+			return keystore;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+			return keystore;
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
+			return keystore;
 		} catch (CertificateException e) {
 			e.printStackTrace();
+			return keystore;
 		} catch (IOException e) {
 			e.printStackTrace();
+			return keystore;
 		}
 		
-		return keystore;
 	}
 	
 	
@@ -62,7 +73,7 @@ public class KeyStoreUtils {
 	 * @param filepath - The location of the {@code .jks} keystore file.
 	 * @param password - Password for the {@code .jks} keystore file.
 	 */
-	public void saveKeyStore(KeyStore keystore, String filepath, String password) {
+	public static void saveKeyStore(KeyStore keystore, String filepath, String password) {
 		try {
 			keystore.store(new FileOutputStream(filepath), password.toCharArray());
 		} catch (KeyStoreException e) {
@@ -77,7 +88,5 @@ public class KeyStoreUtils {
 			e.printStackTrace();
 		}
 	}
-	
-	
 
 }
