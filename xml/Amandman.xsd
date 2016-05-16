@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    targetNamespace="http://www.ftn.uns.ac.rs/amandman" xmlns:am="http://www.ftn.uns.ac.rs/amandman"
+    xmlns:pro="http://www.ftn.uns.ac.rs/propisi">
+    <xs:import namespace="http://www.ftn.uns.ac.rs/propisi" schemaLocation="Propis.xsd"/>
+    <xs:element name="Dokument">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Pravni_osnov" type="xs:string"/>
+                <xs:element name="Predlog_propisa" type="xs:string"/>
+                <xs:element name="Amandman">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="Odredba">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element ref="pro:Clan"/>
+                                        <xs:element ref="pro:Stav"/>
+                                        <xs:element ref="pro:Tacka"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="Predlog_resenja" type="xs:string"/>
+                        </xs:sequence>
+                        <xs:attribute name="Redni_Broj" type="xs:positiveInteger"/>
+                        <xs:attribute default="AMANDMAN" name="Naziv" type="xs:string"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="Obrazlozenje" type="xs:string"/>
+            </xs:sequence>
+            <xs:attribute name="Naziv" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
