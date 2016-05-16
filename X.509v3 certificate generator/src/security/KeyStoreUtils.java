@@ -10,6 +10,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
+import java.util.Arrays;
 
 /**
  * Utility class for {@link KeyStore} managing.
@@ -26,7 +27,7 @@ public class KeyStoreUtils {
 	 * @param password - Password for the keystore.
 	 * @return {@link KeyStore}
 	 */
-	public static KeyStore loadKeyStore(String filepath, String password) {
+	public static KeyStore loadKeyStore(String filepath, char[] password) {
 		
 		KeyStore keystore = null;
 		
@@ -35,31 +36,38 @@ public class KeyStoreUtils {
 			
 			if(filepath != null) {
 				BufferedInputStream in = new BufferedInputStream(new FileInputStream(filepath));
-				keystore.load(in, password.toCharArray());
+				keystore.load(in, password);
 			}
 			else {
-				keystore.load(null, password.toCharArray());
+				keystore.load(null, password);
 			}
 			
+			Arrays.fill(password, '0');
 			return keystore;
 			
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
+			Arrays.fill(password, '0');
 			return keystore;
 		} catch (NoSuchProviderException e) {
 			e.printStackTrace();
+			Arrays.fill(password, '0');
 			return keystore;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+			Arrays.fill(password, '0');
 			return keystore;
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
+			Arrays.fill(password, '0');
 			return keystore;
 		} catch (CertificateException e) {
 			e.printStackTrace();
+			Arrays.fill(password, '0');
 			return keystore;
 		} catch (IOException e) {
 			e.printStackTrace();
+			Arrays.fill(password, '0');
 			return keystore;
 		}
 		
@@ -73,19 +81,25 @@ public class KeyStoreUtils {
 	 * @param filepath - The location of the {@code .jks} keystore file.
 	 * @param password - Password for the {@code .jks} keystore file.
 	 */
-	public static void saveKeyStore(KeyStore keystore, String filepath, String password) {
+	public static void saveKeyStore(KeyStore keystore, String filepath, char[] password) {
 		try {
-			keystore.store(new FileOutputStream(filepath), password.toCharArray());
+			keystore.store(new FileOutputStream(filepath), password);
+			Arrays.fill(password, '0');
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
+			Arrays.fill(password, '0');
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
+			Arrays.fill(password, '0');
 		} catch (CertificateException e) {
 			e.printStackTrace();
+			Arrays.fill(password, '0');
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+			Arrays.fill(password, '0');
 		} catch (IOException e) {
 			e.printStackTrace();
+			Arrays.fill(password, '0');
 		}
 	}
 

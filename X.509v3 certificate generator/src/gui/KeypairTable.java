@@ -13,8 +13,8 @@ public class KeypairTable extends JTable {
 	public KeypairTable() {
 		DefaultTableModel dtm = new DefaultTableModel();
 		dtm.addColumn("No.");
-		dtm.addColumn("");
-		
+		dtm.addColumn("Alias");
+		this.setModel(dtm);		
 	}
 	
 	public KeypairTable(TableModel model) {

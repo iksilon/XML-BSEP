@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -114,7 +115,15 @@ public class MainWindow extends JFrame {
 		keypairTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane.setViewportView(keypairTable);
 	}
+	
+// ---------------------------------------------------------------------------------------------------
+// Akcije, jer me mrzi da prebacujem u posebne faljove a GUI builder ih je ovde stavio.
+// ---------------------------------------------------------------------------------------------------
 
+	/**
+	 * 
+	 *
+	 */
 	private class ActionKeystore extends AbstractAction {
 		private static final long serialVersionUID = 425412543121784713L;
 		public ActionKeystore() {
@@ -122,6 +131,9 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Create new keystore");
 		}
 		public void actionPerformed(ActionEvent e) {
+			KeystoreDialog ksd = new KeystoreDialog();
+			ksd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			ksd.setVisible(true);
 		}
 	}
 	private class ActionKeypair extends AbstractAction {
