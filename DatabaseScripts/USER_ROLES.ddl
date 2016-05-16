@@ -42,7 +42,9 @@ ALTER TABLE Role_permissions
 CREATE TABLE Users -- USER (case insensitive) je rezervisana rec http://stackoverflow.com/questions/695578/creating-table-names-that-are-reserved-words-keywords-in-ms-sql-server
 (
 	USER_ID bigint NOT NULL,
-	USER_NAME varchar(30) UNIQUE NOT NULL,
+	USER_NAME varchar(150) NULL,
+	USER_LASTNAME varchar(150) NULL,
+	USER_USERNAME varchar(30) UNIQUE NOT NULL,
 	USER_PASS varchar(128) NOT NULL,
 	USER_PASS_SALT varchar(128) NOT NULL,
 	USER_ROLE_ID bigint NULL,
