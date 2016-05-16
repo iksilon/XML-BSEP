@@ -3,7 +3,10 @@ var app = angular.module('testApp',['ngRoute']);
 app.config(function($routeProvider){
     $routeProvider
     .when('/', {
-        templateUrl: 'login.html'
+        templateUrl: 'home.html'
+    })
+    .when('/login', {
+        templateUrl:'login.html'  
     })
     .when('/home', {
         resolve: {

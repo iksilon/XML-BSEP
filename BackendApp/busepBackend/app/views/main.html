@@ -7,11 +7,49 @@
         <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/main.css'}">
         #{get 'moreStyles' /}
         <link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
+        
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-cookies.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.js"></script>
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
-    <body>
+    <body ng-app="mainApp">
+    <div id="header">
+	    <img src="@{'/public/images/sgnsLogo.png'}" alt="logo" width="100" height="100">
+	    <h1>SKUPŠTINA GRADA NOVOG SADA</h1>
+	</div>
+
+	<div class="navH">
+	    <ul>
+	        <li><a href="/users/usersAll">Odbornici</a></li>
+	        <li><a href="/acts/active">Vazeci akti</a></li>
+	        <li><a href="/acts/new">Akti u proceduri</a></li>
+	        <li><a href="/search">Pretraga akata</a></li>
+	        <li style="float:right"><a href="/login">Ulogujte se</a></li>
+	    </ul>     
+	</div>
+
+	<div id="navV">
+	    Prvi akt <br>
+	    Drugi akt<br>
+	    Treci akt<br>
+	</div>
+	
+	<div ng-view></div>
+	 
         #{doLayout /}
         
+	<div id="footer">
+		Copyright &copy; AĐIŠ
+	</div>
+        
         <script src="@{'/public/javascripts/jquery-1.6.4.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+        <script src="@{'/public/javascripts/controller.js'}"></script>
         #{get 'moreScripts' /}
     </body>
 </html>
