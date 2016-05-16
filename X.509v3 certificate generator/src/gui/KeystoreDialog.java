@@ -80,12 +80,13 @@ public class KeystoreDialog extends JDialog {
 							System.out.println("New keystore loaded.");
 							System.out.println(ks.toString());
 							
+							// TODO: Return the keystore to MainWindow
+							
 							// Clean up.
 							Arrays.fill(passwordField.getPassword(), '0');
 							Arrays.fill(passwordFieldRetype.getPassword(), '0');
 							dispose();
 						}
-						
 					}
 				});
 				{

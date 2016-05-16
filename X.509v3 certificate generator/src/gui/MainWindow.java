@@ -3,6 +3,7 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.security.KeyPair;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -17,6 +18,10 @@ import javax.swing.JSeparator;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
+
+import data.IssuerData;
+import data.SubjectData;
+import security.CertificateUtils;
 
 /**
  * Main view of the application, extension of the {@link JFrame} class.
@@ -121,8 +126,7 @@ public class MainWindow extends JFrame {
 // ---------------------------------------------------------------------------------------------------
 
 	/**
-	 * 
-	 *
+	 * Opens a dialog for defining keystore password.
 	 */
 	private class ActionKeystore extends AbstractAction {
 		private static final long serialVersionUID = 425412543121784713L;
@@ -136,6 +140,11 @@ public class MainWindow extends JFrame {
 			ksd.setVisible(true);
 		}
 	}
+	
+	/**
+	 * Generates a keypair.
+	 * Prompts the user to fill in certificate details and generates the certificate.
+	 */
 	private class ActionKeypair extends AbstractAction {
 		private static final long serialVersionUID = -1411136323257319945L;
 		public ActionKeypair() {
@@ -143,6 +152,13 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Generate new keypair");
 		}
 		public void actionPerformed(ActionEvent e) {
+			KeyPair kp = CertificateUtils.generateKeyPair();
+			IssuerData issuer = new IssuerData();
+			SubjectData subject = new SubjectData();
+			
+			CertificateDialog dialog = new CertificateDialog(issuer, subject, kp);
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setVisible(true);
 		}
 	}
 	private class ActionOpen extends AbstractAction {

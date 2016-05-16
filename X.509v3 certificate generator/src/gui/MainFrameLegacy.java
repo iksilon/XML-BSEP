@@ -6,25 +6,19 @@ package gui;
 //import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-//import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
-import actions.GenerateButtonAction;
 
 /**
  * @author ILA
  *
  */
 @SuppressWarnings("serial")
-public class MainFrame extends JFrame {
+public class MainFrameLegacy extends JFrame {
 
 	private JPanel mainFormPanel;
 	private JButton generateButton;
@@ -46,16 +40,16 @@ public class MainFrame extends JFrame {
 	private JTextField emailTextField = new JTextField(15);
 	private JTextField yearActiveTextField = new JTextField(1);
 
-	private MainFrame() {
+	private MainFrameLegacy() {
 	}
 
-	private static MainFrame instance = null;
+	private static MainFrameLegacy instance = null;
 
-	public static MainFrame getInstance() { // Singleton
+	public static MainFrameLegacy getInstance() { // Singleton
 		if (instance != null) {
 			return instance;
 		} else {
-			instance = new MainFrame();
+			instance = new MainFrameLegacy();
 			instance.initialize();
 			return instance;
 		}
@@ -69,7 +63,7 @@ public class MainFrame extends JFrame {
 		setTitle("Certificate generator");
 		//this.setLocationRelativeTo(null);
 		
-		addCloseAction();	//pops open a confirmation dialog for closing the application
+		//addCloseAction();	//pops open a confirmation dialog for closing the application
 		
 		//GridBag Layout
 		mainFormPanel = new JPanel(new GridBagLayout());
@@ -164,7 +158,7 @@ public class MainFrame extends JFrame {
 		//gbc.insets.set(5, 5, 5, 5);	//some padding
 		
 		generateButton = new JButton("Generate");
-		generateButton.setAction(new GenerateButtonAction());
+		//generateButton.setAction(new GenerateButtonAction());
 		mainFormPanel.add(generateButton, gbc);
 		
 		this.pack();	//set window size so that it just fits.
@@ -237,37 +231,6 @@ public class MainFrame extends JFrame {
 	}
 	
 
-	/**
-	 * adds the close action to the "x" of the window of the {@code MainFrame}.
-	 * That action is to display a dialog prompting the user to confirm that
-	 * they really want to close the application.
-	 */
-	private void addCloseAction() { // done like this to enhance the code
-									// readability
-
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-
-		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent windowEvent) {
-				closeOperation();
-			}
-		});
-	}
-
-	/**
-	 * Displays the <tt>Yes</tt>/<tt>No</tt> close dialog on top of the
-	 * {@code MainFrame}.
-	 */
-	private void closeOperation() {
-		Object[] options = { "       Yes       ", "       No       " };
-		int n = JOptionPane.showOptionDialog(null, "Are you sure you want to close the X.509v3 certificate generator?",
-				"Close certificate generator", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-				// null,options,options[0]); //which option is selected by
-				// default
-				null, options, options[1]);
-		if (n == 0) {
-			System.exit(0);
-		}
-	}
+	
 
 }

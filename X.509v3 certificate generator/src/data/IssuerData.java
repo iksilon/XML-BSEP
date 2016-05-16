@@ -37,6 +37,11 @@ public class IssuerData {
 	public void setPrivateKey(PrivateKey privateKey) {
 		this.privateKey = privateKey;
 	}
+
+	@Override
+	public String toString() {
+		return x500name.toString();
+	}
 	
 	
 	

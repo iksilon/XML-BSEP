@@ -6,7 +6,7 @@ package application;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import gui.MainFrame;
+import gui.MainFrameLegacy;
 
 /**
  * <p>Main class of the application.</p>
@@ -30,7 +30,7 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		MainFrame main = MainFrame.getInstance();
+		MainFrameLegacy main = MainFrameLegacy.getInstance();
 		main.setVisible(true);
 
 	}
