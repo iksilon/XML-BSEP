@@ -5,10 +5,21 @@
 # Home page
 GET     /                                       Application.index
 
+GET		/login									Login.show
+POST	/login/logIn							Login.logIn
+GET		/login/logOut							Login.logOut
+
+GET		/documents								Utils.latestDocuments
+GET		/documents/{count}						Utils.latestDocuments
+
+# za uzimanje podataka o predsedniku
+GET		/users/highlord							Utils.userHighlord
+
 # Ignore favicon requests
 GET     /favicon.ico                            404
 
 # Map static resources from the /app/public folder to the /public path
+##### Mislim da ovo ne bi trebalo biti dostupno korisniku, s obzirom da radimo bezbednost
 GET     /public/                                staticDir:public
 
 # Catch all

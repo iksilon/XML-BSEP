@@ -5,11 +5,12 @@ import play.db.jpa.Model;
 public class User extends Model {
 	
 	public int id;
-	public String username;
-	public String password;
 	public String name;
 	public String lastName;
-	public String role; // kasnije prebaciti u tip ROLE, kad budemo imali to
+	public String username;
+	public String password;
+	public String password_salt;
+	public long role; // kasnije prebaciti u ManyToOne ili sta vec bude 
 	
 	public User(String username, String password) {
 		super();
