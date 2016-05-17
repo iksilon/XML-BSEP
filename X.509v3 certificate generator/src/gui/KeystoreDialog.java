@@ -24,9 +24,23 @@ public class KeystoreDialog extends JDialog {
 	private JPasswordField passwordField;
 	private JPasswordField passwordFieldRetype;
 	private JLabel lblErrorLabel;
+	
+	private KeyStore createdKeystore;
+	
+	/**
+	 * Returns the newly created {@link KeyStore} from this dialog.
+	 * Dialog is modal so this works, do not change modality of the dialog.
+	 * 
+	 * @return {@link KeyStore}
+	 */
+	public KeyStore getKeystore() {
+		return createdKeystore;
+	}
 
 	/**
 	 * Create the dialog.
+	 * Dialog is modal so returning the created {@link KeyStore} could work - do not change modality!
+	 * 
 	 */
 	public KeystoreDialog() {
 		setResizable(false);
@@ -76,11 +90,9 @@ public class KeystoreDialog extends JDialog {
 							passwordFieldRetype.setText("");
 						}
 						else if(Arrays.equals(passwordField.getPassword(), passwordFieldRetype.getPassword())) {
-							KeyStore ks = KeyStoreUtils.loadKeyStore(null, passwordField.getPassword());
+							createdKeystore = KeyStoreUtils.loadKeyStore(null, passwordField.getPassword());
 							System.out.println("New keystore loaded.");
-							System.out.println(ks.toString());
-							
-							// TODO: Return the keystore to MainWindow
+							System.out.println(createdKeystore.toString());
 							
 							// Clean up.
 							Arrays.fill(passwordField.getPassword(), '0');

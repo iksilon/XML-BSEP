@@ -15,13 +15,12 @@ import gui.MainFrameLegacy;
  * @author ILA
  *
  */
-public class Main {
+public class MainLegacy {
 
 	/**
 	 * Launch the application
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

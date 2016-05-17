@@ -9,6 +9,8 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
 
@@ -102,5 +104,21 @@ public class KeyStoreUtils {
 			Arrays.fill(password, '0');
 		}
 	}
-
+	
+	/**
+	 * Method for inserting a certificate into the keystore.
+	 * 
+	 * @param keystore
+	 * @param alias
+	 * @param privateKey
+	 * @param password
+	 * @param certificate
+	 */
+	public static void write(KeyStore keystore, String alias, PrivateKey privateKey, char[] password, Certificate certificate) {
+		try {
+			keystore.setKeyEntry(alias, privateKey, password, new Certificate[] {certificate});
+		} catch (KeyStoreException e) {
+			e.printStackTrace();
+		}
+	}
 }

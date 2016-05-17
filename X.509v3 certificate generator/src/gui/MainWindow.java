@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -12,16 +14,19 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import data.IssuerData;
 import data.SubjectData;
 import security.CertificateUtils;
+import security.KeyStoreUtils;
 
 /**
  * Main view of the application, extension of the {@link JFrame} class.
@@ -31,6 +36,11 @@ import security.CertificateUtils;
 public class MainWindow extends JFrame {
 
 	private static final long serialVersionUID = 1198734643308937757L;
+	
+	private static MainWindow instance = null;
+	private KeyStore currentKeystore = null;
+	
+	private KeypairTable keypairTable;
 	
 	private JPanel contentPane;
 	private final Action actKeystore = new ActionKeystore();
@@ -57,11 +67,24 @@ public class MainWindow extends JFrame {
 			}
 		});
 	}
+	
+	/**
+	 * Implementation of Singleton pattern.
+	 * Returns the instance of the {@code MainWindow}.
+	 * 
+	 * @return {@link MainWindow}
+	 */
+	public static MainWindow getInstance() {
+		if(instance == null) {
+	         instance = new MainWindow();
+	      }
+	      return instance;
+	}
 
 	/**
 	 * Create the frame.
 	 */
-	public MainWindow() {
+	protected MainWindow() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		
@@ -116,7 +139,7 @@ public class MainWindow extends JFrame {
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 		
-		KeypairTable keypairTable = new KeypairTable();
+		keypairTable = new KeypairTable();
 		keypairTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane.setViewportView(keypairTable);
 	}
@@ -136,8 +159,15 @@ public class MainWindow extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			KeystoreDialog ksd = new KeystoreDialog();
-			ksd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			ksd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 			ksd.setVisible(true);
+			
+			// After returning from the modal dialog.
+			if(ksd.getKeystore() != null) {
+				currentKeystore = ksd.getKeystore();
+				System.out.println(currentKeystore);
+			}
+			ksd.dispose();
 		}
 	}
 	
@@ -152,15 +182,40 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Generate new keypair");
 		}
 		public void actionPerformed(ActionEvent e) {
+			// Is there a KeyStore to which this KeyPair will be stored?
+			if(currentKeystore == null) {
+				JOptionPane.showMessageDialog(MainWindow.getInstance(),
+						"A KeyStore is needed to create a KeyPair. Please create a KeyStore first. "
+						+ "You can do this by going to the File menu, selecting New and then Keystore");
+				return;
+			}
+			
 			KeyPair kp = CertificateUtils.generateKeyPair();
 			IssuerData issuer = new IssuerData();
 			SubjectData subject = new SubjectData();
 			
-			CertificateDialog dialog = new CertificateDialog(issuer, subject, kp);
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
+			CertificateDialog cd = new CertificateDialog(issuer, subject, kp);
+			cd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+			cd.setVisible(true);
+			
+			// After returning from the modal dialog.
+			if (cd.getCertificate() != null) {
+				try {
+					currentKeystore.setCertificateEntry(cd.getAlias(), cd.getCertificate());
+					
+					KeyStoreUtils.write(currentKeystore, cd.getAlias(), kp.getPrivate(), cd.getPassword(), cd.getCertificate());
+					//TODO: Clean up password.
+					
+					((DefaultTableModel)keypairTable.getModel()).addRow(new Object[]{"#", cd.getAlias()});
+					
+				} catch (KeyStoreException e1) {
+					e1.printStackTrace();
+				}
+			}
+			cd.dispose();
 		}
 	}
+	
 	private class ActionOpen extends AbstractAction {
 		private static final long serialVersionUID = 340823143919984037L;
 		public ActionOpen() {
@@ -168,8 +223,10 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Open a keystore file");
 		}
 		public void actionPerformed(ActionEvent e) {
+			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
 		}
 	}
+	
 	private class ActionSave extends AbstractAction {
 		private static final long serialVersionUID = -4641089031850059072L;
 		public ActionSave() {
@@ -177,8 +234,14 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Save keystore");
 		}
 		public void actionPerformed(ActionEvent e) {
+			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
 		}
 	}
+	
+	/**
+	 * Saves the certificate into the certificates folder.
+	 *
+	 */
 	private class ActionSaveAs extends AbstractAction {
 		private static final long serialVersionUID = 3925404848236570471L;
 		public ActionSaveAs() {
@@ -186,6 +249,9 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Save keystore to a file");
 		}
 		public void actionPerformed(ActionEvent e) {
+			//String filepath = "/X.509v3 certificate generator/certificates/";
+			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
+			//KeyStoreUtils.saveKeyStore(currentKeystore, filepath, password);
 		}
 	}
 	private class ActionExit extends AbstractAction {
@@ -195,6 +261,7 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Close the application");
 		}
 		public void actionPerformed(ActionEvent e) {
+			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
 		}
 	}
 	private class ActionExportCertificate extends AbstractAction {
@@ -204,6 +271,7 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Export keypair to a certificate file");
 		}
 		public void actionPerformed(ActionEvent e) {
+			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
 		}
 	}
 	private class ActionExportAll extends AbstractAction {
@@ -213,6 +281,7 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Export all certificates to a specified folder");
 		}
 		public void actionPerformed(ActionEvent e) {
+			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
 		}
 	}
 }

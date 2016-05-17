@@ -25,10 +25,15 @@ import data.IssuerData;
 import data.SubjectData;
 import net.miginfocom.swing.MigLayout;
 import security.CertificateUtils;
+import javax.swing.JPasswordField;
 
 public class CertificateDialog extends JDialog {
 	
 	private static final long serialVersionUID = -1203100536862771236L;
+	
+	private JTextField txtAlias;
+	private JPasswordField passwordField;
+	
 	private JTextField txtName;
 	private JTextField txtSurname;
 	private JTextField txtCN;
@@ -40,9 +45,38 @@ public class CertificateDialog extends JDialog {
 	private JComboBox<IssuerData> comboBox;
 	private JCheckBox chckbxSelfSigned;
 	
-	private IssuerData issuer;
-	private SubjectData subject;
-	private KeyPair kp;
+	private IssuerData issuerData;
+	private SubjectData subjectData;
+	private KeyPair keypair;
+	
+	private X509Certificate createdCertificate = null;
+	private String alias = null;
+	private char[] password;
+	
+	
+	/**
+	 * Returns the generated certificate from this modal dialog.
+	 * @return {@link X509Certificate}
+	 */
+	public X509Certificate getCertificate() {
+		return createdCertificate;
+	}
+	
+	/**
+	 * Returns the defined password.
+	 * @return char[]
+	 */
+	public char[] getPassword() {
+		return password;
+	}
+	
+	/**
+	 * Returns created certificate's alias from this modal dialog. 
+	 * @return {@link String}
+	 */
+	public String getAlias() {
+		return alias;
+	}
 
 	/**
 	 * Create the dialog.
@@ -51,22 +85,47 @@ public class CertificateDialog extends JDialog {
 		setTitle("Generate Certificate");
 		setModal(true);
 		setBounds(100, 100, 355, 498);
-		getContentPane().setLayout(new MigLayout("", "[grow]", "[][grow][grow]"));
+		getContentPane().setLayout(new MigLayout("", "[grow]", "[grow][][][grow][grow]"));
 		
-		this.issuer = issuer;
-		this.subject = subject;
-		this.kp = kp;
+		this.issuerData = issuer;
+		this.subjectData = subject;
+		this.keypair = kp;
+		
+		JPanel panelCert = new JPanel();
+		getContentPane().add(panelCert, "cell 0 0,grow");
+		panelCert.setLayout(new MigLayout("", "[27px][116px,grow]", "[][][22px]"));
+		
+		JLabel lblAlias = new JLabel("Alias");
+		panelCert.add(lblAlias, "cell 0 0,alignx left,aligny center");
+		
+		txtAlias = new JTextField();
+		panelCert.add(txtAlias, "cell 1 0,alignx left,aligny top");
+		txtAlias.setColumns(10);
+		
+		JLabel lblPassword = new JLabel("Password");
+		panelCert.add(lblPassword, "cell 0 2,alignx trailing");
+		
+		passwordField = new JPasswordField();
+		passwordField.setColumns(10);
+		panelCert.add(passwordField, "cell 1 2,alignx left");
 		
 		
-		// Issuer data section ------------------------------------------------------------------------
+	// Issuer data section ------------------------------------------------------------------------
 		
 		JPanel panelIssuer = new JPanel();
-		getContentPane().add(panelIssuer, "cell 0 0,grow");
+		getContentPane().add(panelIssuer, "cell 0 2,grow");
 		panelIssuer.setLayout(new MigLayout("", "[][grow]", "[][][]"));
+		
+		// Labels
 		
 		JLabel lblIssuerData = new JLabel("Issuer Data:");
 		lblIssuerData.setFont(new Font("Tahoma", Font.BOLD, 13));
 		panelIssuer.add(lblIssuerData, "cell 0 0");
+		
+		JLabel lblIssuer = new JLabel("Issuer");
+		panelIssuer.add(lblIssuer, "flowy,cell 0 2");
+		
+		// Fields
 		
 		chckbxSelfSigned = new JCheckBox("Self Signed");
 		chckbxSelfSigned.addChangeListener(new ChangeListener() {
@@ -84,20 +143,19 @@ public class CertificateDialog extends JDialog {
 		});
 		panelIssuer.add(chckbxSelfSigned, "cell 0 1");
 		
-		JLabel lblIssuer = new JLabel("Issuer");
-		panelIssuer.add(lblIssuer, "flowy,cell 0 2");
-		
 		comboBox = new JComboBox<IssuerData>();
-		//TODO: Populate certificates.
+		//TODO: Replace comboBox with file opener.
 		panelIssuer.add(comboBox, "cell 1 2,growx");
 		
 		
 		
-		// Subject data section -----------------------------------------------------------------------
+	// Subject data section -----------------------------------------------------------------------
 		
 		JPanel panelSubject = new JPanel();
-		getContentPane().add(panelSubject, "cell 0 1,grow");
+		getContentPane().add(panelSubject, "cell 0 3,grow");
 		panelSubject.setLayout(new MigLayout("", "[][][grow]", "[][][][][][][][][][][][]"));
+		
+		// Labels
 		
 		JLabel lblSubjectData = new JLabel("Subject Data:");
 		lblSubjectData.setFont(new Font("Tahoma", Font.BOLD, 13));
@@ -106,16 +164,8 @@ public class CertificateDialog extends JDialog {
 		JLabel lblName = new JLabel("Name");
 		panelSubject.add(lblName, "cell 0 1");
 		
-		txtName = new JTextField();
-		panelSubject.add(txtName, "cell 2 1,growx");
-		txtName.setColumns(10);
-		
 		JLabel lblSurname = new JLabel("Surname");
 		panelSubject.add(lblSurname, "cell 0 2");
-		
-		txtSurname = new JTextField();
-		panelSubject.add(txtSurname, "cell 2 2,growx");
-		txtSurname.setColumns(10);
 		
 		JLabel lblCommonName = new JLabel("Common Name");
 		panelSubject.add(lblCommonName, "cell 0 3");
@@ -123,19 +173,11 @@ public class CertificateDialog extends JDialog {
 		JLabel lblcn = new JLabel("(CN)");
 		panelSubject.add(lblcn, "cell 1 3,alignx trailing");
 		
-		txtCN = new JTextField();
-		panelSubject.add(txtCN, "cell 2 3,growx");
-		txtCN.setColumns(10);
-		
 		JLabel lblOrganisationUnit = new JLabel("Organisation Unit");
 		panelSubject.add(lblOrganisationUnit, "cell 0 4");
 		
 		JLabel lblou = new JLabel("(OU)");
 		panelSubject.add(lblou, "cell 1 4,alignx trailing");
-		
-		txtOU = new JTextField();
-		panelSubject.add(txtOU, "cell 2 4,growx");
-		txtOU.setColumns(10);
 		
 		JLabel lblOrganisationName = new JLabel("Organisation Name");
 		panelSubject.add(lblOrganisationName, "cell 0 5");
@@ -143,32 +185,50 @@ public class CertificateDialog extends JDialog {
 		JLabel lblo = new JLabel("(O)");
 		panelSubject.add(lblo, "cell 1 5,alignx trailing");
 		
-		txtO = new JTextField();
-		panelSubject.add(txtO, "cell 2 5,growx");
-		txtO.setColumns(10);
-		
 		JLabel lblCountry = new JLabel("Country");
 		panelSubject.add(lblCountry, "cell 0 8");
 		
 		JLabel lblc = new JLabel("(C)");
 		panelSubject.add(lblc, "cell 1 8,alignx trailing");
-		
-		txtC = new JTextField();
-		panelSubject.add(txtC, "cell 2 8,growx");
-		txtC.setColumns(10);
-		
+
 		JLabel lblEmail = new JLabel("Email");
 		panelSubject.add(lblEmail, "cell 0 9");
 		
 		JLabel lble = new JLabel("(E)");
 		panelSubject.add(lble, "cell 1 9,alignx trailing");
 		
+		JLabel lblValidFormonths = new JLabel("Valid For (months)");
+		panelSubject.add(lblValidFormonths, "cell 0 11");
+		
+		// Fields
+		
+		txtName = new JTextField();
+		panelSubject.add(txtName, "cell 2 1,growx");
+		txtName.setColumns(10);
+		
+		txtSurname = new JTextField();
+		panelSubject.add(txtSurname, "cell 2 2,growx");
+		txtSurname.setColumns(10);
+		
+		txtCN = new JTextField();
+		panelSubject.add(txtCN, "cell 2 3,growx");
+		txtCN.setColumns(10);
+		
+		txtOU = new JTextField();
+		panelSubject.add(txtOU, "cell 2 4,growx");
+		txtOU.setColumns(10);
+				
+		txtO = new JTextField();
+		panelSubject.add(txtO, "cell 2 5,growx");
+		txtO.setColumns(10);
+				
+		txtC = new JTextField();
+		panelSubject.add(txtC, "cell 2 8,growx");
+		txtC.setColumns(10);
+		
 		txtE = new JTextField();
 		panelSubject.add(txtE, "cell 2 9,growx");
 		txtE.setColumns(10);
-		
-		JLabel lblValidFormonths = new JLabel("Valid For (months)");
-		panelSubject.add(lblValidFormonths, "cell 0 11");
 		
 		txtValidity = new JTextField();
 		panelSubject.add(txtValidity, "cell 2 11,growx");
@@ -179,7 +239,7 @@ public class CertificateDialog extends JDialog {
 		// Buttons section ---------------------------------------------------------------------------------
 		
 		JPanel panelButtons = new JPanel();
-		getContentPane().add(panelButtons, "cell 0 2,grow");
+		getContentPane().add(panelButtons, "cell 0 4,grow");
 		panelButtons.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		JButton btnGenerate = new JButton("Generate");
@@ -222,21 +282,23 @@ public class CertificateDialog extends JDialog {
 			    subject.setEndDate(expireDate.getTime());
 			    subject.setSerialNumber(se);
 			    subject.setX500name(builder.build());
-			    subject.setPublicKey(kp.getPublic());
+			    subject.setPublicKey(keypair.getPublic());
 			    
 			    // Issuer
 			    if(chckbxSelfSigned.isSelected()) {
-			    	issuer.setPrivateKey(kp.getPrivate());
+			    	issuer.setPrivateKey(keypair.getPrivate());
 			    	issuer.setX500name(builder.build());
 			    }
 			    else {
-			    	// TODO: comboBox
+			    	// TODO: Open file for issuer.
 			    }
 			    
-			    X509Certificate certificate = CertificateUtils.generateCertificate(issuer, subject);
-			    System.out.println("New certificate generated");
-			    System.out.println(certificate);
-			    //TODO: return certificate to KeyStore
+			    createdCertificate = CertificateUtils.generateCertificate(issuerData, subjectData);
+			    alias = txtAlias.getText();
+			    password = passwordField.getPassword();
+			    System.out.println("New certificate generated : " + alias);
+			    System.out.println(createdCertificate);
+			    dispose();
 			}
 		});
 		panelButtons.add(btnGenerate);
