@@ -8,6 +8,8 @@
         #{get 'moreStyles' /}
         <link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
         
+        <script src="@{'/public/javascripts/jquery-1.6.4.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+        
 		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.css">
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js"></script>
 		<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.js"></script>
@@ -17,6 +19,8 @@
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.js"></script>
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.js"></script>
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		
+		<script src="@{'/public/javascripts/controller.js'}"></script>
     </head>
     <body ng-app="mainApp">
     <div id="header">
@@ -30,7 +34,14 @@
 	        <li><a href="/acts/active">Vazeci akti</a></li>
 	        <li><a href="/acts/new">Akti u proceduri</a></li>
 	        <li><a href="/search">Pretraga akata</a></li>
-	        <li style="float:right"><a href="/login">Ulogujte se</a></li>
+	        <li style="float:right">
+        	#{if highlord == null}
+        		<a href="/login">Ulogujte se</a>
+        	#{/if}
+        	#{else}
+        		<a href="/logout">Log out</a>
+       		#{/else}
+	        </li>	        
 	    </ul>     
 	</div>
 
@@ -42,14 +53,13 @@
 	
 	<div ng-view></div>
 	 
-        #{doLayout /}
+       #{doLayout /}
         
 	<div id="footer">
 		Copyright &copy; AĐIŠ
 	</div>
         
-        <script src="@{'/public/javascripts/jquery-1.6.4.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
-        <script src="@{'/public/javascripts/controller.js'}"></script>
+        
         #{get 'moreScripts' /}
     </body>
 </html>

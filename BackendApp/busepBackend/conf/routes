@@ -7,13 +7,14 @@ GET     /										Application.index
 GET     /home									Application.index
 
 GET		/search									Search.show
-GET		/test									Utils.TEST 
+GET		/test/{testVal}/{qq}					Utils.TEST
 
 GET		/login									Login.show
-POST	/login/logIn							Login.logIn
-GET		/login/logOut							Login.logOut
+POST	/login/{uname}/{pwd}					Login.logIn
+GET		/logout									Login.show(mode:'logout')
+GET		/logout/{uname}							Login.logOut
 
-GET		/documents								Utils.latestDocuments
+GET		/documents								Utils.latestDocuments(count:'0')
 GET		/documents/{count}						Utils.latestDocuments
 
 # za uzimanje podataka o predsedniku

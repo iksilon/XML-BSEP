@@ -17,12 +17,12 @@ public class Utils extends Controller {
 //		List<User> users = (List<User>) Cache.get("users");
 //		List<Document> documents = (List<Document>) Cache.get("documents");
 //		
-//		mode = (mode != null) ? (mode.isEmpty() ? "edit" : mode) : "edit";
+//		mode = (mode != null) ? (mode.isEmpty() ? "def" : mode) : "def";
 //		
 //		render(users, documents, mode);
 //	}
 	
-	// prosledi role kao 0 za predsednika, 1 za odbornika itd
+	// prosledi role 0 za predsednika, 1 za odbornika itd
 	public static void usersByRole(long role) {
 		List<User> users = User.find("byRole", role).fetch();
 		if(users.isEmpty()) {
@@ -41,8 +41,8 @@ public class Utils extends Controller {
 		usersByRole(-1);
 	}
 	
-	public static Result TEST() {
-		Object test = "THE DATA IS ALIVE";
+	public static Result TEST(String testVal, String qq) {
+		Object test = testVal + " " + qq;
 		return new RenderJson(test);
 	}
 	

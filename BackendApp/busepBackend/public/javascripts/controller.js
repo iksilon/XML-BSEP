@@ -1,33 +1,10 @@
 var app = angular.module('mainApp', ['ngMaterial', 'ngMessages', 'ngRoute', 'ngCookies']);
 
-app.config(function($routeProvider){
-    $routeProvider
-    .when('/', {
-        templateUrl: 'Application/index.html'
-    })
-    .when('/login', {
-        templateUrl:'Login/show.html'
-    })
-    .when('/home', {
-        resolve: {
-            "check": function($window, $rootScope){
-                if(!$rootScope.loggedIn) {
-                	$window.location.href = '/';
-                }
-            }
-        },
-        templateUrl:'Application/index.html'
-    })
-    .otherwise({
-        redirectTo: 'Application/index.html'
-    });
-});
-
 app.controller('indexCtrl', function($scope, $rootScope, $http) {
 	$scope.test = "TEST";
 	
 	$scope.alertMe = function() {
-		$http.get('/test').then(
+		$http.get('/test/IT/LIVES').then(
 				function(response){
 					alert(response.data);
 				},
@@ -38,16 +15,19 @@ app.controller('indexCtrl', function($scope, $rootScope, $http) {
 	}
 });
 
-app.controller('loginCtrl', function($scope, $window, $rootScope){
+app.controller('loginCtrl', function($scope, $window, $http, $rootScope){
 	$scope.username = "";
-	$scope.password = "";
+	$scope.funnyString = "";
 	
 	$scope.submit = function() {
-		if($scope.username == 'admin' && $scope.password == 'admin') {
-			$rootScope.loggedIn = true;
-			$window.location.href = 'home';
-		} else {
-			alert('Pogrešno uneseno korisničko ime ili lozinka! Pokušajte ponovo.');
-		}
+		$http.post('/login/' + $scope.username + '/' + $scope.funnyString, {'uname':$scope.username, 'pwd':$scope.funnyString})
+			.then(
+					function(response) {
+						$window.location.href = '/home';
+					},
+					function(reason) {
+						alert('bad login');
+					}
+			);
    };
 });
