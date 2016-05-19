@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -14,6 +16,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -25,7 +28,6 @@ import data.IssuerData;
 import data.SubjectData;
 import net.miginfocom.swing.MigLayout;
 import security.CertificateUtils;
-import javax.swing.JPasswordField;
 
 public class CertificateDialog extends JDialog {
 	
@@ -198,7 +200,7 @@ public class CertificateDialog extends JDialog {
 		panelSubject.add(lble, "cell 1 9,alignx trailing");
 		
 		JLabel lblValidFormonths = new JLabel("Valid For (months)");
-		panelSubject.add(lblValidFormonths, "cell 0 11");
+		panelSubject.add(lblValidFormonths, "flowy,cell 0 11");
 		
 		// Fields
 		
@@ -245,7 +247,65 @@ public class CertificateDialog extends JDialog {
 		JButton btnGenerate = new JButton("Generate");
 		btnGenerate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO: Field validation.
+				// Empty validation.
+				if(txtName.getText() == null || txtName.getText().equals("")) {
+					System.out.println("Name field is mandatory, please fill in and try again.");
+					return;
+				}
+				if(txtSurname.getText() == null || txtSurname.getText().equals("")) {
+					System.out.println("Surname field is mandatory, please fill in and try again.");
+					return;
+				}
+				if(txtCN.getText() == null || txtCN.getText().equals("")) {
+					System.out.println("Common name field is mandatory, please fill in and try again.");
+					return;
+				}
+				if(txtO.getText() == null || txtO.getText().equals("")) {
+					System.out.println("Organization field is mandatory, please fill in and try again.");
+					return;
+				}
+				if(txtOU.getText() == null || txtOU.getText().equals("")) {
+					System.out.println("Organization unit field is mandatory, please fill in and try again.");
+					return;
+				}
+				if(txtC.getText() == null || txtC.getText().equals("")) {
+					System.out.println("Country field is mandatory, please fill in and try again.");
+					return;
+				}
+				if(txtE.getText() == null || txtE.getText().equals("")) {
+					System.out.println("Email field is mandatory, please fill in and try again.");
+					return;
+				}
+				if(txtValidity.getText() == null || txtValidity.getText().equals("")) {
+					System.out.println("Validity field is mandatory, please fill in and try again.");
+					return;
+				}
+				
+				if(txtAlias.getText() == null || txtAlias.getText().equals("")) {
+					System.out.println("Alias field is mandatory, please fill in and try again.");
+					return;
+				}
+				if(passwordField.getPassword() == null || passwordField.getPassword().equals("")) {
+					System.out.println("Password field is mandatory, please fill in and try again.");
+					return;
+				}
+				
+				// TODO: Range validation. Copy FormattedField from PSW
+				
+				int val = Integer.parseInt(txtValidity.getText());
+				if(val <= 0) {
+					System.out.println("Validity must be 1 month or more, please fill in and try again.");
+					return;
+				}
+				
+				String emailRE = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+				Pattern p = Pattern.compile(emailRE);
+				Matcher m = p.matcher(txtE.getText());
+				if(!m.matches()) {
+					System.out.println("Email does not match correct format, please try again.");
+					return;
+				}
+				
 				
 				X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
 				builder.addRDN(BCStyle.GIVENNAME,	txtName.getText());
