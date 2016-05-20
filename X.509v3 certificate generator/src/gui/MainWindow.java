@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -204,9 +205,12 @@ public class MainWindow extends JFrame {
 					currentKeystore.setCertificateEntry(cd.getAlias(), cd.getCertificate());
 					
 					KeyStoreUtils.write(currentKeystore, cd.getAlias(), kp.getPrivate(), cd.getPassword(), cd.getCertificate());
-					//TODO: Clean up password.
+
+					// Clean up password.
+					Arrays.fill(cd.getPassword(), '0');
 					
-					((DefaultTableModel)keypairTable.getModel()).addRow(new Object[]{"#", cd.getAlias()});
+					int rows = ((DefaultTableModel)keypairTable.getModel()).getRowCount();
+					((DefaultTableModel)keypairTable.getModel()).addRow(new Object[]{rows+1, cd.getAlias()});
 					
 				} catch (KeyStoreException e1) {
 					e1.printStackTrace();

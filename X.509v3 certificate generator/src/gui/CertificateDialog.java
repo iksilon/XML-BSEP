@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,6 +38,7 @@ public class CertificateDialog extends JDialog {
 	
 	private JTextField txtAlias;
 	private JPasswordField passwordField;
+	private JPasswordField passwordRetype;
 	
 	private JTextField txtName;
 	private JTextField txtSurname;
@@ -56,6 +58,7 @@ public class CertificateDialog extends JDialog {
 	private X509Certificate createdCertificate = null;
 	private String alias = null;
 	private char[] password;
+	
 	
 	
 	/**
@@ -97,7 +100,7 @@ public class CertificateDialog extends JDialog {
 		
 		JPanel panelCert = new JPanel();
 		getContentPane().add(panelCert, "cell 0 0,grow");
-		panelCert.setLayout(new MigLayout("", "[27px][116px,grow]", "[][][22px]"));
+		panelCert.setLayout(new MigLayout("", "[27px][116px,grow]", "[][][][]"));
 		
 		JLabel lblAlias = new JLabel("Alias");
 		panelCert.add(lblAlias, "cell 0 0,alignx left,aligny center");
@@ -107,11 +110,18 @@ public class CertificateDialog extends JDialog {
 		txtAlias.setColumns(10);
 		
 		JLabel lblPassword = new JLabel("Password");
-		panelCert.add(lblPassword, "cell 0 2,alignx trailing");
+		panelCert.add(lblPassword, "cell 0 2");
 		
 		passwordField = new JPasswordField();
 		passwordField.setColumns(10);
-		panelCert.add(passwordField, "cell 1 2,alignx left");
+		panelCert.add(passwordField, "cell 1 2");
+		
+		JLabel lblRetypePassword = new JLabel("Retype password");
+		panelCert.add(lblRetypePassword, "cell 0 3,alignx trailing");
+		
+		passwordRetype = new JPasswordField();
+		passwordRetype.setColumns(10);
+		panelCert.add(passwordRetype, "cell 1 3,alignx left");
 		
 		
 	// Issuer data section ------------------------------------------------------------------------
@@ -251,7 +261,9 @@ public class CertificateDialog extends JDialog {
 		JButton btnGenerate = new JButton("Generate");
 		btnGenerate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
 				// Empty validation.
+				
 				if(txtName.getText() == null || txtName.getText().equals("")) {
 					lblError.setText("Name field is mandatory, please fill in and try again.");
 					return;
@@ -294,6 +306,8 @@ public class CertificateDialog extends JDialog {
 					return;
 				}
 				
+				// Value validation.
+				
 				int val = Integer.parseInt(txtValidity.getText());
 				if(val <= 0) {
 					lblError.setText("Validity must be 1 month or more, please fill in and try again.");
@@ -308,6 +322,28 @@ public class CertificateDialog extends JDialog {
 					return;
 				}
 				
+				// Password validation.
+				
+				if(passwordField.getPassword().length == 0 || passwordRetype.getPassword().length == 0) {
+					lblError.setText("Both password fields are mandatory, please try again.");
+					passwordField.setText("");
+					passwordRetype.setText("");
+					return;
+				}
+				else if(passwordField.getPassword().length != passwordRetype.getPassword().length) {
+					lblError.setText("Typed passwords do not match, please try again.");
+					passwordField.setText("");
+					passwordRetype.setText("");
+					return;
+				}
+				else if(!Arrays.equals(passwordField.getPassword(), passwordRetype.getPassword())) {
+					lblError.setText("Typed passwords do not match, please try again.");
+					passwordField.setText("");
+					passwordRetype.setText("");
+					return;
+				}
+				
+				// Generate certificate.
 				
 				X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
 				builder.addRDN(BCStyle.GIVENNAME,	txtName.getText());
@@ -358,6 +394,11 @@ public class CertificateDialog extends JDialog {
 			    createdCertificate = CertificateUtils.generateCertificate(issuerData, subjectData);
 			    alias = txtAlias.getText();
 			    password = passwordField.getPassword();
+			    
+			    // Clean up.
+			    Arrays.fill(passwordField.getPassword(), '0');
+			    Arrays.fill(passwordRetype.getPassword(), '0');
+			    
 			    System.out.println("New certificate generated : " + alias);
 			    System.out.println(createdCertificate);
 			    dispose();
