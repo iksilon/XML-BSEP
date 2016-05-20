@@ -148,9 +148,10 @@ public class MainWindow extends JFrame {
 // ---------------------------------------------------------------------------------------------------
 // Akcije, jer me mrzi da prebacujem u posebne faljove a GUI builder ih je ovde stavio.
 // ---------------------------------------------------------------------------------------------------
-
+	
 	/**
 	 * Opens a dialog for defining keystore password.
+	 * Creates a new keystore.
 	 */
 	private class ActionKeystore extends AbstractAction {
 		private static final long serialVersionUID = 425412543121784713L;
@@ -166,7 +167,7 @@ public class MainWindow extends JFrame {
 			// After returning from the modal dialog.
 			if(ksd.getKeystore() != null) {
 				currentKeystore = ksd.getKeystore();
-				System.out.println(currentKeystore);
+				MainWindow.getInstance().setTitle(currentKeystore.toString());
 			}
 			ksd.dispose();
 		}
@@ -186,7 +187,7 @@ public class MainWindow extends JFrame {
 			// Is there a KeyStore to which this KeyPair will be stored?
 			if(currentKeystore == null) {
 				JOptionPane.showMessageDialog(MainWindow.getInstance(),
-						"A KeyStore is needed to create a KeyPair. Please create a KeyStore first. "
+						"A keystore is needed to create a keypair. Please create a keystore first. "
 						+ "You can do this by going to the File menu, selecting New and then Keystore");
 				return;
 			}
@@ -228,6 +229,7 @@ public class MainWindow extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
+			// TODO: Open keystore file.
 		}
 	}
 	
@@ -239,6 +241,7 @@ public class MainWindow extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
+			// TODO: Save keystore.
 		}
 	}
 	
@@ -253,6 +256,8 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Save keystore to a file");
 		}
 		public void actionPerformed(ActionEvent e) {
+			// TODO: SaveAs keystore.
+			
 			//String filepath = "/X.509v3 certificate generator/certificates/";
 			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
 			//KeyStoreUtils.saveKeyStore(currentKeystore, filepath, password);
@@ -266,6 +271,9 @@ public class MainWindow extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
+			
+			// TODO: Exit action.
+			// TODO: Are you sure exit prompt.
 		}
 	}
 	private class ActionExportCertificate extends AbstractAction {
@@ -276,6 +284,8 @@ public class MainWindow extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
+			// TODO: Export certificate.
+			// TODO: Import certificate.
 		}
 	}
 	private class ActionExportAll extends AbstractAction {
@@ -286,6 +296,7 @@ public class MainWindow extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
+			// TODO: Export all certificates.
 		}
 	}
 }

@@ -13,7 +13,8 @@ public class KeypairTable extends JTable {
 		dtm.addColumn("Alias");
 		this.setModel(dtm);
 		
-		//TODO: Cells are editable, they are not supposed to be.
+		//TODO: Cells are editable, they are not supposed to be. MouseListener to open Certificate view on double click.
+		
 	}
 
 }
