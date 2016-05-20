@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -43,7 +45,7 @@ public class CertificateDialog extends JDialog {
 	private JTextField txtO;
 	private JTextField txtC;
 	private JTextField txtE;
-	private JTextField txtValidity;
+	private JFormattedTextField txtValidity;
 	private JComboBox<IssuerData> comboBox;
 	private JCheckBox chckbxSelfSigned;
 	
@@ -86,7 +88,7 @@ public class CertificateDialog extends JDialog {
 	public CertificateDialog(IssuerData issuer, SubjectData subject, KeyPair kp) {
 		setTitle("Generate Certificate");
 		setModal(true);
-		setBounds(100, 100, 355, 498);
+		setBounds(100, 100, 357, 531);
 		getContentPane().setLayout(new MigLayout("", "[grow]", "[grow][][][grow][grow]"));
 		
 		this.issuerData = issuer;
@@ -155,7 +157,7 @@ public class CertificateDialog extends JDialog {
 		
 		JPanel panelSubject = new JPanel();
 		getContentPane().add(panelSubject, "cell 0 3,grow");
-		panelSubject.setLayout(new MigLayout("", "[][][grow]", "[][][][][][][][][][][][]"));
+		panelSubject.setLayout(new MigLayout("", "[][][grow]", "[][][][][][][][][][][][][][]"));
 		
 		// Labels
 		
@@ -232,9 +234,11 @@ public class CertificateDialog extends JDialog {
 		panelSubject.add(txtE, "cell 2 9,growx");
 		txtE.setColumns(10);
 		
-		txtValidity = new JTextField();
+		txtValidity = new JFormattedTextField(NumberFormat.getIntegerInstance());
 		panelSubject.add(txtValidity, "cell 2 11,growx");
-		txtValidity.setColumns(10);
+		
+		JLabel lblError = new JLabel("");
+		panelSubject.add(lblError, "cell 0 12 3 1");
 		
 		
 		
@@ -249,52 +253,50 @@ public class CertificateDialog extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				// Empty validation.
 				if(txtName.getText() == null || txtName.getText().equals("")) {
-					System.out.println("Name field is mandatory, please fill in and try again.");
+					lblError.setText("Name field is mandatory, please fill in and try again.");
 					return;
 				}
 				if(txtSurname.getText() == null || txtSurname.getText().equals("")) {
-					System.out.println("Surname field is mandatory, please fill in and try again.");
+					lblError.setText("Surname field is mandatory, please fill in and try again.");
 					return;
 				}
 				if(txtCN.getText() == null || txtCN.getText().equals("")) {
-					System.out.println("Common name field is mandatory, please fill in and try again.");
+					lblError.setText("Common name field is mandatory, please fill in and try again.");
 					return;
 				}
 				if(txtO.getText() == null || txtO.getText().equals("")) {
-					System.out.println("Organization field is mandatory, please fill in and try again.");
+					lblError.setText("Organization field is mandatory, please fill in and try again.");
 					return;
 				}
 				if(txtOU.getText() == null || txtOU.getText().equals("")) {
-					System.out.println("Organization unit field is mandatory, please fill in and try again.");
+					lblError.setText("Organization unit field is mandatory, please fill in and try again.");
 					return;
 				}
 				if(txtC.getText() == null || txtC.getText().equals("")) {
-					System.out.println("Country field is mandatory, please fill in and try again.");
+					lblError.setText("Country field is mandatory, please fill in and try again.");
 					return;
 				}
 				if(txtE.getText() == null || txtE.getText().equals("")) {
-					System.out.println("Email field is mandatory, please fill in and try again.");
+					lblError.setText("Email field is mandatory, please fill in and try again.");
 					return;
 				}
 				if(txtValidity.getText() == null || txtValidity.getText().equals("")) {
-					System.out.println("Validity field is mandatory, please fill in and try again.");
+					lblError.setText("Validity field is mandatory, please fill in and try again.");
 					return;
 				}
 				
 				if(txtAlias.getText() == null || txtAlias.getText().equals("")) {
-					System.out.println("Alias field is mandatory, please fill in and try again.");
+					lblError.setText("Alias field is mandatory, please fill in and try again.");
 					return;
 				}
 				if(passwordField.getPassword() == null || passwordField.getPassword().equals("")) {
-					System.out.println("Password field is mandatory, please fill in and try again.");
+					lblError.setText("Password field is mandatory, please fill in and try again.");
 					return;
 				}
 				
-				// TODO: Range validation. Copy FormattedField from PSW
-				
 				int val = Integer.parseInt(txtValidity.getText());
 				if(val <= 0) {
-					System.out.println("Validity must be 1 month or more, please fill in and try again.");
+					lblError.setText("Validity must be 1 month or more, please fill in and try again.");
 					return;
 				}
 				
@@ -302,7 +304,7 @@ public class CertificateDialog extends JDialog {
 				Pattern p = Pattern.compile(emailRE);
 				Matcher m = p.matcher(txtE.getText());
 				if(!m.matches()) {
-					System.out.println("Email does not match correct format, please try again.");
+					lblError.setText("Email does not match correct format, please try again.");
 					return;
 				}
 				
