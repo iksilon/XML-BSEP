@@ -3,6 +3,8 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -86,8 +88,35 @@ public class MainWindow extends JFrame {
 	 * Create the frame.
 	 */
 	protected MainWindow() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
+		setTitle("CerGen");
+		
+		// Exit prompt.
+		
+		this.addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				String ObjButtons[] = {"Yes","No"};
+		        int PromptResult = 
+		        		JOptionPane.showOptionDialog(null,
+		        									"Are you sure you want to exit?",
+		        									"Leaving CerGen",
+		        									JOptionPane.DEFAULT_OPTION,
+		        									JOptionPane.WARNING_MESSAGE,
+		        									null,
+		        									ObjButtons,
+		        									ObjButtons[1]);
+		        if(PromptResult == JOptionPane.YES_OPTION)
+		        {
+		            System.exit(0);
+		        }
+			}
+			
+		});
+		
+		// Components.
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -167,7 +196,7 @@ public class MainWindow extends JFrame {
 			// After returning from the modal dialog.
 			if(ksd.getKeystore() != null) {
 				currentKeystore = ksd.getKeystore();
-				MainWindow.getInstance().setTitle(currentKeystore.toString());
+				MainWindow.getInstance().setTitle("CerGen - " + currentKeystore.toString());
 			}
 			ksd.dispose();
 		}
@@ -263,17 +292,18 @@ public class MainWindow extends JFrame {
 			//KeyStoreUtils.saveKeyStore(currentKeystore, filepath, password);
 		}
 	}
+	
+	/**
+	 * Sends the window closing event, and triggers appropriate listeners.
+	 */
 	private class ActionExit extends AbstractAction {
 		private static final long serialVersionUID = 2732771330480399657L;
 		public ActionExit() {
 			putValue(NAME, "Exit");
 			putValue(SHORT_DESCRIPTION, "Close the application");
 		}
-		public void actionPerformed(ActionEvent e) {
-			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
-			
-			// TODO: Exit action.
-			// TODO: Are you sure exit prompt.
+		public void actionPerformed(ActionEvent e) {			
+			MainWindow.getInstance().dispatchEvent(new WindowEvent(MainWindow.getInstance(), WindowEvent.WINDOW_CLOSING));
 		}
 	}
 	private class ActionExportCertificate extends AbstractAction {
