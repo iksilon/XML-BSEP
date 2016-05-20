@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -24,6 +26,7 @@ import javax.swing.JSeparator;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 import data.IssuerData;
@@ -42,6 +45,7 @@ public class MainWindow extends JFrame {
 	
 	private static MainWindow instance = null;
 	private KeyStore currentKeystore = null;
+	private char[] currentPassword;
 	
 	private KeypairTable keypairTable;
 	
@@ -196,6 +200,9 @@ public class MainWindow extends JFrame {
 			// After returning from the modal dialog.
 			if(ksd.getKeystore() != null) {
 				currentKeystore = ksd.getKeystore();
+				currentPassword = ksd.getPassword();
+				Arrays.fill(ksd.getPassword(), '0');
+				
 				MainWindow.getInstance().setTitle("CerGen - " + currentKeystore.toString());
 			}
 			ksd.dispose();
@@ -275,7 +282,8 @@ public class MainWindow extends JFrame {
 	}
 	
 	/**
-	 * Saves the certificate into the certificates folder.
+	 * Opens a file choosing dialog to select the path where the keystore will be saved.
+	 * Default file name is Untitled.
 	 *
 	 */
 	private class ActionSaveAs extends AbstractAction {
@@ -285,11 +293,49 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Save keystore to a file");
 		}
 		public void actionPerformed(ActionEvent e) {
-			// TODO: SaveAs keystore.
-			
-			//String filepath = "/X.509v3 certificate generator/certificates/";
-			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
-			//KeyStoreUtils.saveKeyStore(currentKeystore, filepath, password);
+			// TODO: Fix password mechanism, this is NOT SECURE!
+			JFileChooser chooser = new JFileChooser();
+		    FileNameExtensionFilter filter = new FileNameExtensionFilter("Java keystore files", "jks");
+		    chooser.setFileFilter(filter);
+		    
+		    String filename = "";
+		    String dir = "";
+		    
+		    int returnVal = chooser.showSaveDialog(MainWindow.getInstance());
+		    if (returnVal == JFileChooser.CANCEL_OPTION) {
+		    	return;
+		    }
+		    
+		    if (returnVal == JFileChooser.APPROVE_OPTION) {
+		        filename = chooser.getSelectedFile().getName();
+		        dir = chooser.getCurrentDirectory().toString();
+		        // TODO: Path does not have separator. Fix this.
+		        System.out.println(dir+filename);
+		    }
+		    
+		    // Does this file already exist? Overwrite it?
+		    File f = new File(dir+filename);
+		    if(f.isFile()) {
+		    	String ObjButtons[] = {"Yes","No"};
+		        int PromptResult = 
+		        		JOptionPane.showOptionDialog(null,
+		        									"Selected file already exists, would you like to overwrite existing file?",
+		        									"Overwrite existing file",
+		        									JOptionPane.DEFAULT_OPTION,
+		        									JOptionPane.WARNING_MESSAGE,
+		        									null,
+		        									ObjButtons,
+		        									ObjButtons[1]);
+		        // Yep, overwrite.
+		        if(PromptResult == JOptionPane.YES_OPTION)
+		        {
+		        	KeyStoreUtils.saveKeyStore(currentKeystore, dir+filename, currentPassword);
+		        }
+		        
+		    }
+		    else {
+		    	KeyStoreUtils.saveKeyStore(currentKeystore, dir+filename, currentPassword);
+		    }
 		}
 	}
 	

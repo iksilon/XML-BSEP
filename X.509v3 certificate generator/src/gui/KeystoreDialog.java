@@ -26,6 +26,7 @@ public class KeystoreDialog extends JDialog {
 	private JLabel lblErrorLabel;
 	
 	private KeyStore createdKeystore;
+	private char[] createdPassword;
 	
 	/**
 	 * Returns the newly created {@link KeyStore} from this dialog.
@@ -35,6 +36,16 @@ public class KeystoreDialog extends JDialog {
 	 */
 	public KeyStore getKeystore() {
 		return createdKeystore;
+	}
+	
+	/**
+	 * Returns the newly created {@code char[]} password from this dialog.
+	 * Dialog is modal so this works, do not change modality of the dialog.
+	 * 
+	 * @return char[]
+	 */
+	public char[] getPassword() {
+		return createdPassword;
 	}
 
 	/**
@@ -91,6 +102,7 @@ public class KeystoreDialog extends JDialog {
 						}
 						else if(Arrays.equals(passwordField.getPassword(), passwordFieldRetype.getPassword())) {
 							createdKeystore = KeyStoreUtils.loadKeyStore(null, passwordField.getPassword());
+							createdPassword = passwordField.getPassword();
 							System.out.println("New keystore loaded.");
 							System.out.println(createdKeystore.toString());
 							
