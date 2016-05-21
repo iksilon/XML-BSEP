@@ -265,7 +265,6 @@ public class MainWindow extends JFrame {
 	
 	/**
 	 * Opens a file choosing dialog to select the path where the keystore will be saved.
-	 * Default file name is untitled.
 	 *
 	 */
 	private class ActionSaveAs extends AbstractAction {
@@ -299,13 +298,13 @@ public class MainWindow extends JFrame {
 		    
 		    // User approved.
 		    if (returnVal == JFileChooser.APPROVE_OPTION) {
+		    	// TODO: Z:Minor: Prevent unsupported chars in filename by making a key press listener.
+		    	
 		    	// Check if user forgot file extension or got it wrong.
 		        path = chooser.getSelectedFile().getAbsolutePath();
 		        if(!path.endsWith(".jks")) {
 		        	path = path.concat(".jks");
 		        }
-		        
-		        //TODO: A:Important: Check if filename is "".
 		        
 		        // Does this file already exist? Overwrite it?
 			    File f = new File(path);
@@ -360,6 +359,10 @@ public class MainWindow extends JFrame {
 		}
 	}
 	
+	/**
+	 * Opens a file choosing dialog to select the path which keystore will be opened.
+	 *
+	 */
 	private class ActionOpen extends AbstractAction {
 		private static final long serialVersionUID = 340823143919984037L;
 		public ActionOpen() {
@@ -367,8 +370,37 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Open a keystore file");
 		}
 		public void actionPerformed(ActionEvent e) {
-			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
 			// TODO: Open keystore file.
+			
+			// Set default file chooser directory. Create the dialog.
+			String workingDir = System.getProperty("user.dir");
+			workingDir = Paths.get(workingDir, "certificates").toString();
+			JFileChooser chooser = new JFileChooser(workingDir);
+		    FileNameExtensionFilter filter = new FileNameExtensionFilter("Java keystore files", "jks");
+		    chooser.setFileFilter(filter);
+		    
+		    String path = "";
+		    		    
+		    // User gave up.
+		    int returnVal = chooser.showOpenDialog(MainWindow.getInstance());
+		    if (returnVal == JFileChooser.CANCEL_OPTION) {
+		    	return;
+		    }
+		    
+		    // User approved.
+		    if (returnVal == JFileChooser.APPROVE_OPTION) {
+		    	// Enter password.
+		    	KeystoreDialog ksd = new KeystoreDialog();
+				ksd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+				ksd.setVisible(true);
+				
+				// After returning from the modal dialog.
+				path = chooser.getSelectedFile().getAbsolutePath();
+		    	KeyStoreUtils.loadKeyStore(path, ksd.getPassword());
+		    	// Clean up.
+		    	Arrays.fill(ksd.getPassword(), '0');
+		    }
+		    
 		}
 	}
 	
