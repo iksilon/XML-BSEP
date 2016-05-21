@@ -228,6 +228,10 @@ public class MainWindow extends JFrame {
 							scd.setCertificateText(cert.toString());
 							scd.setVisible(true);
 						}
+						else {
+							JOptionPane.showMessageDialog(MainWindow.getInstance(), 
+									"There is no such certificate.");
+						}
 					} catch (KeyStoreException e1) {
 						e1.printStackTrace();
 					}
