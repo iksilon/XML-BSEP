@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -294,48 +295,55 @@ public class MainWindow extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			// TODO: Fix password mechanism, this is NOT SECURE!
-			JFileChooser chooser = new JFileChooser();
+			
+			// Set default file chooser directory. Create the dialog.
+			String workingDir = System.getProperty("user.dir");
+			workingDir = Paths.get(workingDir, "certificates").toString();
+			JFileChooser chooser = new JFileChooser(workingDir);
 		    FileNameExtensionFilter filter = new FileNameExtensionFilter("Java keystore files", "jks");
 		    chooser.setFileFilter(filter);
 		    
-		    String filename = "";
-		    String dir = "";
-		    
+		    String path = "";
+		    		    
 		    int returnVal = chooser.showSaveDialog(MainWindow.getInstance());
 		    if (returnVal == JFileChooser.CANCEL_OPTION) {
 		    	return;
 		    }
 		    
+		    // User approved.
 		    if (returnVal == JFileChooser.APPROVE_OPTION) {
-		        filename = chooser.getSelectedFile().getName();
-		        dir = chooser.getCurrentDirectory().toString();
-		        // TODO: Path does not have separator. Fix this.
-		        System.out.println(dir+filename);
-		    }
-		    
-		    // Does this file already exist? Overwrite it?
-		    File f = new File(dir+filename);
-		    if(f.isFile()) {
-		    	String ObjButtons[] = {"Yes","No"};
-		        int PromptResult = 
-		        		JOptionPane.showOptionDialog(null,
-		        									"Selected file already exists, would you like to overwrite existing file?",
-		        									"Overwrite existing file",
-		        									JOptionPane.DEFAULT_OPTION,
-		        									JOptionPane.WARNING_MESSAGE,
-		        									null,
-		        									ObjButtons,
-		        									ObjButtons[1]);
-		        // Yep, overwrite.
-		        if(PromptResult == JOptionPane.YES_OPTION)
-		        {
-		        	KeyStoreUtils.saveKeyStore(currentKeystore, dir+filename, currentPassword);
+		    	// Check if user forgot file extension or got it wrong.
+		        path = chooser.getSelectedFile().getAbsolutePath();
+		        if(!path.endsWith(".jks")) {
+		        	path = path.concat(".jks");
 		        }
 		        
+		        // Does this file already exist? Overwrite it?
+			    File f = new File(path);
+			    if(f.isFile()) {
+			    	String ObjButtons[] = {"Yes","No"};
+			        int PromptResult = 
+			        		JOptionPane.showOptionDialog(null,
+			        									"Selected file already exists, would you like to overwrite existing file?",
+			        									"Overwrite existing file",
+			        									JOptionPane.DEFAULT_OPTION,
+			        									JOptionPane.WARNING_MESSAGE,
+			        									null,
+			        									ObjButtons,
+			        									ObjButtons[1]);
+			        // Yep, overwrite.
+			        if(PromptResult == JOptionPane.YES_OPTION)
+			        {
+			        	KeyStoreUtils.saveKeyStore(currentKeystore, path, currentPassword);
+			        }
+			        
+			    }
+			    else {
+			    	KeyStoreUtils.saveKeyStore(currentKeystore, path, currentPassword);
+			    }
 		    }
-		    else {
-		    	KeyStoreUtils.saveKeyStore(currentKeystore, dir+filename, currentPassword);
-		    }
+		    
+		    
 		}
 	}
 	
