@@ -19,7 +19,7 @@ import net.miginfocom.swing.MigLayout;
  * Dialog for setting the keystore password.
  *
  */
-public class KeystoreDialog extends JDialog {
+public class SetPasswordDialog extends JDialog {
 
 	private static final long serialVersionUID = 1361284372352576724L;
 	private final JPanel contentPanel = new JPanel();
@@ -44,7 +44,7 @@ public class KeystoreDialog extends JDialog {
 	 * Dialog is modal so that returning the created {@code password} could work - do not change modality!
 	 * 
 	 */
-	public KeystoreDialog() {
+	public SetPasswordDialog() {
 		// Dialog setup.
 		setResizable(false);
 		setTitle("Create Keystore");

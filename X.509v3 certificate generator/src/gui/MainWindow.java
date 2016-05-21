@@ -11,6 +11,7 @@ import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.util.Arrays;
+import java.util.Enumeration;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -67,6 +68,14 @@ public class MainWindow extends JFrame {
 	private final Action actExportAll = new ActionExportAll();
 	private JTextField txtCurrentKeystore;
 	private JLabel lblCurrentKeystore = new JLabel("Current keystore:");
+	
+	public DefaultTableModel getKeypairTableModel() {
+		return (DefaultTableModel)keypairTable.getModel();
+	}
+	
+	public void setKeypairTableModel(DefaultTableModel m) {
+		keypairTable.setModel(m);
+	}
 
 	/**
 	 * Launch the application.
@@ -251,7 +260,7 @@ public class MainWindow extends JFrame {
 			}
 			else {	// Existing. Overwrite the file.
 				// Set password for keystore.
-		    	KeystoreDialog ksd = new KeystoreDialog();
+		    	SetPasswordDialog ksd = new SetPasswordDialog();
 				ksd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 				ksd.setVisible(true);
 				
@@ -323,7 +332,7 @@ public class MainWindow extends JFrame {
 			        if(PromptResult == JOptionPane.YES_OPTION)
 			        {
 			        	// Set password for keystore.
-				    	KeystoreDialog ksd = new KeystoreDialog();
+				    	SetPasswordDialog ksd = new SetPasswordDialog();
 						ksd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 						ksd.setVisible(true);
 						
@@ -340,7 +349,7 @@ public class MainWindow extends JFrame {
 			    }
 			    else {
 			    	// Set password for keystore.
-			    	KeystoreDialog ksd = new KeystoreDialog();
+			    	SetPasswordDialog ksd = new SetPasswordDialog();
 					ksd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 					ksd.setVisible(true);
 					
@@ -369,9 +378,7 @@ public class MainWindow extends JFrame {
 			putValue(NAME, "Open");
 			putValue(SHORT_DESCRIPTION, "Open a keystore file");
 		}
-		public void actionPerformed(ActionEvent e) {
-			// TODO: Open keystore file.
-			
+		public void actionPerformed(ActionEvent e) {			
 			// Set default file chooser directory. Create the dialog.
 			String workingDir = System.getProperty("user.dir");
 			workingDir = Paths.get(workingDir, "certificates").toString();
@@ -390,15 +397,35 @@ public class MainWindow extends JFrame {
 		    // User approved.
 		    if (returnVal == JFileChooser.APPROVE_OPTION) {
 		    	// Enter password.
-		    	KeystoreDialog ksd = new KeystoreDialog();
+		    	EnterPasswordDialog ksd = new EnterPasswordDialog();
 				ksd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 				ksd.setVisible(true);
 				
 				// After returning from the modal dialog.
 				path = chooser.getSelectedFile().getAbsolutePath();
-		    	KeyStoreUtils.loadKeyStore(path, ksd.getPassword());
+		    	KeyStore loaded = KeyStoreUtils.loadKeyStore(path, ksd.getPassword());
+		    	currentKeystore = loaded;
+		    	currentPath = path;
+		    	txtCurrentKeystore.setText(currentPath);
 		    	// Clean up.
 		    	Arrays.fill(ksd.getPassword(), '0');
+		    	ksd.dispose();
+		    	
+		    	// Populate the table.
+		    	Enumeration<String> aliases;
+				try {
+					aliases = currentKeystore.aliases();					
+					System.out.println("Aliases:");
+					while(aliases.hasMoreElements()) {
+						String a = aliases.nextElement();
+						System.out.println(a);
+						int rows = ((DefaultTableModel)keypairTable.getModel()).getRowCount();
+						((DefaultTableModel)keypairTable.getModel()).addRow(new Object[]{rows+1, a});
+					}
+					
+				} catch (KeyStoreException e1) {
+					e1.printStackTrace();
+				}
 		    }
 		    
 		}
