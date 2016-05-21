@@ -181,12 +181,15 @@ public class MainWindow extends JFrame {
 	}
 	
 // ---------------------------------------------------------------------------------------------------
-// Akcije, jer me mrzi da prebacujem u posebne faljove a GUI builder ih je ovde stavio.
+// Actions section because I couldn't be bothered to move them to separate files.
 // ---------------------------------------------------------------------------------------------------
 	
+	
+// Keystore stuff ------------------------------------------------------------------------------------
+	
 	/**
-	 * Opens a dialog for defining keystore password.
 	 * Creates a new keystore.
+	 * Opens a dialog for defining keystore password.
 	 */
 	private class ActionKeystore extends AbstractAction {
 		private static final long serialVersionUID = 425412543121784713L;
@@ -215,65 +218,10 @@ public class MainWindow extends JFrame {
 	}
 	
 	/**
-	 * Generates a keypair.
-	 * Prompts the user to fill in certificate details and generates the certificate.
+	 * Saves the current keystore into file.
+	 * If it's a new keystore, {@link ActionSaveAs} is called.
+	 *
 	 */
-	private class ActionKeypair extends AbstractAction {
-		private static final long serialVersionUID = -1411136323257319945L;
-		public ActionKeypair() {
-			putValue(NAME, "Keypair");
-			putValue(SHORT_DESCRIPTION, "Generate new keypair");
-		}
-		public void actionPerformed(ActionEvent e) {
-			// Is there a KeyStore to which this KeyPair will be stored?
-			if(currentKeystore == null) {
-				JOptionPane.showMessageDialog(MainWindow.getInstance(),
-						"A keystore is needed to create a keypair. Please create a keystore first. "
-						+ "You can do this by going to the File menu, selecting New and then Keystore");
-				return;
-			}
-			
-			KeyPair kp = CertificateUtils.generateKeyPair();
-			IssuerData issuer = new IssuerData();
-			SubjectData subject = new SubjectData();
-			
-			CertificateDialog cd = new CertificateDialog(issuer, subject, kp);
-			cd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-			cd.setVisible(true);
-			
-			// After returning from the modal dialog.
-			if (cd.getCertificate() != null) {
-				try {
-					currentKeystore.setCertificateEntry(cd.getAlias(), cd.getCertificate());
-					
-					KeyStoreUtils.write(currentKeystore, cd.getAlias(), kp.getPrivate(), cd.getPassword(), cd.getCertificate());
-
-					// Clean up password.
-					Arrays.fill(cd.getPassword(), '0');
-					
-					int rows = ((DefaultTableModel)keypairTable.getModel()).getRowCount();
-					((DefaultTableModel)keypairTable.getModel()).addRow(new Object[]{rows+1, cd.getAlias()});
-					
-				} catch (KeyStoreException e1) {
-					e1.printStackTrace();
-				}
-			}
-			cd.dispose();
-		}
-	}
-	
-	private class ActionOpen extends AbstractAction {
-		private static final long serialVersionUID = 340823143919984037L;
-		public ActionOpen() {
-			putValue(NAME, "Open");
-			putValue(SHORT_DESCRIPTION, "Open a keystore file");
-		}
-		public void actionPerformed(ActionEvent e) {
-			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
-			// TODO: Open keystore file.
-		}
-	}
-	
 	private class ActionSave extends AbstractAction {
 		private static final long serialVersionUID = -4641089031850059072L;
 		public ActionSave() {
@@ -281,6 +229,13 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Save keystore");
 		}
 		public void actionPerformed(ActionEvent e) {
+			// Is there a keystore at all?
+			if(currentKeystore == null) {
+				JOptionPane.showMessageDialog(MainWindow.getInstance(),
+						"There is no active keystore to be saved. Please create or open a keystore first.");
+				return;
+			}
+			
 			// This is a new keystore - call SaveAs.
 			if(currentPath.equals("")) {
 				actSaveAs.actionPerformed(null);
@@ -305,6 +260,13 @@ public class MainWindow extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			// TODO: A:Critical: Fix password mechanism, this is NOT SECURE!
+			
+			// Is there a keystore at all?
+			if(currentKeystore == null) {
+				JOptionPane.showMessageDialog(MainWindow.getInstance(),
+						"There is no active keystore to be saved. Please create or open a keystore first.");
+				return;
+			}
 			
 			// Set default file chooser directory. Create the dialog.
 			String workingDir = System.getProperty("user.dir");
@@ -358,6 +320,70 @@ public class MainWindow extends JFrame {
 		    
 		}
 	}
+	
+	private class ActionOpen extends AbstractAction {
+		private static final long serialVersionUID = 340823143919984037L;
+		public ActionOpen() {
+			putValue(NAME, "Open");
+			putValue(SHORT_DESCRIPTION, "Open a keystore file");
+		}
+		public void actionPerformed(ActionEvent e) {
+			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
+			// TODO: Open keystore file.
+		}
+	}
+	
+	/**
+	 * Generates a keypair.
+	 * Prompts the user to fill in certificate details and generates the certificate.
+	 */
+	private class ActionKeypair extends AbstractAction {
+		private static final long serialVersionUID = -1411136323257319945L;
+		public ActionKeypair() {
+			putValue(NAME, "Keypair");
+			putValue(SHORT_DESCRIPTION, "Generate new keypair");
+		}
+		public void actionPerformed(ActionEvent e) {
+			// Is there a KeyStore to which this KeyPair will be stored?
+			if(currentKeystore == null) {
+				JOptionPane.showMessageDialog(MainWindow.getInstance(),
+						"A keystore is needed to create a keypair. Please create a keystore first. "
+						+ "You can do this by going to the File menu, selecting New and then Keystore");
+				return;
+			}
+			
+			KeyPair kp = CertificateUtils.generateKeyPair();
+			IssuerData issuer = new IssuerData();
+			SubjectData subject = new SubjectData();
+			
+			CertificateDialog cd = new CertificateDialog(issuer, subject, kp);
+			cd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+			cd.setVisible(true);
+			
+			// After returning from the modal dialog.
+			if (cd.getCertificate() != null) {
+				try {
+					currentKeystore.setCertificateEntry(cd.getAlias(), cd.getCertificate());
+					
+					KeyStoreUtils.write(currentKeystore, cd.getAlias(), kp.getPrivate(), cd.getPassword(), cd.getCertificate());
+
+					// Clean up password.
+					Arrays.fill(cd.getPassword(), '0');
+					
+					int rows = ((DefaultTableModel)keypairTable.getModel()).getRowCount();
+					((DefaultTableModel)keypairTable.getModel()).addRow(new Object[]{rows+1, cd.getAlias()});
+					
+				} catch (KeyStoreException e1) {
+					e1.printStackTrace();
+				}
+			}
+			cd.dispose();
+		}
+	}
+	
+	
+	
+	
 	
 	/**
 	 * Sends the window closing event, and triggers appropriate listeners.
