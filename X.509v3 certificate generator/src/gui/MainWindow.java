@@ -56,6 +56,8 @@ public class MainWindow extends JFrame {
 	private String currentPath = "";
 	
 	private KeypairTable keypairTable;
+	private JTextField txtCurrentKeystore;
+	private JLabel lblCurrentKeystore = new JLabel("Current keystore:");
 	
 	private JPanel contentPane;
 	private final Action actKeystore = new ActionKeystore();
@@ -66,16 +68,9 @@ public class MainWindow extends JFrame {
 	private final Action actExit = new ActionExit();
 	private final Action actExportCertificate = new ActionExportCertificate();
 	private final Action actExportAll = new ActionExportAll();
-	private JTextField txtCurrentKeystore;
-	private JLabel lblCurrentKeystore = new JLabel("Current keystore:");
+	private final Action actImportCertificate = new ActionImportCertificate();
 	
-	public DefaultTableModel getKeypairTableModel() {
-		return (DefaultTableModel)keypairTable.getModel();
-	}
-	
-	public void setKeypairTableModel(DefaultTableModel m) {
-		keypairTable.setModel(m);
-	}
+	// Main ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	/**
 	 * Launch the application.
@@ -92,6 +87,19 @@ public class MainWindow extends JFrame {
 			}
 		});
 	}
+	
+	// Get/set ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	public KeyStore getCurrentKeystore() {
+		System.out.println("get method " + currentKeystore);
+		return currentKeystore;
+	}
+	
+	public void setCurrentKeystore(KeyStore k) {
+		currentKeystore = k;
+	}
+	
+	// Singleton ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	/**
 	 * Implementation of Singleton pattern.
@@ -114,7 +122,7 @@ public class MainWindow extends JFrame {
 		setBounds(100, 100, 450, 300);
 		setTitle("CerGen");
 		
-		// Exit prompt.
+		// Exit prompt ------------------------------------------------------------------------
 		
 		this.addWindowListener(new WindowAdapter() {
 
@@ -138,7 +146,7 @@ public class MainWindow extends JFrame {
 			
 		});
 		
-		// Components.
+		// Components ------------------------------------------------------------------------
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -182,6 +190,12 @@ public class MainWindow extends JFrame {
 		JMenuItem mntmExportAll = mnTools.add(actExportAll);
 		mntmExportAll.setText("Export All");
 		
+		JSeparator separator = new JSeparator();
+		mnTools.add(separator);
+		
+		JMenuItem mntmImportCertificate = mnTools.add(actImportCertificate);
+		mntmImportCertificate.setText("Import Certificate");
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -209,12 +223,12 @@ public class MainWindow extends JFrame {
 		txtCurrentKeystore.setText("");
 	}
 	
-// ---------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Actions section because I couldn't be bothered to move them to separate files.
-// ---------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	
-// Keystore stuff ------------------------------------------------------------------------------------
+// Keystore stuff ------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	/**
 	 * Creates a new keystore.
@@ -227,7 +241,7 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Create new keystore");
 		}
 		public void actionPerformed(ActionEvent e) {
-			// Placeholder password. Will be set when keystore is save to file.			
+			// Placeholder password. Will be set when keystore is saved to file.			
 			currentKeystore = KeyStoreUtils.loadKeyStore(null, "placeholder".toCharArray());
 			txtCurrentKeystore.setText("New keystore");
 			lblCurrentKeystore.setText("*Current keystore:");
@@ -258,8 +272,9 @@ public class MainWindow extends JFrame {
 				actSaveAs.actionPerformed(null);
 				return;
 			}
-			else {	// Existing. Overwrite the file.
-				// Set password for keystore.
+			// Existing. Overwrite the file.
+			else {	
+				// Set password for keystore. This is needed because keeping password in memory is bad and saving needs a password.
 		    	SetPasswordDialog ksd = new SetPasswordDialog();
 				ksd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 				ksd.setVisible(true);
@@ -404,7 +419,10 @@ public class MainWindow extends JFrame {
 				// After returning from the modal dialog.
 				path = chooser.getSelectedFile().getAbsolutePath();
 		    	KeyStore loaded = KeyStoreUtils.loadKeyStore(path, ksd.getPassword());
-		    	currentKeystore = loaded;
+		    	//currentKeystore = loaded;
+		    	setCurrentKeystore(loaded);
+		    	System.out.println("open " + getCurrentKeystore());
+		    	
 		    	currentPath = path;
 		    	txtCurrentKeystore.setText(currentPath);
 		    	// Clean up.
@@ -431,7 +449,7 @@ public class MainWindow extends JFrame {
 		}
 	}
 	
-// Certificate stuff --------------------------------------------------------------------------------------
+// Certificate stuff --------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	/**
 	 * Generates a keypair.
@@ -484,23 +502,6 @@ public class MainWindow extends JFrame {
 		}
 	}
 	
-	
-	
-	
-	
-	/**
-	 * Sends the window closing event, and triggers appropriate listeners.
-	 */
-	private class ActionExit extends AbstractAction {
-		private static final long serialVersionUID = 2732771330480399657L;
-		public ActionExit() {
-			putValue(NAME, "Exit");
-			putValue(SHORT_DESCRIPTION, "Close the application");
-		}
-		public void actionPerformed(ActionEvent e) {			
-			MainWindow.getInstance().dispatchEvent(new WindowEvent(MainWindow.getInstance(), WindowEvent.WINDOW_CLOSING));
-		}
-	}
 	private class ActionExportCertificate extends AbstractAction {
 		private static final long serialVersionUID = -1698079888963949279L;
 		public ActionExportCertificate() {
@@ -522,6 +523,31 @@ public class MainWindow extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
 			// TODO: Export all certificates.
+		}
+	}
+	private class ActionImportCertificate extends AbstractAction {
+		private static final long serialVersionUID = 4384732596786044097L;
+		public ActionImportCertificate() {
+			putValue(NAME, "SwingAction");
+			putValue(SHORT_DESCRIPTION, "Some short description");
+		}
+		public void actionPerformed(ActionEvent e) {
+		}
+	}
+	
+// Window stuff --------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	/**
+	 * Sends the window closing event, and triggers appropriate listeners.
+	 */
+	private class ActionExit extends AbstractAction {
+		private static final long serialVersionUID = 2732771330480399657L;
+		public ActionExit() {
+			putValue(NAME, "Exit");
+			putValue(SHORT_DESCRIPTION, "Close the application");
+		}
+		public void actionPerformed(ActionEvent e) {			
+			MainWindow.getInstance().dispatchEvent(new WindowEvent(MainWindow.getInstance(), WindowEvent.WINDOW_CLOSING));
 		}
 	}
 }
