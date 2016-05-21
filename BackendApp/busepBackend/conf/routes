@@ -3,15 +3,15 @@
 # ~~~~
 
 # Home page
-GET     /										Application.index
-GET     /home									Application.index
+#GET     /										Application.index
+#GET     /home									Application.index
 
-GET		/search									Search.show
+#GET		/search									Search.show
 GET		/test/{testVal}/{qq}					Utils.TEST
 
-GET		/login									Login.show
+#GET		/login									Login.show
 POST	/login/{uname}/{pwd}					Login.logIn
-GET		/logout									Login.show(mode:'logout')
+#GET		/logout									Login.show(mode:'logout')
 GET		/logout/{uname}							Login.logOut
 
 GET		/documents								Utils.latestDocuments(count:'0')
@@ -25,8 +25,8 @@ GET		/users/usersAll							Utils.usersAll
 GET     /favicon.ico                            404
 
 # Map static resources from the /app/public folder to the /public path
-##### Mislim da ovo ne bi trebalo biti dostupno korisniku, s obzirom da radimo bezbednost
-GET     /public/                                staticDir:public
+#GET     /public/                                staticDir:public
+GET     /		                                staticDir:public
 
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}
