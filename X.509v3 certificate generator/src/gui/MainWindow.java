@@ -47,6 +47,7 @@ public class MainWindow extends JFrame {
 	private static MainWindow instance = null;
 	private KeyStore currentKeystore = null;
 	private char[] currentPassword;
+	private String currentPath = "";
 	
 	private KeypairTable keypairTable;
 	
@@ -202,9 +203,12 @@ public class MainWindow extends JFrame {
 			if(ksd.getKeystore() != null) {
 				currentKeystore = ksd.getKeystore();
 				currentPassword = ksd.getPassword();
+				currentPath = "";
 				Arrays.fill(ksd.getPassword(), '0');
 				
-				MainWindow.getInstance().setTitle("CerGen - " + currentKeystore.toString());
+				// TODO: Z:Minor: Change title does not work.
+				String newTitle = "CerGen - " + currentKeystore.toString();
+				MainWindow.getInstance().setTitle(newTitle);
 			}
 			ksd.dispose();
 		}
@@ -277,8 +281,14 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Save keystore");
 		}
 		public void actionPerformed(ActionEvent e) {
-			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
-			// TODO: Save keystore.
+			// This is a new keystore - call SaveAs.
+			if(currentPath.equals("")) {
+				actSaveAs.actionPerformed(null);
+				return;
+			}
+			else {	// Existing. Overwrite the file.
+				KeyStoreUtils.saveKeyStore(currentKeystore, currentPath, currentPassword);
+			}
 		}
 	}
 	
@@ -294,7 +304,7 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Save keystore to a file");
 		}
 		public void actionPerformed(ActionEvent e) {
-			// TODO: Fix password mechanism, this is NOT SECURE!
+			// TODO: A:Critical: Fix password mechanism, this is NOT SECURE!
 			
 			// Set default file chooser directory. Create the dialog.
 			String workingDir = System.getProperty("user.dir");
@@ -335,11 +345,13 @@ public class MainWindow extends JFrame {
 			        if(PromptResult == JOptionPane.YES_OPTION)
 			        {
 			        	KeyStoreUtils.saveKeyStore(currentKeystore, path, currentPassword);
+			        	currentPath = path;
 			        }
 			        
 			    }
 			    else {
 			    	KeyStoreUtils.saveKeyStore(currentKeystore, path, currentPassword);
+			    	currentPath = path;
 			    }
 		    }
 		    
