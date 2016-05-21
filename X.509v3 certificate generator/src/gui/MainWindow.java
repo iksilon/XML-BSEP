@@ -17,6 +17,7 @@ import javax.swing.Action;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -24,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
@@ -32,13 +34,17 @@ import javax.swing.table.DefaultTableModel;
 
 import data.IssuerData;
 import data.SubjectData;
+import net.miginfocom.swing.MigLayout;
 import security.CertificateUtils;
 import security.KeyStoreUtils;
 
 /**
  * Main view of the application, extension of the {@link JFrame} class.
  * This window shows a keystore file with all it's certificates.
- *
+ * User can create new keystores and add certificates to it either by creating them or by importing them from file.
+ * Certificates and keystores can then be exported/saved to file.
+ * Only one keystore is showed at a time.
+ * 
  */
 public class MainWindow extends JFrame {
 
@@ -46,7 +52,6 @@ public class MainWindow extends JFrame {
 	
 	private static MainWindow instance = null;
 	private KeyStore currentKeystore = null;
-	private char[] currentPassword;
 	private String currentPath = "";
 	
 	private KeypairTable keypairTable;
@@ -60,6 +65,8 @@ public class MainWindow extends JFrame {
 	private final Action actExit = new ActionExit();
 	private final Action actExportCertificate = new ActionExportCertificate();
 	private final Action actExportAll = new ActionExportAll();
+	private JTextField txtCurrentKeystore;
+	private JLabel lblCurrentKeystore = new JLabel("Current keystore:");
 
 	/**
 	 * Launch the application.
@@ -178,6 +185,19 @@ public class MainWindow extends JFrame {
 		keypairTable = new KeypairTable();
 		keypairTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane.setViewportView(keypairTable);
+		
+		JPanel panel = new JPanel();
+		contentPane.add(panel, BorderLayout.NORTH);
+		panel.setLayout(new MigLayout("", "[100px][grow,fill]", "[22px]"));
+		
+		lblCurrentKeystore = new JLabel("Current keystore:");
+		panel.add(lblCurrentKeystore, "cell 0 0,alignx trailing,aligny center");
+		
+		txtCurrentKeystore = new JTextField();
+		txtCurrentKeystore.setEditable(false);
+		panel.add(txtCurrentKeystore, "cell 1 0,growx");
+		txtCurrentKeystore.setColumns(10);
+		txtCurrentKeystore.setText("");
 	}
 	
 // ---------------------------------------------------------------------------------------------------
@@ -198,22 +218,10 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Create new keystore");
 		}
 		public void actionPerformed(ActionEvent e) {
-			KeystoreDialog ksd = new KeystoreDialog();
-			ksd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-			ksd.setVisible(true);
-			
-			// After returning from the modal dialog.
-			if(ksd.getKeystore() != null) {
-				currentKeystore = ksd.getKeystore();
-				currentPassword = ksd.getPassword();
-				currentPath = "";
-				Arrays.fill(ksd.getPassword(), '0');
-				
-				// TODO: Z:Minor: Change title does not work.
-				String newTitle = "CerGen - " + currentKeystore.toString();
-				MainWindow.getInstance().setTitle(newTitle);
-			}
-			ksd.dispose();
+			// Placeholder password. Will be set when keystore is save to file.			
+			currentKeystore = KeyStoreUtils.loadKeyStore(null, "placeholder".toCharArray());
+			txtCurrentKeystore.setText("New keystore");
+			lblCurrentKeystore.setText("*Current keystore:");
 		}
 	}
 	
@@ -242,14 +250,22 @@ public class MainWindow extends JFrame {
 				return;
 			}
 			else {	// Existing. Overwrite the file.
-				KeyStoreUtils.saveKeyStore(currentKeystore, currentPath, currentPassword);
+				// Set password for keystore.
+		    	KeystoreDialog ksd = new KeystoreDialog();
+				ksd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+				ksd.setVisible(true);
+				
+				// After returning from the modal dialog.					
+				KeyStoreUtils.saveKeyStore(currentKeystore, currentPath, ksd.getPassword());
+				txtCurrentKeystore.setText(currentPath);
+				lblCurrentKeystore.setText("Current keystore:");
 			}
 		}
 	}
 	
 	/**
 	 * Opens a file choosing dialog to select the path where the keystore will be saved.
-	 * Default file name is Untitled.
+	 * Default file name is untitled.
 	 *
 	 */
 	private class ActionSaveAs extends AbstractAction {
@@ -258,9 +274,7 @@ public class MainWindow extends JFrame {
 			putValue(NAME, "Save As");
 			putValue(SHORT_DESCRIPTION, "Save keystore to a file");
 		}
-		public void actionPerformed(ActionEvent e) {
-			// TODO: A:Critical: Fix password mechanism, this is NOT SECURE!
-			
+		public void actionPerformed(ActionEvent e) {			
 			// Is there a keystore at all?
 			if(currentKeystore == null) {
 				JOptionPane.showMessageDialog(MainWindow.getInstance(),
@@ -277,6 +291,7 @@ public class MainWindow extends JFrame {
 		    
 		    String path = "";
 		    		    
+		    // User gave up.
 		    int returnVal = chooser.showSaveDialog(MainWindow.getInstance());
 		    if (returnVal == JFileChooser.CANCEL_OPTION) {
 		    	return;
@@ -289,6 +304,8 @@ public class MainWindow extends JFrame {
 		        if(!path.endsWith(".jks")) {
 		        	path = path.concat(".jks");
 		        }
+		        
+		        //TODO: A:Important: Check if filename is "".
 		        
 		        // Does this file already exist? Overwrite it?
 			    File f = new File(path);
@@ -306,14 +323,36 @@ public class MainWindow extends JFrame {
 			        // Yep, overwrite.
 			        if(PromptResult == JOptionPane.YES_OPTION)
 			        {
-			        	KeyStoreUtils.saveKeyStore(currentKeystore, path, currentPassword);
-			        	currentPath = path;
+			        	// Set password for keystore.
+				    	KeystoreDialog ksd = new KeystoreDialog();
+						ksd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+						ksd.setVisible(true);
+						
+						// After returning from the modal dialog.					
+						KeyStoreUtils.saveKeyStore(currentKeystore, path, ksd.getPassword());
+				    	currentPath = path;
+				    	txtCurrentKeystore.setText(currentPath);
+				    	lblCurrentKeystore.setText("Current keystore:");
+				    	// Clean up.
+				    	Arrays.fill(ksd.getPassword(), '0');
+						ksd.dispose();
 			        }
 			        
 			    }
 			    else {
-			    	KeyStoreUtils.saveKeyStore(currentKeystore, path, currentPassword);
+			    	// Set password for keystore.
+			    	KeystoreDialog ksd = new KeystoreDialog();
+					ksd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+					ksd.setVisible(true);
+					
+					// After returning from the modal dialog.					
+					KeyStoreUtils.saveKeyStore(currentKeystore, path, ksd.getPassword());
 			    	currentPath = path;
+			    	txtCurrentKeystore.setText(currentPath);
+			    	lblCurrentKeystore.setText("Current keystore:");
+			    	// Clean up.
+			    	Arrays.fill(ksd.getPassword(), '0');
+					ksd.dispose();
 			    }
 		    }
 		    
@@ -332,6 +371,8 @@ public class MainWindow extends JFrame {
 			// TODO: Open keystore file.
 		}
 	}
+	
+// Certificate stuff --------------------------------------------------------------------------------------
 	
 	/**
 	 * Generates a keypair.
@@ -370,8 +411,11 @@ public class MainWindow extends JFrame {
 					// Clean up password.
 					Arrays.fill(cd.getPassword(), '0');
 					
+					// Update view.
 					int rows = ((DefaultTableModel)keypairTable.getModel()).getRowCount();
 					((DefaultTableModel)keypairTable.getModel()).addRow(new Object[]{rows+1, cd.getAlias()});
+					
+			    	lblCurrentKeystore.setText("*Current keystore:");
 					
 				} catch (KeyStoreException e1) {
 					e1.printStackTrace();

@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.security.KeyStore;
 import java.util.Arrays;
 
 import javax.swing.JButton;
@@ -15,8 +14,11 @@ import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
-import security.KeyStoreUtils;
 
+/**
+ * Dialog for setting the keystore password.
+ *
+ */
 public class KeystoreDialog extends JDialog {
 
 	private static final long serialVersionUID = 1361284372352576724L;
@@ -25,18 +27,7 @@ public class KeystoreDialog extends JDialog {
 	private JPasswordField passwordFieldRetype;
 	private JLabel lblErrorLabel;
 	
-	private KeyStore createdKeystore;
 	private char[] createdPassword;
-	
-	/**
-	 * Returns the newly created {@link KeyStore} from this dialog.
-	 * Dialog is modal so this works, do not change modality of the dialog.
-	 * 
-	 * @return {@link KeyStore}
-	 */
-	public KeyStore getKeystore() {
-		return createdKeystore;
-	}
 	
 	/**
 	 * Returns the newly created {@code char[]} password from this dialog.
@@ -50,10 +41,11 @@ public class KeystoreDialog extends JDialog {
 
 	/**
 	 * Create the dialog.
-	 * Dialog is modal so returning the created {@link KeyStore} could work - do not change modality!
+	 * Dialog is modal so that returning the created {@code password} could work - do not change modality!
 	 * 
 	 */
 	public KeystoreDialog() {
+		// Dialog setup.
 		setResizable(false);
 		setTitle("Create Keystore");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -63,6 +55,8 @@ public class KeystoreDialog extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new MigLayout("", "[78px][][grow]", "[16px][][]"));
+		
+		// Components.
 		{
 			JLabel lblSetPassword = new JLabel("Set password");
 			contentPanel.add(lblSetPassword, "cell 0 0,alignx left,aligny top");
@@ -90,6 +84,7 @@ public class KeystoreDialog extends JDialog {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						
+						// Password field validation.
 						if(passwordField.getPassword().length == 0 || passwordFieldRetype.getPassword().length == 0) {
 							lblErrorLabel.setText("Both password fields are mandatory, please try again.");
 							passwordField.setText("");
@@ -100,11 +95,9 @@ public class KeystoreDialog extends JDialog {
 							passwordField.setText("");
 							passwordFieldRetype.setText("");
 						}
+						// Success.
 						else if(Arrays.equals(passwordField.getPassword(), passwordFieldRetype.getPassword())) {
-							createdKeystore = KeyStoreUtils.loadKeyStore(null, passwordField.getPassword());
 							createdPassword = passwordField.getPassword();
-							System.out.println("New keystore loaded.");
-							System.out.println(createdKeystore.toString());
 							
 							// Clean up.
 							Arrays.fill(passwordField.getPassword(), '0');
