@@ -7,21 +7,27 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
+import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class ShowCertDialog extends JDialog {
 
 	private static final long serialVersionUID = -2863633865898628467L;
 	private final JPanel contentPanel = new JPanel();
-	private JTextField textField;
+	JTextArea textArea = null;
 
+	public void setCertificateText(String s) {
+		textArea.setText(s);
+	}
 
 	/**
 	 * Create the dialog.
 	 */
 	public ShowCertDialog() {
+		setModal(true);
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -33,10 +39,9 @@ public class ShowCertDialog extends JDialog {
 			scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 			contentPanel.add(scrollPane, BorderLayout.CENTER);
 			{
-				textField = new JTextField();
-				textField.setEditable(false);
-				scrollPane.setViewportView(textField);
-				textField.setColumns(10);
+				textArea = new JTextArea();
+				textArea.setEditable(false);
+				scrollPane.setViewportView(textArea);
 			}
 		}
 		{
@@ -45,14 +50,14 @@ public class ShowCertDialog extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				JButton okButton = new JButton("OK");
+				okButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						dispose();
+					}
+				});
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
 			}
 		}
 	}

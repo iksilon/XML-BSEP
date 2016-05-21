@@ -3,6 +3,8 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -10,6 +12,7 @@ import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -29,6 +32,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
@@ -208,6 +212,29 @@ public class MainWindow extends JFrame {
 		keypairTable = new KeypairTable();
 		keypairTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane.setViewportView(keypairTable);
+		keypairTable.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+					String v = (String) keypairTable.getValueAt(keypairTable.getSelectedRow(), 1);
+					
+					
+					try {
+						Certificate cert = currentKeystore.getCertificate(v);
+						if(cert != null) {
+							ShowCertDialog scd = new ShowCertDialog();
+							scd.setTitle("Certificate: " + v);
+							scd.setCertificateText(cert.toString());
+							scd.setVisible(true);
+						}
+					} catch (KeyStoreException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+			
+		});
 		
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.NORTH);
