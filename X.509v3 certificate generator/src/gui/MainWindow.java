@@ -8,6 +8,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -15,6 +17,7 @@ import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -544,31 +547,89 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Export keypair to a certificate file");
 		}
 		
+		/**
+		 * Saves the given {@link Certificate} to the specified {@code path} based on the type of the file (file extension {@code ex}).
+		 * If the encoding is not specified (.cer or .crt), user will be prompted to choose encoding type.
+		 * 
+		 * @param path {@link String}
+		 * @param cert {@link Certificate}
+		 * @param ex {@link String}
+		 */
 		private void saveFile(String path, Certificate cert, String ex) {
+			System.out.println(ex);
+			
 			switch (ex) {
 			case ".cer":
-				// TODO: Save .cer file.
-				break;
 			case ".crt":
-				// TODO: Save .crt file.
-				break;
-			case ".der":
-				// TODO: Save .der file.
-				break;
-			case ".pem":
-				try {
-					FileWriter fw = new FileWriter(path);
-					PEMWriter pw = new PEMWriter(fw);
-					pw.writeObject(cert);
-					pw.close();
-				} catch (IOException e) {
-					e.printStackTrace();
+				System.out.println("fell into certificate");
+				// TODO: Save .cer/.crt file.
+				// Ask which encoding is to be used. A hack, I know, I don't care.
+				Object[] options = {"PEM", "DER"};
+				int n = JOptionPane.showOptionDialog(MainWindow.getInstance(),
+				    "Which encoding you want to use?",
+				    "Certificate encoding",
+				    JOptionPane.YES_NO_OPTION,
+				    JOptionPane.QUESTION_MESSAGE,
+				    null,
+				    options,
+				    options[0]);
+				
+				if(n == 0) {
+					savePEMfile(path, cert);
+				}
+				else {
+					saveDERfile(path, cert);
 				}
 				
+				break;
+			case ".der":
+				saveDERfile(path, cert);
+				break;
+			case ".pem":
+				savePEMfile(path, cert);
 				break;
 			default:
 				break;
 			}
+		}
+		
+		/**
+		 * Saves the given {@link Certificate} into a PEM encoded file at the specified {@code path}.
+		 * @param path {@link String}
+		 * @param cert {@link Certificate}
+		 */
+		private void savePEMfile(String path, Certificate cert) {
+			try {
+				FileWriter fw = new FileWriter(path);
+				PEMWriter pw = new PEMWriter(fw);
+				pw.writeObject(cert);
+				pw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		/**
+		 * Saves the given {@link Certificate} into a DER encoded file at the specified {@code path}.
+		 * @param path {@link String}
+		 * @param cert {@link Certificate}
+		 */
+		private void saveDERfile(String path, Certificate cert) {
+			File certFile = new File(path);
+			FileOutputStream fos;
+			try {
+				fos = new FileOutputStream(certFile);
+				fos.write(cert.getEncoded());
+				fos.flush();
+				fos.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (CertificateEncodingException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 		}
 		
 		public void actionPerformed(ActionEvent e) {			
@@ -589,7 +650,7 @@ public class MainWindow extends JFrame {
 					String workingDir = System.getProperty("user.dir");
 					workingDir = Paths.get(workingDir, "certificates").toString();
 					JFileChooser chooser = new JFileChooser(workingDir);
-				    FileNameExtensionFilter filterDef = new FileNameExtensionFilter("Certificate files", "cer", "crt");
+				    FileNameExtensionFilter filterDef = new FileNameExtensionFilter("Certificate files", ".cer", ".crt");
 				    chooser.setFileFilter(filterDef);
 				    FileNameExtensionFilter filterPEM = new FileNameExtensionFilter("PEM encoded certificate files", ".pem");
 				    FileNameExtensionFilter filterDER = new FileNameExtensionFilter("DER encoded certificate files", ".der");
@@ -613,6 +674,7 @@ public class MainWindow extends JFrame {
 							if(path.endsWith(ex)) {
 								// Match found, save file.
 								saveFile(path, cert, ex);
+								return;
 							}
 						}
 				    	
