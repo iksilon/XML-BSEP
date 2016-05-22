@@ -653,11 +653,100 @@ public class MainWindow extends JFrame {
 	private class ActionImportCertificate extends AbstractAction {
 		private static final long serialVersionUID = 4384732596786044097L;
 		public ActionImportCertificate() {
-			putValue(NAME, "SwingAction");
-			putValue(SHORT_DESCRIPTION, "Some short description");
+			putValue(NAME, "Export All");
+			putValue(SHORT_DESCRIPTION, "Export all certificates to specified folder.");
 		}
-		public void actionPerformed(ActionEvent e) {
-			// TODO: Import certificate.
+		
+		private Certificate openFile(String path, String ex) {
+			Certificate cert = null;
+			
+			switch (ex) {
+			case ".cer":
+			case ".crt":
+				// Try DER first.
+				cert = CertificateUtils.openDERfile(path);
+				if(cert == null) {
+					// Then try PEM.
+					cert = CertificateUtils.openPEMfile(path);
+					if(cert == null) {
+						// What the hell did you give me?
+						JOptionPane.showMessageDialog(MainWindow.getInstance(), 
+								"Unknown encoding type, certificate could not be read.");
+					}
+				}
+				break;
+			case ".der":
+				cert = CertificateUtils.openDERfile(path);
+				break;
+			case ".pem":
+				cert = CertificateUtils.openPEMfile(path);
+				break;
+			default:
+				break;
+			}
+			
+			return cert;
+		}
+		
+		public void actionPerformed(ActionEvent e) {			
+			// Set default file chooser directory. Create the dialog.
+			String workingDir = System.getProperty("user.dir");
+			workingDir = Paths.get(workingDir, "certificates").toString();
+			JFileChooser chooser = new JFileChooser(workingDir);
+		    FileNameExtensionFilter filterDef = new FileNameExtensionFilter("Certificate files", ".cer", ".crt");
+		    chooser.setFileFilter(filterDef);
+		    FileNameExtensionFilter filterPEM = new FileNameExtensionFilter("PEM encoded certificate files", ".pem");
+		    FileNameExtensionFilter filterDER = new FileNameExtensionFilter("DER encoded certificate files", ".der");
+		    chooser.addChoosableFileFilter(filterPEM);
+		    chooser.addChoosableFileFilter(filterDER);
+		    
+		    // User gave up.
+		    int returnVal = chooser.showOpenDialog(MainWindow.getInstance());
+		    if (returnVal == JFileChooser.CANCEL_OPTION) {
+		    	return;
+		    }
+		    
+		    // User approved.
+		    if (returnVal == JFileChooser.APPROVE_OPTION) {
+		    	String path = chooser.getSelectedFile().getAbsolutePath();
+		    	String[] exts = {".cer", ".crt", ".der", ".pem"};
+		    	
+		    	// Find extension match
+		    	for (String ex : exts) {
+					if(path.endsWith(ex)) {
+						// Match found, set alias.
+						String alias = JOptionPane.showInputDialog(MainWindow.getInstance(), 
+					    		"Please enter certificate alias:");
+					    if(alias == null || alias.equals("")) {
+					    	JOptionPane.showMessageDialog(MainWindow.getInstance(), 
+					    			"That is not a valid alias.");
+					    	return;
+					    }
+						
+						// Open file.
+						Certificate c = openFile(path, ex);
+						if(c == null) {
+							return;
+						}
+						
+						// Yay, let's present this mofo.
+						try {
+							currentKeystore.setCertificateEntry(alias, c);
+							int rows = ((DefaultTableModel)keypairTable.getModel()).getRowCount();
+							((DefaultTableModel)keypairTable.getModel()).addRow(new Object[]{rows+1, alias});
+							lblCurrentKeystore.setText("*Current keystore:");
+						} catch (KeyStoreException e1) {
+							e1.printStackTrace();
+						}
+						
+						return;
+					}
+				}
+		    	
+		    	// No match, alert the user.
+		    	JOptionPane.showMessageDialog(MainWindow.getInstance(),
+		    			"Selected file type is not supported.");
+		    }
 		}
 	}
 	
