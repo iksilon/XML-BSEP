@@ -353,7 +353,7 @@ public class CertificateDialog extends JDialog {
 			    builder.addRDN(BCStyle.OU,			txtOU.getText());
 			    builder.addRDN(BCStyle.C,			txtC.getText());
 			    builder.addRDN(BCStyle.E, 			txtE.getText());
-			    // TODO: Set when there are users. Is this receiver ID?
+			    // TODO: Question: Set when there are users. Is this receiver ID?
 			    builder.addRDN(BCStyle.UID, "123445");
 			    
 			    Calendar startDate = Calendar.getInstance();

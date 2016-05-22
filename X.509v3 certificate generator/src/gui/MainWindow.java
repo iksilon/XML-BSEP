@@ -8,16 +8,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -41,8 +36,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-
-import org.bouncycastle.openssl.PEMWriter;
 
 import data.IssuerData;
 import data.SubjectData;
@@ -99,17 +92,6 @@ public class MainWindow extends JFrame {
 		});
 	}
 	
-	// Get/set ----------------------------------------------------------------------------------------------------------------------------------------------------------------
-	
-	public KeyStore getCurrentKeystore() {
-		System.out.println("get method " + currentKeystore);
-		return currentKeystore;
-	}
-	
-	public void setCurrentKeystore(KeyStore k) {
-		currentKeystore = k;
-	}
-	
 	// Singleton ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	/**
@@ -136,6 +118,8 @@ public class MainWindow extends JFrame {
 		// Exit prompt ------------------------------------------------------------------------
 		
 		this.addWindowListener(new WindowAdapter() {
+			
+			// TODO: Z:Minor: Check if the keystore has unsaved changes. Add a boolean for that.
 
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -219,13 +203,12 @@ public class MainWindow extends JFrame {
 		keypairTable = new KeypairTable();
 		keypairTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane.setViewportView(keypairTable);
+		// Double click on table row to see certificate details.
 		keypairTable.addMouseListener(new MouseAdapter() {
-
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
 					String v = (String) keypairTable.getValueAt(keypairTable.getSelectedRow(), 1);
-					
 					
 					try {
 						Certificate cert = currentKeystore.getCertificate(v);
@@ -263,6 +246,7 @@ public class MainWindow extends JFrame {
 	
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // Actions section because I couldn't be bothered to move them to separate files.
+// Also, nothing works via getInstance() so there you have it.
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	
@@ -457,9 +441,7 @@ public class MainWindow extends JFrame {
 				// After returning from the modal dialog.
 				path = chooser.getSelectedFile().getAbsolutePath();
 		    	KeyStore loaded = KeyStoreUtils.loadKeyStore(path, ksd.getPassword());
-		    	//currentKeystore = loaded;
-		    	setCurrentKeystore(loaded);
-		    	System.out.println("open " + getCurrentKeystore());
+		    	currentKeystore = loaded;
 		    	
 		    	currentPath = path;
 		    	txtCurrentKeystore.setText(currentPath);
@@ -540,6 +522,11 @@ public class MainWindow extends JFrame {
 		}
 	}
 	
+	/**
+	 * 
+	 * Exports the certificate into specified file and encoding.
+	 *
+	 */
 	private class ActionExportCertificate extends AbstractAction {
 		private static final long serialVersionUID = -1698079888963949279L;
 		public ActionExportCertificate() {
@@ -562,7 +549,6 @@ public class MainWindow extends JFrame {
 			case ".cer":
 			case ".crt":
 				System.out.println("fell into certificate");
-				// TODO: Save .cer/.crt file.
 				// Ask which encoding is to be used. A hack, I know, I don't care.
 				Object[] options = {"PEM", "DER"};
 				int n = JOptionPane.showOptionDialog(MainWindow.getInstance(),
@@ -575,61 +561,22 @@ public class MainWindow extends JFrame {
 				    options[0]);
 				
 				if(n == 0) {
-					savePEMfile(path, cert);
+					CertificateUtils.savePEMfile(path, cert);
 				}
 				else {
-					saveDERfile(path, cert);
+					CertificateUtils.saveDERfile(path, cert);
 				}
 				
 				break;
 			case ".der":
-				saveDERfile(path, cert);
+				CertificateUtils.saveDERfile(path, cert);
 				break;
 			case ".pem":
-				savePEMfile(path, cert);
+				CertificateUtils.savePEMfile(path, cert);
 				break;
 			default:
 				break;
 			}
-		}
-		
-		/**
-		 * Saves the given {@link Certificate} into a PEM encoded file at the specified {@code path}.
-		 * @param path {@link String}
-		 * @param cert {@link Certificate}
-		 */
-		private void savePEMfile(String path, Certificate cert) {
-			try {
-				FileWriter fw = new FileWriter(path);
-				PEMWriter pw = new PEMWriter(fw);
-				pw.writeObject(cert);
-				pw.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		/**
-		 * Saves the given {@link Certificate} into a DER encoded file at the specified {@code path}.
-		 * @param path {@link String}
-		 * @param cert {@link Certificate}
-		 */
-		private void saveDERfile(String path, Certificate cert) {
-			File certFile = new File(path);
-			FileOutputStream fos;
-			try {
-				fos = new FileOutputStream(certFile);
-				fos.write(cert.getEncoded());
-				fos.flush();
-				fos.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (CertificateEncodingException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
 		}
 		
 		public void actionPerformed(ActionEvent e) {			
@@ -690,6 +637,7 @@ public class MainWindow extends JFrame {
 			
 		}
 	}
+	
 	private class ActionExportAll extends AbstractAction {
 		private static final long serialVersionUID = 5683267289392412616L;
 		public ActionExportAll() {
@@ -701,6 +649,7 @@ public class MainWindow extends JFrame {
 			// TODO: Z:Minor: Export all certificates.
 		}
 	}
+	
 	private class ActionImportCertificate extends AbstractAction {
 		private static final long serialVersionUID = 4384732596786044097L;
 		public ActionImportCertificate() {
