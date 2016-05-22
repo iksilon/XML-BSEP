@@ -8,6 +8,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.KeyStore;
@@ -36,6 +38,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+
+import org.bouncycastle.openssl.PEMWriter;
 
 import data.IssuerData;
 import data.SubjectData;
@@ -539,10 +543,89 @@ public class MainWindow extends JFrame {
 			putValue(NAME, "Export Certificate");
 			putValue(SHORT_DESCRIPTION, "Export keypair to a certificate file");
 		}
-		public void actionPerformed(ActionEvent e) {
-			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
-			// TODO: Export certificate.
-			// TODO: Import certificate.
+		
+		private void saveFile(String path, Certificate cert, String ex) {
+			switch (ex) {
+			case ".cer":
+				// TODO: Save .cer file.
+				break;
+			case ".crt":
+				// TODO: Save .crt file.
+				break;
+			case ".der":
+				// TODO: Save .der file.
+				break;
+			case ".pem":
+				try {
+					FileWriter fw = new FileWriter(path);
+					PEMWriter pw = new PEMWriter(fw);
+					pw.writeObject(cert);
+					pw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				break;
+			default:
+				break;
+			}
+		}
+		
+		public void actionPerformed(ActionEvent e) {			
+			// Is anything selected?
+			if(keypairTable.getSelectedRow() == -1) {
+				JOptionPane.showMessageDialog(MainWindow.getInstance(),
+						"No row in table is selected, certificate cannot be exported."
+						+ "Please select the certificate first and try again.");
+				return;
+			}
+			// Yes, it is.
+			else {
+				String alias = keypairTable.getValueAt(keypairTable.getSelectedRow(), 1).toString();
+				try {
+					Certificate cert = currentKeystore.getCertificate(alias);
+					
+					// Set default file chooser directory. Create the dialog.
+					String workingDir = System.getProperty("user.dir");
+					workingDir = Paths.get(workingDir, "certificates").toString();
+					JFileChooser chooser = new JFileChooser(workingDir);
+				    FileNameExtensionFilter filterDef = new FileNameExtensionFilter("Certificate files", "cer", "crt");
+				    chooser.setFileFilter(filterDef);
+				    FileNameExtensionFilter filterPEM = new FileNameExtensionFilter("PEM encoded certificate files", ".pem");
+				    FileNameExtensionFilter filterDER = new FileNameExtensionFilter("DER encoded certificate files", ".der");
+				    chooser.addChoosableFileFilter(filterPEM);
+				    chooser.addChoosableFileFilter(filterDER);
+				    
+				    // User gave up.
+				    int returnVal = chooser.showSaveDialog(MainWindow.getInstance());
+				    if (returnVal == JFileChooser.CANCEL_OPTION) {
+				    	return;
+				    }
+				    
+				    // User approved.
+				    if (returnVal == JFileChooser.APPROVE_OPTION) {
+				    	FileNameExtensionFilter ff = (FileNameExtensionFilter) chooser.getFileFilter();
+				    	String path = chooser.getSelectedFile().getAbsolutePath();
+				    	String[] exts = ff.getExtensions();
+				    	
+				    	// Find extension match
+				    	for (String ex : exts) {
+							if(path.endsWith(ex)) {
+								// Match found, save file.
+								saveFile(path, cert, ex);
+							}
+						}
+				    	
+				    	// No match, add the extension and save file.
+				    	path = path.concat(exts[0]);
+				    	saveFile(path, cert, exts[0]);
+				    }
+					
+				} catch (KeyStoreException e1) {
+					e1.printStackTrace();
+				}				
+			}
+			
 		}
 	}
 	private class ActionExportAll extends AbstractAction {
@@ -553,7 +636,7 @@ public class MainWindow extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Coming soon.");
-			// TODO: Export all certificates.
+			// TODO: Z:Minor: Export all certificates.
 		}
 	}
 	private class ActionImportCertificate extends AbstractAction {
@@ -563,6 +646,7 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Some short description");
 		}
 		public void actionPerformed(ActionEvent e) {
+			// TODO: Import certificate.
 		}
 	}
 	
