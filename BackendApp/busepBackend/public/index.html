@@ -19,6 +19,10 @@
 	<script src="angular/controllers/index.js"></script>
 	<script src="angular/controllers/login.js"></script>
 	<script src="angular/controllers/latestActs.js"></script>
+	<script src="angular/controllers/akti.js"></script>
+	<script src="angular/controllers/odbornici.js"></script>
+	<script src="angular/controllers/panel.js"></script>
+	<script src="angular/controllers/search.js"></script>
 </head>
 <body ng-app="mainApp" ng-cloak>
 	<md-toolbar layout-align="space-around center">
@@ -30,21 +34,21 @@
 		</span>
 	</md-toolbar>
 	
-	<section layout="row" flex="">
-		<md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="md-sidenav-left" md-is-locked-open="true">
-			<md-toolbar class="md-theme-indigo" layout-margin>
+	<section layout="row" flex="" layout-margin style="min-height:75%;">
+		<md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="md-sidenav-left" md-is-locked-open="true" flex>
+			<md-toolbar class="md-theme-indigo" >
 				<h1 class="md-toolbar-tools">Poslednje izmene akata</h1>
 			</md-toolbar>
 			<md-content layout-padding="" ng-controller="LatestActsCtrl">
 				<div ng-repeat="act in recentActs">
 					<md-toolbar class="md-theme-amber">
-						<h3 class="md-toolbar-tools">{{act.name}}</h3>
+						<h3 class="md-toolbar-tools">{{act.title}}</h3>
 					</md-toolbar>
 				</div>
 			</md-content>
 		</md-sidenav>
 
-		<md-content flex="" layout-padding="">
+		<md-content flex="">
 			<md-toolbar layout="row" layout-align="space-between center">
 				<span>
 					<md-button go-click="/odbornici">Odbornici</md-button>
@@ -52,6 +56,9 @@
 					<md-button go-click="/akti/proc">Akti u proceduri</md-button>
 					<md-button go-click="/odbornici">Odbornici</md-button>
 					<md-button go-click="/search">Pretraga akata</md-button>
+					<!-- ng-if="user.role == 1" -->
+					<md-button go-click="/cp/odbornik" >Meni</md-button>
+					<md-button go-click="/cp/highlord" ng-if="user.role == 0">Meni</md-button>
 					<md-button go-click="/" ng-if="isNotMainPage()">Povratak</md-button>
 				</span>
 				<span>
@@ -60,7 +67,7 @@
 				</span>
 			</md-toolbar>
 			
-			<div layout="column" layout-fill="" layout-align="top center" ng-view></div>
+			<div ng-view></div>
 		</md-content>
 	</section>
 	<md-toolbar layout-align="space-around center">

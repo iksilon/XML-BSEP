@@ -1,0 +1,23 @@
+<form name="amandmanForm" ng-submit="amandmanFormSubmit()">
+	<md-content layout="row">
+	<md-content layout="column">
+		<md-input-container>
+			<label>Naslov</label>
+			<input required name="title" ng-model="amandman.title"/>
+			<div ng-messages="amandmanForm.title.$error" role="alert">
+				<div ng-message="required">Obavezno polje</div>
+			</div>
+		</md-input-container>
+		<md-input-container>
+			<label>Sadržaj</label>
+			<textarea required name="content" ng-model="amandman.content"/>
+			<div ng-messages="amandmanForm.content.$error" role="alert">
+				<div ng-message="required">Obavezno polje</div>
+			</div>
+		</md-input-container>
+		<md-content layout-padding layout="row" layout-sm="row" layout-align="center start">
+			<md-button class="md-raised md-primary login-button" type="submit">Predloži amandman</md-button>
+		</md-content>
+	</md-content>
+	</md-content>
+</form>

@@ -16,24 +16,32 @@
 			controller: "IndexCtrl"
 		})
 		.when("/odbornici", {
-			templateUrl: "angular/includes/odbornici.html",
+			templateUrl: "angular/routes/odbornici.html",
 			controller: "OdborniciCtrl"
 		})
 		.when("/akti/vazeci", {
-			templateUrl: "angular/includes/aktiVazeci.html",
+			templateUrl: "angular/routes/aktiVazeci.html",
 			controller: "AktiCtrl"
 		})
 		.when("/akti/proc", {
-			templateUrl: "angular/includes/aktiProc.html",
+			templateUrl: "angular/routes/aktiProc.html",
 			controller: "AktiCtrl"
 		})
 		.when("/login", {
-			templateUrl: "angular/includes/login.html",
+			templateUrl: "angular/routes/login.html",
 			controller: "LoginCtrl"
 		})
 		.when("/search", {
-			templateUrl: "angular/includes/search.html",
+			templateUrl: "angular/routes/search.html",
 			controller: "SearchCtrl"
+		})
+		.when("/cp/odbornik", {
+			templateUrl: "angular/routes/panelOdbornik.html",
+			controller: "PanelCtrl"
+		})
+		.when("/cp/highlord", {
+			templateUrl: "angular/routes/panelHighlord.html",
+			controller: "PanelCtrl"
 		})
 		.otherwise({
 			redirectTo:"/"

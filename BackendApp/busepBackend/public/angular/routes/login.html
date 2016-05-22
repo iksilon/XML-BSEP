@@ -1,0 +1,28 @@
+<form ng-submit="loginFormSubmit()" name="loginForm">
+	<md-content layout="row">
+	<md-content layout="column" ng-controller="LoginCtrl">
+		<md-input-container>
+			<label>Korisničko ime</label>
+			<input required type="text" name="username" ng-model="username">
+			<div ng-messages="loginForm.username.$error">
+				<div ng-message="required">Obavezno polje</div>
+			</div>
+		</md-input-container>
+		<md-input-container>
+			<label>Lozinka</label>
+			<input required type="password" name="password" ng-model="funnyString">
+			<div ng-messages="loginForm.password.$error">
+				<div ng-message="required">Obavezno polje</div>
+			</div>
+		</md-input-container>
+		<md-button type="submit" class="md-primary md-raised">Login</md-button>
+	</md-content>
+	</md-content>
+</form>
+<!-- <div ng-controller="LoginCtrl">
+    <center><form ng-submit="submit()" id="login">
+        Korisničko ime: <input type="text" id="username" ng-model="username"><br>
+        Lozinka: <input type="password" id="password" ng-model="funnyString"><br>
+        <input type="submit" value="Login"> </button>
+    </form></center>
+</div> -->

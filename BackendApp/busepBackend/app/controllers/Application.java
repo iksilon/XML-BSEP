@@ -10,10 +10,10 @@ import models.*;
 
 public class Application extends Controller {
 
-    public static void index() {
-    	User highlord = (User) Cache.get("highlord");
-    	
-        render(highlord);
-    }
+//    public static void index() {
+//    	User highlord = (User) Cache.get("highlord");
+//    	
+//        render(highlord);
+//    }
 
 }

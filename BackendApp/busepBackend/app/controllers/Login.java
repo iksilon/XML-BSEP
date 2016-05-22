@@ -12,16 +12,16 @@ import play.mvc.results.Unauthorized;
 
 public class Login extends Controller {
 
-	public static void show(String mode) {
-		mode = (mode != null) ?  mode : "login";
-		if(mode.equals("logout")) {
-			Cache.delete("highlord");
-		}
-		
-		User highlord = (User) Cache.get("highlord");
-		
-		render(highlord);
-	}
+//	public static void show(String mode) {
+//		mode = (mode != null) ?  mode : "login";
+//		if(mode.equals("logout")) {
+//			Cache.delete("highlord");
+//		}
+//		
+//		User highlord = (User) Cache.get("highlord");
+//		
+//		render(highlord);
+//	}
 	
 	public static Result logIn(String uname, String pwd) {
 		if(uname.equals("highlord") && pwd.equals("admin")) { //privremeno, dok baza nije gotova

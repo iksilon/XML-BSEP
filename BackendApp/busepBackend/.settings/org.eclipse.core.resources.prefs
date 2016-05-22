@@ -1,7 +1,10 @@
 eclipse.preferences.version=1
 encoding//app/views/Login/show.html=UTF-8
 encoding//app/views/main.html=UTF-8
-encoding//public/angular/includes/login.html=UTF-8
+encoding//public/angular/includes/act/optionsMenu.html=UTF-8
+encoding//public/angular/includes/predlogAkt.html=UTF-8
+encoding//public/angular/includes/predlogAmandman.html=UTF-8
+encoding//public/angular/routes/login.html=UTF-8
 encoding//public/index.html=UTF-8
 encoding//public/main.html=UTF-8
 encoding/<project>=UTF-8
