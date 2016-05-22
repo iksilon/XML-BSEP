@@ -1,6 +1,8 @@
 package security;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -13,6 +15,7 @@ import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -38,6 +41,50 @@ public class CertificateUtils {
 	// Registracija providera
 	static {
 		Security.addProvider(new BouncyCastleProvider());
+	}
+	
+	/**
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static Certificate openPEMfile(String path) {
+		try {
+			FileInputStream fis = new FileInputStream(path);
+			BufferedInputStream bis = new BufferedInputStream(fis);
+
+			CertificateFactory cf = CertificateFactory.getInstance("X.509"); 
+			Certificate cert = cf.generateCertificate(bis);
+			System.out.println(cert.toString());
+			bis.close();
+			return cert;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		} catch (CertificateException e) {
+			e.printStackTrace();
+			return null;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static Certificate openDERfile(String path) {
+		try {
+			FileInputStream fis = new FileInputStream(path);
+			CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			Certificate cert = cf.generateCertificate(fis);
+			System.out.println(cert);
+			
+			return cert;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		} catch (CertificateException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	/**
