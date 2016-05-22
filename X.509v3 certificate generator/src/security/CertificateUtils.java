@@ -1,10 +1,16 @@
 package security;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -14,6 +20,7 @@ import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMWriter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
@@ -23,7 +30,7 @@ import data.SubjectData;
 
 /**
  * Utility class for certificate managing.
- * It can generate key pairs and certificates. 
+ * It can generate key pairs and certificates and save them to file.
  *
  */
 public class CertificateUtils {
@@ -31,6 +38,45 @@ public class CertificateUtils {
 	// Registracija providera
 	static {
 		Security.addProvider(new BouncyCastleProvider());
+	}
+	
+	/**
+	 * Saves the given {@link Certificate} into a PEM encoded file at the specified {@code path}.
+	 * @param path {@link String}
+	 * @param cert {@link Certificate}
+	 */
+	public static void savePEMfile(String path, Certificate cert) {
+		try {
+			FileWriter fw = new FileWriter(path);
+			PEMWriter pw = new PEMWriter(fw);
+			pw.writeObject(cert);
+			pw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Saves the given {@link Certificate} into a DER encoded file at the specified {@code path}.
+	 * @param path {@link String}
+	 * @param cert {@link Certificate}
+	 */
+	public static void saveDERfile(String path, Certificate cert) {
+		File certFile = new File(path);
+		FileOutputStream fos;
+		try {
+			fos = new FileOutputStream(certFile);
+			fos.write(cert.getEncoded());
+			fos.flush();
+			fos.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (CertificateEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	/**
