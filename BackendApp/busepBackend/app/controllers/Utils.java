@@ -12,15 +12,6 @@ import play.mvc.Http.Response;
 import play.mvc.results.*;
 
 public class Utils extends Controller {
-
-//	public static void show(String mode) {
-//		List<User> users = (List<User>) Cache.get("users");
-//		List<Document> documents = (List<Document>) Cache.get("documents");
-//		
-//		mode = (mode != null) ? (mode.isEmpty() ? "def" : mode) : "def";
-//		
-//		render(users, documents, mode);
-//	}
 	
 	// prosledi role 0 za predsednika, 1 za odbornika itd
 	public static void usersByRole(long role) {
@@ -30,15 +21,6 @@ public class Utils extends Controller {
 		}
 		
 		Cache.set("users", users);
-		//show("");
-	}
-	
-	public static void userHighlord() {
-		usersByRole(0); // neka 0 bude predsednik, tj glavni dasa
-	}
-	
-	public static void usersAll() {
-		usersByRole(-1);
 	}
 	
 	public static Result TEST(String testVal, String qq) {
@@ -49,13 +31,32 @@ public class Utils extends Controller {
 	public static void latestDocuments(int count) {
 		List<Document> latestDocuments = Document.findAll();
 		if(count <= 0) {
-			Cache.set("documents", latestDocuments);			
-//			show("");
+			Cache.set("documents", latestDocuments);
 		}
 		
 		latestDocuments = new ArrayList<Document>(latestDocuments.subList(latestDocuments.size() - count, latestDocuments.size()));
 		Cache.set("documents", latestDocuments);
-		
-//		show(""); 
+	}
+	
+	public static Result getPanelIds(String uname) {
+		int panelDeoId = (int) Cache.get(uname + "DeoId");
+		int panelClanId = (int) Cache.get(uname + "ClanId");
+		Object[] resp = new Object[] {panelDeoId, panelClanId};
+		System.out.println("I WERK");
+		return new RenderJson(resp);
+	}
+	
+	public static Result setDeoId(String uname) {
+		String keyDeo = uname + "DeoId";
+		int panelDeoId = (int) Cache.get(keyDeo);
+		Cache.set(keyDeo, ++panelDeoId);
+		return new Ok();
+	}
+	
+	public static Result setClanId(String uname) {
+		String keyClan = uname + "ClanId";
+		int panelClanId = (int) Cache.get(keyClan);		
+		Cache.set(keyClan, ++panelClanId);
+		return new Ok();
 	}
 }

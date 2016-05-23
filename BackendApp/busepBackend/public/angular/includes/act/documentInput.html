@@ -41,11 +41,11 @@
 				GDE JE OSTALO??? ANGULAR PLS
 				<md-input-container>
 					<label>Preambula</label>
-					<textarea name="preambula" ng-model="tab.preambula">
+					<textarea name="preambula" ng-model="tab.preambula"/>
 				</md-input-container>
 				<md-input-container>
 					<label>Naziv</label>
-					<input required name="naziv" ng-model="tab.naziv"/>
+					<input  name="naziv" ng-model="tab.naziv"/>
 					<div ng-messages="tabForm.naziv.$error">
 						<div ng-message="required">Obavezno polje</div>
 					</div>
@@ -91,7 +91,7 @@
 					</div>
 				</md-input-container>
 				<md-input-container>
-					<label>Obrazloženje</label>
+					<label>Obrazloï¿½enje</label>
 					<textarea name="obrazlozenje" ng-model="tab.obrazlozenje"/>
 				</md-input-container>
 			</form>

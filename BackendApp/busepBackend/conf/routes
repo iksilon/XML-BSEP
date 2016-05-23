@@ -16,10 +16,16 @@ GET		/logout/{uname}							Login.logOut
 
 GET		/documents								Utils.latestDocuments(count:'0')
 GET		/documents/{count}						Utils.latestDocuments
-POST	/act/new								Acts.new
-# za uzimanje podataka o predsedniku
-GET		/users/highlord							Utils.userHighlord
-GET		/users/usersAll							Utils.usersAll
+POST	/act/new								Acts.newAct
+
+# za uzimanje podataka o korisnicima
+GET		/users/highlord							Utils.usersByRole(0)
+GET		/users/odbornici						Utils.usersByRole(1)
+GET		/users/usersAll							Utils.usersByRole(-1)
+
+GET		/get/panelIds/{uname}					Utils.getPanelIds
+POST	/set/deoId/{uname}						Utils.setDeoId
+POST	/set/clanId/{uname}						Utils.setClanId
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
