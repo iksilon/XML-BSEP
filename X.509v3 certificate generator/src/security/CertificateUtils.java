@@ -18,6 +18,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+import javax.swing.JOptionPane;
+
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -30,6 +32,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 import data.IssuerData;
 import data.SubjectData;
+import gui.MainWindow;
 
 /**
  * Utility class for certificate managing.
@@ -43,10 +46,43 @@ public class CertificateUtils {
 		Security.addProvider(new BouncyCastleProvider());
 	}
 	
+	public static Certificate openFile(String path, String ex) {
+		Certificate cert = null;
+		
+		switch (ex) {
+		case ".cer":
+		case ".crt":
+			// Try DER first.
+			cert = CertificateUtils.openDERfile(path);
+			if(cert == null) {
+				// Then try PEM.
+				cert = CertificateUtils.openPEMfile(path);
+				if(cert == null) {
+					// What the hell did you give me?
+					JOptionPane.showMessageDialog(MainWindow.getInstance(), 
+							"Unknown encoding type, certificate could not be read.");
+				}
+			}
+			break;
+		case ".der":
+			cert = CertificateUtils.openDERfile(path);
+			break;
+		case ".pem":
+			cert = CertificateUtils.openPEMfile(path);
+			break;
+		default:
+			break;
+		}
+		
+		return cert;
+	}
+	
 	/**
+	 * Reads a {@link Certificate} from a .pem or .cer/.crt file.
+	 * Only one certificate per file is supported.
 	 * 
-	 * @param path
-	 * @return
+	 * @param path {@link String}
+	 * @return {@link Certificate}
 	 */
 	public static Certificate openPEMfile(String path) {
 		try {
@@ -70,6 +106,13 @@ public class CertificateUtils {
 		}
 	}
 	
+	/**
+	 * Reads a {@link Certificate} from a .der or .cer/.crt file.
+	 * Only one certificate per file is supported.
+	 * 
+	 * @param path
+	 * @return {@link Certificate}
+	 */
 	public static Certificate openDERfile(String path) {
 		try {
 			FileInputStream fis = new FileInputStream(path);

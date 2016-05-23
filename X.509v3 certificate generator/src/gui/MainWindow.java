@@ -657,37 +657,6 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Export all certificates to specified folder.");
 		}
 		
-		private Certificate openFile(String path, String ex) {
-			Certificate cert = null;
-			
-			switch (ex) {
-			case ".cer":
-			case ".crt":
-				// Try DER first.
-				cert = CertificateUtils.openDERfile(path);
-				if(cert == null) {
-					// Then try PEM.
-					cert = CertificateUtils.openPEMfile(path);
-					if(cert == null) {
-						// What the hell did you give me?
-						JOptionPane.showMessageDialog(MainWindow.getInstance(), 
-								"Unknown encoding type, certificate could not be read.");
-					}
-				}
-				break;
-			case ".der":
-				cert = CertificateUtils.openDERfile(path);
-				break;
-			case ".pem":
-				cert = CertificateUtils.openPEMfile(path);
-				break;
-			default:
-				break;
-			}
-			
-			return cert;
-		}
-		
 		public void actionPerformed(ActionEvent e) {			
 			// Set default file chooser directory. Create the dialog.
 			String workingDir = System.getProperty("user.dir");
@@ -724,7 +693,7 @@ public class MainWindow extends JFrame {
 					    }
 						
 						// Open file.
-						Certificate c = openFile(path, ex);
+						Certificate c = CertificateUtils.openFile(path, ex);
 						if(c == null) {
 							return;
 						}

@@ -4,7 +4,9 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.file.Paths;
 import java.security.KeyPair;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.text.NumberFormat;
 import java.util.Arrays;
@@ -16,16 +18,20 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.cert.X509CertificateHolder;
 
 import data.IssuerData;
 import data.SubjectData;
@@ -159,7 +165,61 @@ public class CertificateDialog extends JDialog {
 		
 		comboBox = new JComboBox<IssuerData>();
 		//TODO: Replace comboBox with file opener.
-		panelIssuer.add(comboBox, "cell 1 2,growx");
+		JPanel panelFileOpen = new JPanel();
+		JTextField txtFileOpen = new JTextField();
+		panelFileOpen.add(txtFileOpen);
+		
+		JButton btnOpenCert = new JButton("...");
+		btnOpenCert.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Set default file chooser directory. Create the dialog.
+				String workingDir = System.getProperty("user.dir");
+				workingDir = Paths.get(workingDir, "certificates").toString();
+				JFileChooser chooser = new JFileChooser(workingDir);
+			    FileNameExtensionFilter filterDef = new FileNameExtensionFilter("Certificate files", ".cer", ".crt");
+			    chooser.setFileFilter(filterDef);
+			    FileNameExtensionFilter filterPEM = new FileNameExtensionFilter("PEM encoded certificate files", ".pem");
+			    FileNameExtensionFilter filterDER = new FileNameExtensionFilter("DER encoded certificate files", ".der");
+			    chooser.addChoosableFileFilter(filterPEM);
+			    chooser.addChoosableFileFilter(filterDER);
+			    
+			    // User gave up.
+			    int returnVal = chooser.showOpenDialog(MainWindow.getInstance());
+			    if (returnVal == JFileChooser.CANCEL_OPTION) {
+			    	return;
+			    }
+			    
+			    // User approved.
+			    if (returnVal == JFileChooser.APPROVE_OPTION) {
+			    	String path = chooser.getSelectedFile().getAbsolutePath();
+			    	String[] exts = {".cer", ".crt", ".der", ".pem"};
+			    	
+			    	// Find extension match
+			    	for (String ex : exts) {
+						if(path.endsWith(ex)) {
+							// Open file.
+							Certificate c = CertificateUtils.openFile(path, ex);
+							if(c == null) {
+								return;
+							}
+							
+							// Yay, let's  sign this mofo.
+							X509CertificateHolder ch = new X509CertificateHolder(c);
+							issuerData = new IssuerData(privateKey, x500name);
+							
+							return;
+						}
+					}
+			    	
+			    	// No match, alert the user.
+			    	JOptionPane.showMessageDialog(MainWindow.getInstance(),
+			    			"Selected file type is not supported.");
+			    }
+			}
+		});
+		
+		panelIssuer.add(panelFileOpen, "cell 1 2,growx");
 		
 		
 		
