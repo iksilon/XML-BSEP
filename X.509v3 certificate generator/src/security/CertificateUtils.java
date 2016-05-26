@@ -87,8 +87,7 @@ public class CertificateUtils {
 	public static Certificate openPEMfile(String path) {
 		try {
 			FileInputStream fis = new FileInputStream(path);
-			BufferedInputStream bis = new BufferedInputStream(fis);
-
+			BufferedInputStream bis = new BufferedInputStream(fis);			
 			CertificateFactory cf = CertificateFactory.getInstance("X.509"); 
 			Certificate cert = cf.generateCertificate(bis);
 			System.out.println(cert.toString());
@@ -115,7 +114,7 @@ public class CertificateUtils {
 	 */
 	public static Certificate openDERfile(String path) {
 		try {
-			FileInputStream fis = new FileInputStream(path);
+			FileInputStream fis = new FileInputStream(path);			
 			CertificateFactory cf = CertificateFactory.getInstance("X.509");
 			Certificate cert = cf.generateCertificate(fis);
 			System.out.println(cert);
