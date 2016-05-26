@@ -2,3 +2,4 @@
 
 require:
     - play
+    - play -> db 1.1.1
