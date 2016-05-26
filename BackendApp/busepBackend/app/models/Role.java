@@ -3,6 +3,7 @@ package models;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -12,6 +13,8 @@ import play.db.jpa.Model;
 
 @Entity
 public class Role extends Model {
+	
+	@Column(length = 50, nullable = false)
 	public String name;
 
 	@OneToMany(mappedBy="role")
