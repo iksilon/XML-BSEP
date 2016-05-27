@@ -2,19 +2,29 @@
 	var app = angular.module('mainApp');
 	
 	app.controller('LoginCtrl', function($scope, $window, $http, $rootScope){
-		$scope.username = "";
-		$scope.funnyString = "";
+		$scope.formData = {username:'', funnyString:''};
 		
-		$scope.submit = function() {
-			$http.post('/login/' + $scope.username + '/' + $scope.funnyString, {'uname':$scope.username, 'pwd':$scope.funnyString})
+		$scope.loginFormSubmit = function() {
+			$http.get('/login/' + $scope.formData.username + '/' + $scope.formData.funnyString)
 				.then(
 						function(response) {
-							$window.location.href = '/home';
+							$window.location.href = '#/';
 						},
 						function(reason) {
-							alert('bad login');
+							alert(reason.data);
 						}
 				);
 	   };
+	   
+	   $rootScope.logout = function() {
+		   $http.get('/logout/' + $rootScope.user.username)
+		   	.then(
+		   			function(response) {
+		   				$rootScope.user = {empty:true};
+		   			},
+		   			function(reason) {
+		   				console.error(reason.data);
+		   			});
+	   }
 	});
 }());

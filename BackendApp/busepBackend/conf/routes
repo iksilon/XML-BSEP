@@ -8,9 +8,10 @@
 
 #GET		/search									Search.show
 GET		/test/{testVal}/{qq}					Utils.TEST
+GET		/test/loggedUserTest					Utils.loggedUserTest
 
 #GET		/login									Login.show
-POST	/login/{uname}/{pwd}					Login.logIn
+GET		/login/{uname}/{pwd}					Login.logIn
 #GET		/logout									Login.show(mode:'logout')
 GET		/logout/{uname}							Login.logOut
 
@@ -19,9 +20,9 @@ GET		/documents/{count}						Utils.latestDocuments
 POST	/act/new								Acts.newAct
 
 # za uzimanje podataka o korisnicima
-GET		/users/highlord							Utils.usersByRole(0)
-GET		/users/odbornici						Utils.usersByRole(1)
-GET		/users/usersAll							Utils.usersByRole(-1)
+GET		/users/highlord							Utils.usersByRole(role:'0')
+GET		/users/odbornici						Utils.usersByRole(role:'1')
+GET		/users/usersAll							Utils.usersByRole(role:'-1')
 
 GET		/get/panelIds/{uname}					Utils.getPanelIds
 POST	/set/deoId/{uname}						Utils.setDeoId

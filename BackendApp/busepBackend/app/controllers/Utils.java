@@ -3,13 +3,16 @@ package controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import models.Document;
 import models.User;
 import play.cache.Cache;
 import play.mvc.Controller;
-import play.mvc.Http.Request;
-import play.mvc.Http.Response;
-import play.mvc.results.*;
+import play.mvc.results.Error;
+import play.mvc.results.Ok;
+import play.mvc.results.RenderJson;
+import play.mvc.results.Result;
 
 public class Utils extends Controller {
 	
@@ -26,6 +29,18 @@ public class Utils extends Controller {
 	public static Result TEST(String testVal, String qq) {
 		Object test = testVal + " " + qq;
 		return new RenderJson(test);
+	}
+	
+	public static Result loggedUserTest() {
+		try {
+			User user = (User) Cache.get("loggedUserTest");
+			ObjectMapper om = new ObjectMapper();
+			return new RenderJson(om.writeValueAsString(user));
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new Error("Could not fetch requested data due to an exception");
+		}
 	}
 	
 	public static void latestDocuments(int count) {

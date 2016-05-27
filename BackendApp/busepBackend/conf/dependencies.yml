@@ -3,3 +3,7 @@
 require:
     - play
     - play -> db 1.1.1
+    - com.fasterxml.jackson.core -> jackson-core 2.7.4
+    - com.fasterxml.jackson.core -> jackson-annotations 2.7.4
+    - com.fasterxml.jackson.core -> jackson-databind 2.7.4
+    - jtds -> jtds 1.2

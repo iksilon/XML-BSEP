@@ -5,9 +5,14 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 
 import play.db.jpa.Model;
 
@@ -17,12 +22,17 @@ public class Role extends Model {
 	@Column(length = 50, nullable = false)
 	public String name;
 
-	@OneToMany(mappedBy="role")
-	public List<Users> users = new ArrayList<Users>();
+	@OneToMany(fetch=FetchType.EAGER, mappedBy="role")
+	@JsonIgnore	
+	public List<User> users = new ArrayList<User>();
 	
 	@ManyToMany
 	@JoinTable(name="ROLE_PERMISSIONS")
 	public List<Permission> permissions = new ArrayList<Permission>();
+	
+	public Role() {
+		super();
+	}
 	
 	public Role(String name) {
 		super();

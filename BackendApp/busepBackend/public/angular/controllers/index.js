@@ -1,15 +1,13 @@
 (function() {
-	var app = angular.module('mainApp');
+	var app = angular.module('mainApp', ['ngMaterial', 'ngMessages', 'ngRoute', 'ngCookies']);
 	
-	app.controller('IndexCtrl', function($scope, $rootScope, $http) {$scope.alertMe = function() {
-			$http.get('/test/IT/LIVES').then(
-					function(response){
-						alert(response.data);
-					},
-					function(reason){
-						alert("failed");
-					}
-			);
-		}
+	app.controller('IndexCtrl', function($scope, $rootScope, $http) {
+		$rootScope.user = {empty:true};
+		$http.get('/test/loggedUserTest')
+			.then(function(response) {
+				$rootScope.user = response.data;
+			}, function(reason) {
+				console.log(reason.data);
+			});
 	});
 }());

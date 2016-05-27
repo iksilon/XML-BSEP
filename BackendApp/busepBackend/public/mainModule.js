@@ -1,18 +1,22 @@
 (function() {
-	var app = angular.module('mainApp', ['ngMaterial', 'ngMessages', 'ngRoute', 'ngCookies']);
+	var app = angular.module('mainApp');
 
 	app.config(function($routeProvider){ //, $locationProvider
 		$routeProvider
 		.when("/", {
-			templateUrl: "main.html",
+			templateUrl: "angular/routes/main.html",
 			controller: "IndexCtrl"			
 		})
 		.when("/main", {
-			templateUrl: "main.html",
+			templateUrl: "angular/routes/main.html",
 			controller: "IndexCtrl"
 		})
 		.when("/index", {
-			templateUrl: "main.html",
+			templateUrl: "angular/routes/main.html",
+			controller: "IndexCtrl"
+		})
+		.when("/home", {
+			templateUrl: "angular/routes/main.html",
 			controller: "IndexCtrl"
 		})
 		.when("/odbornici", {

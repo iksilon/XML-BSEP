@@ -11,11 +11,11 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.js"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.js"></script>
+	<script type="text/javascript" src="https://cdn.rawgit.com/auth0/angular-jwt/master/dist/angular-jwt.js"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.js"></script>
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.css">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-	<script src="mainModule.js"></script>
 	<script src="angular/controllers/index.js"></script>
 	<script src="angular/controllers/login.js"></script>
 	<script src="angular/controllers/latestActs.js"></script>
@@ -23,6 +23,7 @@
 	<script src="angular/controllers/odbornici.js"></script>
 	<script src="angular/controllers/panel.js"></script>
 	<script src="angular/controllers/search.js"></script>
+	<script src="mainModule.js"></script>
 </head>
 <body ng-app="mainApp" ng-cloak>
 	<md-toolbar layout-align="space-around center">
@@ -57,13 +58,13 @@
 					<md-button go-click="/odbornici">Odbornici</md-button>
 					<md-button go-click="/search">Pretraga akata</md-button>
 					<!-- ng-if="user.role == 1" -->
-					<md-button go-click="/cp/odbornik" >Meni</md-button>
-					<md-button go-click="/cp/highlord" ng-if="user.role == 0">Meni</md-button>
+					<md-button go-click="/cp/odbornik" ng-if="user.role == 1">Odbornik meni</md-button>
+					<md-button go-click="/cp/highlord" ng-if="user.role == 0">Predsednik meni</md-button>
 					<md-button go-click="/" ng-if="isNotMainPage()">Povratak</md-button>
 				</span>
 				<span>
-					<md-button class="md-warn" go-click="/login" ng-if="!loggedIn()">Prijava</md-button>
-					<md-button ng-click="logout()" ng-if="loggedIn()">Odjava</md-button>
+					<md-button class="md-warn" go-click="/login" ng-if="user.empty == true">Prijava</md-button>
+					<md-button ng-click="logout()" ng-if="user.empty != true">Odjava</md-button>
 				</span>
 			</md-toolbar>
 			
@@ -71,7 +72,7 @@
 		</md-content>
 	</section>
 	<md-toolbar layout-align="space-around center">
-		Copyright &copy; AĐIŠ - Tim 27
+		Copyright &copy; Tim 27
 	</md-toolbar>
 </body>
 </html>

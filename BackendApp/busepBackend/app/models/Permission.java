@@ -11,17 +11,16 @@ import play.db.jpa.Model;
 @Entity
 public class Permission extends Model {
 	public String name;
-	
-	
+
 	@ManyToMany(mappedBy = "permissions")
 	public List<Role> roles = new ArrayList<Role>();
 
+	public Permission() {
+		super();
+	}
 
 	public Permission(String name) {
 		super();
 		this.name = name;
 	}
-	
-
-	
 }
