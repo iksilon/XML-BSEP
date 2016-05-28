@@ -8,25 +8,38 @@
             <xs:sequence>
                 <xs:element name="Pravni_osnov" type="xs:string"/>
                 <xs:element name="Predlog_propisa" type="xs:string"/>
-                <xs:element name="Amandman">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name="Odredba">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element ref="pro:Clan"/>
-                                        <xs:element ref="pro:Stav"/>
-                                        <xs:element ref="pro:Tacka"/>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                            <xs:element name="Predlog_resenja" type="xs:string"/>
-                        </xs:sequence>
-                        <xs:attribute name="Redni_Broj" type="xs:positiveInteger"/>
-                        <xs:attribute default="AMANDMAN" name="Naziv" type="xs:string"/>
-                    </xs:complexType>
-                </xs:element>
-                <xs:element name="Obrazlozenje" type="xs:string"/>
+                <xs:sequence>
+                    <xs:element name="Amandman" maxOccurs="unbounded" minOccurs="1">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="Odredba" type="xs:string"> </xs:element>
+                                <xs:element name="Predlog_resenja">
+                                    <xs:complexType>
+                                        <xs:choice>
+                                            <xs:element ref="pro:Clan"/>
+                                            <xs:element ref="pro:Stav"/>
+                                            <xs:element ref="pro:Tacka"/>
+                                            <xs:element ref="pro:Podtacka"/>
+                                            <xs:element ref="pro:Alineja"/>
+                                        </xs:choice>
+                                        <xs:attribute name="tipPredloga">
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                  <xs:enumeration value="izmena"/>
+                                                  <xs:enumeration value="dopuna"/>
+                                                  <xs:enumeration value="brisanje"/>
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:attribute>
+                                    </xs:complexType>
+                                </xs:element>
+                                <xs:element name="Obrazlozenje" type="xs:string"/>
+                            </xs:sequence>
+                            <xs:attribute name="Redni_Broj" type="xs:positiveInteger"/>
+                            <xs:attribute default="AMANDMAN" name="Naziv" type="xs:string"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
             </xs:sequence>
             <xs:attribute name="Naziv" type="xs:string"/>
         </xs:complexType>
