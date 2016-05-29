@@ -6,7 +6,7 @@
 		$scope.userRoles = ['Predsednik', 'Odbornik', 'Web admin'];
 		
 		$scope.addUser = function() {
-			$http.post('/user/create', {user:$scope.newUser})
+			$http.get('/user/create' + $scope.newUser.email + "/" +$scope.newUser.role + "/" + sha256($scope.newUser.pass))
 				.then(
 						function(response) {
 							//dodat korisnik

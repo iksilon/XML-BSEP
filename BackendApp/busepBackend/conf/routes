@@ -19,6 +19,9 @@ GET		/documents								Utils.latestDocuments(count:'0')
 GET		/documents/{count}						Utils.latestDocuments
 POST	/act/new								Acts.newAct
 
+# unosenje novog korisnika
+GET     /user/create/{uname}/{role}/{passwd}    AddUser.addUser
+
 # za uzimanje podataka o korisnicima
 GET		/users/highlord							Utils.usersByRole(role:'0')
 GET		/users/odbornici						Utils.usersByRole(role:'1')
