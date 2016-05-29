@@ -1,4 +1,4 @@
-<form name="addUserForm" ng-submit="addUser(addUserForm.$valid)">
+<form name="addUserForm" ng-submit="addUser()">
 <md-content layout="row">
 <md-content layout="column">
 	<md-input-container>
@@ -33,7 +33,6 @@
 			<div ng-message="compareTo">Lozinke se ne poklapaju</div>
 		</div>
 	</md-input-container>
-<!-- 	<input type="submit" class="md-raised md-primary" value="Dodaj" /> -->
 	<md-button type="submit" class="md-raised md-primary" ng-disabled="!addUserForm.$valid" ng-click="addUser()">Dodaj</md-button>
 </md-content>
 </md-content>

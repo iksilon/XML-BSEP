@@ -5,12 +5,7 @@
 		$scope.newUser = {email:'', role:'', pass:'', passConfirm:''};
 		$scope.userRoles = ['Predsednik', 'Odbornik', 'Web admin'];
 		
-		$scope.addUser = function(formValid) {
-			if(!formValid) {
-				console.log("REIGN OF INVALID");
-				return;
-			}
-			
+		$scope.addUser = function() {			
 			$http.get('/user/create/' + $scope.newUser.email + "/" +$scope.newUser.role + "/" + sha256($scope.newUser.pass))
 				.then(
 						function(response) {
