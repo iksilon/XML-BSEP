@@ -1,0 +1,28 @@
+<form name="addUserForm">
+<md-content layout="row">
+<md-content layout="column">
+	<md-input-container>
+		<label>Email</label>
+		<input required type="email" name="email" ng-model="newUser.email" ng-pattern="/^.+@.+\..+$/"/>
+		<div ng-messages="addUserForm.email.$error">
+			<div ng-message="required">Obavezno polje</div>
+			<div ng-message="pattern">Unestite validan email</div>
+		</div>
+	</md-input-container>
+	<md-input-container>
+		<label>Uloga</label>
+		<md-select ng-model="newUser.role">
+			<md-option ng-repeat="role in userRoles" value="{{role}}">{{role}}</md-option>
+		</md-select>
+		<div ng-messages="addUserForm.role.$error">
+			<div ng-message="required">Obavezno polje</div>
+		</div>
+	</md-input-container>
+	<md-input-container>
+		<label style="display:none;">sifra</label>
+		<input type="hidden" value="promenime"/>
+	</md-input-container>
+	<md-button type="submit" class="md-raised md-primary" ng-click="addUser()">Dodaj</md-button>
+</md-content>
+</md-content>
+</form>
