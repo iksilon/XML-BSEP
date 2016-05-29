@@ -48,36 +48,4 @@ public class Login extends Controller {
 		System.out.println(uname + " LOGGED OUT");
 		return new Ok();
 	}
-
-	//helper methods
-	private byte[] hashPassword(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
-		String algorithm = "PBKDF2WithHmacSHA1";	//koristimo vrstu SHA1 algoritma
-		int derivedKeyLength = 160;	//duzina sha1 hasha u bitima
-		int iterations = 32450;  //neka se sete ovog broja :)
-
-		KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, derivedKeyLength);
-		SecretKeyFactory f = SecretKeyFactory.getInstance(algorithm);
-
-		return f.generateSecret(spec).getEncoded();
-	}
-
-	private byte[] generateSalt() throws NoSuchAlgorithmException {
-		int saltLength = 8;
-		String saltAlgorithm = "SHA1PRNG";
-		SecureRandom random = SecureRandom.getInstance(saltAlgorithm);
-		byte[] salt = new byte[saltLength];
-		random.nextBytes(salt);
-
-		return salt;
-	}
-
-	private String base64Encode(byte[] data) {
-		BASE64Encoder encoder = new BASE64Encoder();
-		return encoder.encode(data);
-	}
-
-	private byte[] base64Decode(String base64Data) throws IOException {
-		BASE64Decoder decoder = new BASE64Decoder();
-		return decoder.decodeBuffer(base64Data);
-	}
 }
