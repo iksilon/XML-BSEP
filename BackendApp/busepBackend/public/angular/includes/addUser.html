@@ -19,8 +19,18 @@
 		</div>
 	</md-input-container>
 	<md-input-container>
-		<label style="display:none;">sifra</label>
-		<input type="hidden" value="promenime"/>
+		<label>Lozinka</label>
+		<input required type="password" name="pass" ng-model="newUser.pass"/>
+		<div ng-messages="addUserForm.pass.$error">
+			<div ng-message="required">Obavezno polje</div>
+		</div>
+	</md-input-container>
+	<md-input-container>
+		<label>Potvrda lozinke</label>
+		<input required type="password" name="passConfirm" ng-model="newUser.passConfirm"/>
+		<div ng-messages="addUserForm.passConfirm.$error">
+			<div ng-message="required">Obavezno polje</div>
+		</div>
 	</md-input-container>
 	<md-button type="submit" class="md-raised md-primary" ng-click="addUser()">Dodaj</md-button>
 </md-content>
