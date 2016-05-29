@@ -1,7 +1,7 @@
-<div ng-if="user.empty == true">
+<div ng-if="user == undefined || user == null">
 	sta bi smo mogli staviti ovde?
 	neki tekst DOBRODOSLI BLA BLA, ili tako nesto?
 </div>
-<div ng-if="user.empty != true">
+<div ng-if="user != undefined && user != null">
 	LOGGED IN HEHEH
 </div>

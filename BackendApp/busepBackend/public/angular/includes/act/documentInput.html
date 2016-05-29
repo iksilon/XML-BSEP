@@ -1,47 +1,44 @@
 <md-tabs md-border-bottom md-autoselect md-dynamic-height>
 	<md-tab label="Akt">
-<!-- 		<md-content> -->
-			<form name="aktForm" layout="column">
-				<md-input-container>
-					<label>Tip</label>
-					<input required name="tip" ng-model="akt.tip"/>
-					<div ng-messages="aktForm.tip.$error">
-						<div ng-message="required">Obavezno polje</div>
-					</div>
-				</md-input-container>
-				<md-input-container>
-					<label>Oznaka</label>
-					<input required name="oznaka" ng-model="akt.oznaka"/>
-					<div ng-messages="aktForm.oznaka.$error">
-						<div ng-message="required">Obavezno polje</div>
-					</div>
-				</md-input-container>
-				<md-input-container>
-					<label>Ustanova</label>
-					<input required name="ustanova" ng-model="akt.ustanova"/>
-					<div ng-messages="aktForm.ustanova.$error">
-						<div ng-message="required">Obavezno polje</div>
-					</div>
-				</md-input-container>
-				<md-input-container>
-					<label>Odgovorno lice</label>
-					<input required name="odgLice" ng-model="akt.odgLice"/>
-					<div ng-messages="aktForm.odgLice.$error">
-						<div ng-message="required">Obavezno polje</div>
-					</div>
-				</md-input-container>
-				
-				<md-datepicker md-placeholder="Datum" ng-model="akt.datum"></md-datepicker>
-			</form>
-<!-- 		</md-content> -->
+		<form name="aktForm" layout="column">
+			<md-input-container>
+				<label>Tip</label>
+				<input required name="tip" ng-model="akt.tip"/>
+				<div ng-messages="aktForm.tip.$error">
+					<div ng-message="required">Obavezno polje</div>
+				</div>
+			</md-input-container>
+			<md-input-container>
+				<label>Oznaka</label>
+				<input required name="oznaka" ng-model="akt.oznaka"/>
+				<div ng-messages="aktForm.oznaka.$error">
+					<div ng-message="required">Obavezno polje</div>
+				</div>
+			</md-input-container>
+			<md-input-container>
+				<label>Ustanova</label>
+				<input required name="ustanova" ng-model="akt.ustanova"/>
+				<div ng-messages="aktForm.ustanova.$error">
+					<div ng-message="required">Obavezno polje</div>
+				</div>
+			</md-input-container>
+			<md-input-container>
+				<label>Odgovorno lice</label>
+				<input required name="odgLice" ng-model="akt.odgLice"/>
+				<div ng-messages="aktForm.odgLice.$error">
+					<div ng-message="required">Obavezno polje</div>
+				</div>
+			</md-input-container>
+			
+			<md-datepicker md-placeholder="Datum" ng-model="akt.datum"></md-datepicker>
+		</form>
 	</md-tab>
 	<md-tab ng-repeat="tab in aktTabs" label="{{tab.label}}">
 		<div ng-if="tab.deo">
 			<form name="tabForm" layout="column">
-				GDE JE OSTALO??? ANGULAR PLS
 				<md-input-container>
 					<label>Preambula</label>
-					<textarea name="preambula" ng-model="tab.preambula"/>
+					<textarea name="preambula" ng-model="tab.preambula"></textarea>
 				</md-input-container>
 				<md-input-container>
 					<label>Naziv</label>
@@ -56,43 +53,39 @@
 				</md-input-container>
 				<md-input-container layout-margin>
 					<label>Deo - Oznaka</label>
-					<textarea required name="oznaka" ng-model="tab.oznaka"/>
+					<textarea required name="oznaka" ng-model="tab.oznaka"></textarea>
 					<div ng-messages="tabForm.oznaka.$error">
 						<div ng-message="required">Obavezno polje</div>
 					</div>
 				</md-input-container>
 				<md-input-container layout-margin>
 					<label>Deo - Naziv</label>
-					<textarea name="deoNaziv" ng-model="tab.deoNaziv"/>
-				</md-input-container>
-				<md-input-container layout-margin>
-					<label>Deo - Glava</label>
-					<input disabled/>
+					<textarea name="deoNaziv" ng-model="tab.deoNaziv"></textarea>
 				</md-input-container>
 				<md-input-container layout-margin layout-padding>
 					<label>Deo - Glava - Oznaka</label>
-					<textarea required name="glavaOznaka" ng-model="tab.glavaOznaka"/>
+					<textarea required name="glavaOznaka" ng-model="tab.glavaOznaka"></textarea>
 					<div ng-messages="tabForm.glavaOznaka.$error">
 						<div ng-message="required">Obavezno polje</div>
 					</div>
 				</md-input-container>
 				<md-input-container layout-margin layout-padding>
 					<label>Deo - Glava - Naziv</label>
-					<textarea required name="glavaNaziv" ng-model="tab.glavaNaziv"/>
+					<textarea required name="glavaNaziv" ng-model="tab.glavaNaziv"></textarea>
 					<div ng-messages="tabForm.glavaNaziv.$error">
 						<div ng-message="required">Obavezno polje</div>
 					</div>
 				</md-input-container>
 				<md-input-container layout-margin layout-padding>
 					<label>Deo - Glava - Odeljak</label>
-					<textarea required name="glavaOdeljak" ng-model="tab.glavaOdeljak"/>
+					<textarea required name="glavaOdeljak" ng-model="tab.glavaOdeljak"></textarea>
 					<div ng-messages="tabForm.glavaOdeljak.$error">
 						<div ng-message="required">Obavezno polje</div>
 					</div>
 				</md-input-container>
 				<md-input-container>
-					<label>Obrazloï¿½enje</label>
-					<textarea name="obrazlozenje" ng-model="tab.obrazlozenje"/>
+					<label>Obrazloženje</label>
+					<textarea name="obrazlozenje" ng-model="tab.obrazlozenje"></textarea>
 				</md-input-container>
 			</form>
 		</div>
@@ -101,48 +94,3 @@
 		</div>
 	</md-tab>
 </md-tabs>
-<!-- <form name="aktForm" layout="column" flex="100"> -->
-<!-- <md-input-container> -->
-<!-- 	<label>Tip</label> -->
-<!-- 	<input required name="tip" ng-model="akt.tip"/> -->
-<!-- 	<div ng-messages="aktForm.tip.$error"> -->
-<!-- 		<div ng-message="required">Obavezno polje</div> -->
-<!-- 	</div> -->
-<!-- </md-input-container> -->
-<!-- <md-input-container> -->
-<!-- 	<label>Oznaka</label> -->
-<!-- 	<input required name="oznaka" ng-model="akt.oznaka"/> -->
-<!-- 	<div ng-messages="aktForm.oznaka.$error"> -->
-<!-- 		<div ng-message="required">Obavezno polje</div> -->
-<!-- 	</div> -->
-<!-- </md-input-container> -->
-<!-- <md-input-container> -->
-<!-- 	<label>Ustanova</label> -->
-<!-- 	<input required name="ustanova" ng-model="akt.ustanova"/> -->
-<!-- 	<div ng-messages="aktForm.ustanova.$error"> -->
-<!-- 		<div ng-message="required">Obavezno polje</div> -->
-<!-- 	</div> -->
-<!-- </md-input-container> -->
-<!-- <md-input-container> -->
-<!-- 	<label>Odgovorno lice</label> -->
-<!-- 	<input required name="odgLice" ng-model="akt.odgLice"/> -->
-<!-- 	<div ng-messages="aktForm.odgLice.$error"> -->
-<!-- 		<div ng-message="required">Obavezno polje</div> -->
-<!-- 	</div> -->
-<!-- </md-input-container> -->
-
-<!-- <md-datepicker md-placeholder="Datum" ng-model="akt.datum"></md-datepicker> -->
-
-<!-- <form name="newInputForm"> -->
-	<div ng-repeat="input in formInputs" layout="column" flex>
-		<md-input-container>
-			<label>{{input.label}}</label>
-			<textarea required name="newInput" ng-model="input.content" ng-if="input.required"/>
-			<textarea disabled name="newInput" ng-model="input.content" ng-if="!input.required"/>
-<!-- 			<div ng-messages="newInputForm.newInput.$error" ng-if="input.required"> -->
-<!-- 				<div ng-message="required">Obavezno polje</div> -->
-<!-- 			</div> -->
-		</md-input-container>
-	</div>
-<!-- </form> -->
-</form>

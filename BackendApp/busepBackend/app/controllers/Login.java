@@ -37,6 +37,7 @@ public class Login extends Controller {
 		Cache.set(loggedUser.username + "DeoId", 1);
 		Cache.set(loggedUser.username + "ClanId", 1);
 		Cache.set("loggedUserTest", loggedUser);
+		// User role bi trebalo sacuvati u JWT ili vec negde gde je nedostupan klijentu
 		return new Ok();
 	}
 	

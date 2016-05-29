@@ -4,8 +4,9 @@
 	app.controller('LoginCtrl', function($scope, $window, $http, $rootScope){
 		$scope.formData = {username:'', funnyString:''};
 		
+//		alert(sha256("đčćžšљњшこつきめ"));
 		$scope.loginFormSubmit = function() {
-			$http.get('/login/' + $scope.formData.username + '/' + $scope.formData.funnyString)
+			$http.get('/login/' + $scope.formData.username + '/' + sha256($scope.formData.funnyString))
 				.then(
 						function(response) {
 							$window.location.href = '#/';
@@ -15,16 +16,5 @@
 						}
 				);
 	   };
-	   
-	   $rootScope.logout = function() {
-		   $http.get('/logout/' + $rootScope.user.username)
-		   	.then(
-		   			function(response) {
-		   				$rootScope.user = {empty:true};
-		   			},
-		   			function(reason) {
-		   				console.error(reason.data);
-		   			});
-	   }
 	});
 }());

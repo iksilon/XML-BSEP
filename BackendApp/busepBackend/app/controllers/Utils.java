@@ -34,7 +34,9 @@ public class Utils extends Controller {
 	public static Result loggedUserTest() {
 		try {
 			User user = (User) Cache.get("loggedUserTest");
+			
 			ObjectMapper om = new ObjectMapper();
+			
 			return new RenderJson(om.writeValueAsString(user));
 		}
 		catch (Exception e) {

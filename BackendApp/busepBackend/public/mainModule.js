@@ -47,6 +47,10 @@
 			templateUrl: "angular/routes/panelHighlord.html",
 			controller: "PanelCtrl"
 		})
+		.when("/cp/wa", {
+			templateUrl: "angular/routes/panelWebAdmin.html",
+			controller: "WebAdminCtrl"
+		})
 		.otherwise({
 			redirectTo:"/"
 		});
@@ -65,5 +69,18 @@
 				});
 			});
 		};
+	})
+	.run(function($rootScope, $cookies, $http, $window) {
+		$rootScope.logout = function() {
+			$http.get('/logout/' + $rootScope.user.username)
+				.then(
+						function(response) {
+							$rootScope.user = null;
+							$window.location.href = '#/';
+						},
+						function(reason) {
+							console.error(reason.data);
+						});
+		}
 	});;
 }());

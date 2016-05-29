@@ -5,6 +5,8 @@
 
 	<link rel="shortcut icon" type="image/png" href="images/favicon.png">
       
+	<script src="javascripts/sha256-224.min.js"></script>
+	
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-cookies.js"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
@@ -23,17 +25,18 @@
 	<script src="angular/controllers/odbornici.js"></script>
 	<script src="angular/controllers/panel.js"></script>
 	<script src="angular/controllers/search.js"></script>
+	<script src="angular/controllers/webAdmin.js"></script>
 	<script src="mainModule.js"></script>
 </head>
 <body ng-app="mainApp" ng-cloak>
+	<md-content layout="row" layout-align="space-around center">
+<!-- 	<md-toolbar width="99"> -->
+<!-- 		<img src="images/sgnsLogo.png" alt="logo" width="99" height="99"> -->
+<!-- 	</md-toolbar> -->
 	<md-toolbar layout-align="space-around center">
-		<!-- <span>
-			<img src="images/sgnsLogo.png" alt="logo" width="100" height="100">
-		</span> -->
-		<span>
-			<h1 class="md-center">SKUPŠTINA GRADA NOVOG SADA</h1>
-		</span>
+		<h1>SKUPŠTINA GRADA NOVOG SADA</h1>
 	</md-toolbar>
+	</md-content>
 	
 	<section layout="row" flex="" layout-margin style="min-height:75%;">
 		<md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="md-sidenav-left" md-is-locked-open="true" flex>
@@ -57,14 +60,17 @@
 					<md-button go-click="/akti/proc">Akti u proceduri</md-button>
 					<md-button go-click="/odbornici">Odbornici</md-button>
 					<md-button go-click="/search">Pretraga akata</md-button>
-					<!-- ng-if="user.role == 1" -->
-					<md-button go-click="/cp/odbornik" ng-if="user.role == 1">Odbornik meni</md-button>
-					<md-button go-click="/cp/highlord" ng-if="user.role == 0">Predsednik meni</md-button>
-					<md-button go-click="/" ng-if="isNotMainPage()">Povratak</md-button>
+<!-- 					ng-if="user.role == 1" -->
+					<md-button go-click="/cp/odbornik">Odbornik meni</md-button>
+<!-- 					 ng-if="user.role == 0" -->
+					<md-button go-click="/cp/highlord">Predsednik meni</md-button>
+<!-- 					 ng-if="user.role == 2" -->
+					<md-button go-click="/cp/wa">Web admin meni</md-button>
+					<md-button go-click="/" ng-if="!mainPage">Povratak</md-button>
 				</span>
 				<span>
-					<md-button class="md-warn" go-click="/login" ng-if="user.empty == true">Prijava</md-button>
-					<md-button ng-click="logout()" ng-if="user.empty != true">Odjava</md-button>
+					<md-button class="md-warn" go-click="/login" ng-if="user == undefined || user == null">Prijava</md-button>
+					<md-button ng-click="logout()" ng-if="user != undefined && user != null">Odjava</md-button>
 				</span>
 			</md-toolbar>
 			
