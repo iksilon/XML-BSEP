@@ -70,6 +70,55 @@
 			});
 		};
 	})
+	.directive("passwordVerify", function() {
+		return {
+			require: "ngModel",
+			scope: {
+				passwordVerify: '='
+			},
+			link: function(scope, element, attrs, ctrl) {
+				scope.$watch(function() {
+					var combined;
+
+					if (scope.passwordVerify || ctrl.$viewValue) {
+						combined = scope.passwordVerify + '_' + ctrl.$viewValue; 
+					}
+					return combined;
+				}, function(value) {
+					if (value) {
+						ctrl.$parsers.unshift(function(viewValue) {
+							var origin = scope.passwordVerify;
+							if (origin !== viewValue) {
+								ctrl.$setValidity("passwordVerify", false);
+								return undefined;
+							} else {
+								ctrl.$setValidity("passwordVerify", true);
+								return viewValue;
+							}
+						});
+					}
+				});
+			}
+		};
+	})
+	.directive("compareTo", function() {
+	    return {
+	    	require: "ngModel",
+	        scope: {
+	            otherModelValue: "=compareTo"
+	        },
+	        link: function(scope, element, attributes, ngModel) {
+	             
+	            ngModel.$validators.compareTo = function(modelValue) {
+	                return modelValue == scope.otherModelValue;
+	            };
+	 
+	            scope.$watch("otherModelValue", function() {
+	                ngModel.$validate();
+	            });
+	        }
+	    };
+	})
 	.run(function($rootScope, $cookies, $http, $window) {
 		$rootScope.logout = function() {
 			$http.get('/logout/' + $rootScope.user.username)

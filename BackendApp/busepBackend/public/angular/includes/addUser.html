@@ -1,4 +1,4 @@
-<form name="addUserForm">
+<form name="addUserForm" ng-submit="addUser(addUserForm.$valid)">
 <md-content layout="row">
 <md-content layout="column">
 	<md-input-container>
@@ -27,12 +27,14 @@
 	</md-input-container>
 	<md-input-container>
 		<label>Potvrda lozinke</label>
-		<input required type="password" name="passConfirm" ng-model="newUser.passConfirm"/>
+		<input required type="password" name="passConfirm" ng-model="newUser.passConfirm" compare-to="newUser.pass"/>
 		<div ng-messages="addUserForm.passConfirm.$error">
 			<div ng-message="required">Obavezno polje</div>
+			<div ng-message="compareTo">Lozinke se ne poklapaju</div>
 		</div>
 	</md-input-container>
-	<md-button type="submit" class="md-raised md-primary" ng-click="addUser()">Dodaj</md-button>
+<!-- 	<input type="submit" class="md-raised md-primary" value="Dodaj" /> -->
+	<md-button type="submit" class="md-raised md-primary" ng-disabled="!addUserForm.$valid" ng-click="addUser()">Dodaj</md-button>
 </md-content>
 </md-content>
 </form>
