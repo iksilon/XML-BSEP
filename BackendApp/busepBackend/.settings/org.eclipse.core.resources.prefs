@@ -1,4 +1,14 @@
 eclipse.preferences.version=1
 encoding//public/angular/controllers/webAdmin.js=UTF-8
+encoding//public/angular/includes/act/optionsMenu.html=UTF-8
 encoding//public/angular/includes/addUser.html=UTF-8
+encoding//public/angular/routes/aktiProc.html=UTF-8
+encoding//public/angular/routes/aktiVazeci.html=UTF-8
+encoding//public/angular/routes/login.html=UTF-8
+encoding//public/angular/routes/main.html=UTF-8
+encoding//public/angular/routes/odbornici.html=UTF-8
+encoding//public/angular/routes/panelHighlord.html=UTF-8
+encoding//public/angular/routes/panelOdbornik.html=UTF-8
+encoding//public/angular/routes/panelWebAdmin.html=UTF-8
+encoding//public/angular/routes/search.html=UTF-8
 encoding/<project>=UTF-8

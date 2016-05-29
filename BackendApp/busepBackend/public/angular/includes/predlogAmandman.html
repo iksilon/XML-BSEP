@@ -1,4 +1,4 @@
-<form name="amandmanForm" ng-submit="amandmanFormSubmit()">
+<form name="amandmanForm" ng-submit="amandmanFormSubmit()" ng-cloak>
 	<md-content layout="row">
 	<md-content layout="column">
 		<md-input-container>
@@ -9,14 +9,14 @@
 			</div>
 		</md-input-container>
 		<md-input-container>
-			<label>Sadr≈æaj</label>
+			<label>Sadrûaj</label>
 			<textarea required name="content" ng-model="amandman.content"/>
 			<div ng-messages="amandmanForm.content.$error" role="alert">
 				<div ng-message="required">Obavezno polje</div>
 			</div>
 		</md-input-container>
 		<md-content layout-padding layout="row" layout-sm="row" layout-align="center start">
-			<md-button class="md-raised md-primary login-button" type="submit">Predlo≈æi amandman</md-button>
+			<md-button class="md-raised md-primary login-button" type="submit">Predloûi amandman</md-button>
 		</md-content>
 	</md-content>
 	</md-content>
