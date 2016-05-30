@@ -41,4 +41,11 @@ public class User extends Model {
 		this.username = username;
 		this.password = password;
 	}
+
+	/*public User(String username, String password, String roleName){
+		super();
+		//this.username = username;
+		//this.password = password;
+		//this.role = new Role(roleName);		
+	}*/
 }

@@ -24,12 +24,14 @@ import java.security.InvalidKeyException;
 public class Login extends Controller {
 	
 	public static Result logIn(String uname, String pwd) {
-		List<User> user = User.find("byUsernameAndPassword", uname, pwd).fetch();
-		if(user.isEmpty()) {
+		User loggedUser = User.find("byUsername", uname).first();
+
+		if (loggedUser == null)
 			return new BadRequest("Invalid login");
-		}
-		
-		User loggedUser = user.get(0);
+
+		if (!loggedUser.password.equals(pwd))
+			return new BadRequest("Invalid login");
+
 		// Proslediti uvek username kad je neka akcija koja zavisi od korisnika (npr predlaganje amandmana)
 		//potrebno radi pronalazenja korisnika u Cache, jer je kljuc njegov username
 		//takodje, korisnika ukloniti iz Cache kad se izloguje
