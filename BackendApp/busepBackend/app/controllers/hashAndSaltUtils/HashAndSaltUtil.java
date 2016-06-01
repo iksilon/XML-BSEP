@@ -24,6 +24,8 @@ import java.util.Arrays;
 public class HashAndSaltUtil {
 	public HashAndSaltUtil(){
 		//nema tu šta da se konstruiše
+		
+		// pa onda ti ne treba konstruktor, jer je ovo podrazumevani xD
 	}
 
 	public byte[] hashPassword(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {

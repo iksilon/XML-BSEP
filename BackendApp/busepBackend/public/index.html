@@ -59,12 +59,9 @@
 					<md-button go-click="/akti/vazeci">Važeći akti</md-button>
 					<md-button go-click="/akti/proc">Akti u proceduri</md-button>
 					<md-button go-click="/search">Pretraga akata</md-button>
-<!-- 					ng-if="user.role == 1" -->
-					<md-button go-click="/cp/odbornik">Odbornik meni</md-button>
-<!-- 					 ng-if="user.role == 0" -->
-					<md-button go-click="/cp/highlord">Predsednik meni</md-button>
-<!-- 					 ng-if="user.role == 2" -->
-					<md-button go-click="/cp/wa">Web admin meni</md-button>
+					<md-button go-click="/cp/odbornik" ng-show="userMenuChecks.isOdbornik(user.role.id)">Odbornik meni</md-button>
+					<md-button go-click="/cp/highlord" ng-show="userMenuChecks.isPredsednik(user.role.id)">Predsednik meni</md-button>
+					<md-button go-click="/cp/wa" ng-show="userMenuChecks.isAdmin(user.role.id)">Web admin meni</md-button>
 					<md-button go-click="/" ng-if="!mainPage">Povratak</md-button>
 				</span>
 				<span>

@@ -23,11 +23,12 @@ public class Role extends Model {
 	public String name;
 
 	@OneToMany(fetch=FetchType.EAGER, mappedBy="role")
-	@JsonIgnore	
+	@JsonIgnore
 	public List<User> users = new ArrayList<User>();
 	
 	@ManyToMany
 	@JoinTable(name="ROLE_PERMISSIONS")
+	@JsonIgnore
 	public List<Permission> permissions = new ArrayList<Permission>();
 	
 	public Role() {

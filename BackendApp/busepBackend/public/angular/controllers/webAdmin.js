@@ -2,6 +2,8 @@
 	var app = angular.module('mainApp');
 	
 	app.controller('WebAdminCtrl', function($scope, $rootScope, $http) {
+		$rootScope.mainPage = false;
+		
 		$scope.newUser = {email:'', role:'', pass:'', passConfirm:''};
 		$scope.userRoles = ['Predsednik', 'Odbornik', 'Web admin'];
 		
