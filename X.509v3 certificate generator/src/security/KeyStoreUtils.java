@@ -114,7 +114,7 @@ public class KeyStoreUtils {
 	 * @param password
 	 * @param certificate
 	 */
-	public static void write(KeyStore keystore, String alias, PrivateKey privateKey, char[] password, Certificate certificate) {
+	public static void insertKey(KeyStore keystore, String alias, PrivateKey privateKey, char[] password, Certificate certificate) {
 		try {
 			keystore.setKeyEntry(alias, privateKey, password, new Certificate[] {certificate});
 		} catch (KeyStoreException e) {

@@ -13,6 +13,7 @@ import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -46,7 +47,7 @@ import security.KeyStoreUtils;
 /**
  * Main view of the application, extension of the {@link JFrame} class.
  * This window shows a keystore file with all it's certificates.
- * User can create new keystores and add certificates to it either by creating them or by importing them from file.
+ * User can create new keystores and add keypairs and certificates to it either by creating them or by importing them from file.
  * Certificates and keystores can then be exported/saved to file.
  * Only one keystore is showed at a time.
  * 
@@ -133,8 +134,7 @@ public class MainWindow extends JFrame {
 		        									null,
 		        									ObjButtons,
 		        									ObjButtons[1]);
-		        if(PromptResult == JOptionPane.YES_OPTION)
-		        {
+		        if(PromptResult == JOptionPane.YES_OPTION) {
 		            System.exit(0);
 		        }
 			}
@@ -203,6 +203,7 @@ public class MainWindow extends JFrame {
 		keypairTable = new KeypairTable();
 		keypairTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane.setViewportView(keypairTable);
+		
 		// Double click on table row to see certificate details.
 		keypairTable.addMouseListener(new MouseAdapter() {
 			@Override
@@ -303,6 +304,8 @@ public class MainWindow extends JFrame {
 				
 				// After returning from the modal dialog.					
 				KeyStoreUtils.saveKeyStore(currentKeystore, currentPath, ksd.getPassword());
+				Arrays.fill(ksd.getPassword(), '0');
+				ksd.dispose();
 				txtCurrentKeystore.setText(currentPath);
 				lblCurrentKeystore.setText("Current keystore:");
 			}
@@ -384,6 +387,7 @@ public class MainWindow extends JFrame {
 			        }
 			        
 			    }
+			    // This is a new file.
 			    else {
 			    	// Set password for keystore.
 			    	SetPasswordDialog ksd = new SetPasswordDialog();
@@ -482,7 +486,7 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Generate new keypair");
 		}
 		public void actionPerformed(ActionEvent e) {
-			// Is there a KeyStore to which this KeyPair will be stored?
+			// Is there a KeyStore to which this will be stored?
 			if(currentKeystore == null) {
 				JOptionPane.showMessageDialog(MainWindow.getInstance(),
 						"A keystore is needed to create a keypair. Please create a keystore first. "
@@ -490,11 +494,8 @@ public class MainWindow extends JFrame {
 				return;
 			}
 			
-			KeyPair kp = CertificateUtils.generateKeyPair();
-			IssuerData issuer = new IssuerData();
-			SubjectData subject = new SubjectData();
-			
-			CertificateDialog cd = new CertificateDialog(issuer, subject, kp);
+			// Open dialog for all certificate data.
+			CertificateDialog cd = new CertificateDialog(currentKeystore);
 			cd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 			cd.setVisible(true);
 			
@@ -503,7 +504,7 @@ public class MainWindow extends JFrame {
 				try {
 					currentKeystore.setCertificateEntry(cd.getAlias(), cd.getCertificate());
 					
-					KeyStoreUtils.write(currentKeystore, cd.getAlias(), kp.getPrivate(), cd.getPassword(), cd.getCertificate());
+					KeyStoreUtils.insertKey(currentKeystore, cd.getAlias(), kp.getPrivate(), cd.getPassword(), cd.getCertificate());
 
 					// Clean up password.
 					Arrays.fill(cd.getPassword(), '0');
@@ -546,10 +547,9 @@ public class MainWindow extends JFrame {
 			System.out.println(ex);
 			
 			switch (ex) {
-			case ".cer":
-			case ".crt":
-				System.out.println("fell into certificate");
-				// Ask which encoding is to be used. A hack, I know, I don't care.
+			case "cer":
+			case "crt":
+				// Ask which encoding is to be used. A misuse of Y/N dialog, I know, I don't care.
 				Object[] options = {"PEM", "DER"};
 				int n = JOptionPane.showOptionDialog(MainWindow.getInstance(),
 				    "Which encoding you want to use?",
@@ -568,10 +568,10 @@ public class MainWindow extends JFrame {
 				}
 				
 				break;
-			case ".der":
+			case "der":
 				CertificateUtils.saveDERfile(path, cert);
 				break;
-			case ".pem":
+			case "pem":
 				CertificateUtils.savePEMfile(path, cert);
 				break;
 			default:
@@ -597,10 +597,10 @@ public class MainWindow extends JFrame {
 					String workingDir = System.getProperty("user.dir");
 					workingDir = Paths.get(workingDir, "certificates").toString();
 					JFileChooser chooser = new JFileChooser(workingDir);
-				    FileNameExtensionFilter filterDef = new FileNameExtensionFilter("Certificate files", ".cer", ".crt");
+				    FileNameExtensionFilter filterDef = new FileNameExtensionFilter("Certificate files", "cer", "crt");
 				    chooser.setFileFilter(filterDef);
-				    FileNameExtensionFilter filterPEM = new FileNameExtensionFilter("PEM encoded certificate files", ".pem");
-				    FileNameExtensionFilter filterDER = new FileNameExtensionFilter("DER encoded certificate files", ".der");
+				    FileNameExtensionFilter filterPEM = new FileNameExtensionFilter("PEM encoded certificate files", "pem");
+				    FileNameExtensionFilter filterDER = new FileNameExtensionFilter("DER encoded certificate files", "der");
 				    chooser.addChoosableFileFilter(filterPEM);
 				    chooser.addChoosableFileFilter(filterDER);
 				    
@@ -618,7 +618,7 @@ public class MainWindow extends JFrame {
 				    	
 				    	// Find extension match
 				    	for (String ex : exts) {
-							if(path.endsWith(ex)) {
+							if(path.endsWith("." + ex)) {
 								// Match found, save file.
 								saveFile(path, cert, ex);
 								return;
@@ -626,7 +626,7 @@ public class MainWindow extends JFrame {
 						}
 				    	
 				    	// No match, add the extension and save file.
-				    	path = path.concat(exts[0]);
+				    	path = path.concat("." + exts[0]);
 				    	saveFile(path, cert, exts[0]);
 				    }
 					
@@ -650,6 +650,12 @@ public class MainWindow extends JFrame {
 		}
 	}
 	
+	/**
+	 * Opens a certificate from a file and adds it to the current keystore.
+	 * File chooser gives possible file extension filters but this is only for UX,
+	 * extension and encoding are checked nevertheless. 
+	 *
+	 */
 	private class ActionImportCertificate extends AbstractAction {
 		private static final long serialVersionUID = 4384732596786044097L;
 		public ActionImportCertificate() {
@@ -662,10 +668,10 @@ public class MainWindow extends JFrame {
 			String workingDir = System.getProperty("user.dir");
 			workingDir = Paths.get(workingDir, "certificates").toString();
 			JFileChooser chooser = new JFileChooser(workingDir);
-		    FileNameExtensionFilter filterDef = new FileNameExtensionFilter("Certificate files", ".cer", ".crt");
+		    FileNameExtensionFilter filterDef = new FileNameExtensionFilter("Certificate files", "cer", "crt");
 		    chooser.setFileFilter(filterDef);
-		    FileNameExtensionFilter filterPEM = new FileNameExtensionFilter("PEM encoded certificate files", ".pem");
-		    FileNameExtensionFilter filterDER = new FileNameExtensionFilter("DER encoded certificate files", ".der");
+		    FileNameExtensionFilter filterPEM = new FileNameExtensionFilter("PEM encoded certificate files", "pem");
+		    FileNameExtensionFilter filterDER = new FileNameExtensionFilter("DER encoded certificate files", "der");
 		    chooser.addChoosableFileFilter(filterPEM);
 		    chooser.addChoosableFileFilter(filterDER);
 		    
@@ -703,6 +709,7 @@ public class MainWindow extends JFrame {
 							currentKeystore.setCertificateEntry(alias, c);
 							int rows = ((DefaultTableModel)keypairTable.getModel()).getRowCount();
 							((DefaultTableModel)keypairTable.getModel()).addRow(new Object[]{rows+1, alias});
+							//TODO: Z:Minor: Have some kind of check in the table whether certificate has a private key available.
 							lblCurrentKeystore.setText("*Current keystore:");
 						} catch (KeyStoreException e1) {
 							e1.printStackTrace();
