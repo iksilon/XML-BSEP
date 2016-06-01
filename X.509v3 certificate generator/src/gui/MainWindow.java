@@ -9,11 +9,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.nio.file.Paths;
-import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -38,8 +36,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
-import data.IssuerData;
-import data.SubjectData;
 import net.miginfocom.swing.MigLayout;
 import security.CertificateUtils;
 import security.KeyStoreUtils;
@@ -141,56 +137,34 @@ public class MainWindow extends JFrame {
 			
 		});
 		
+		// MenuBar ------------------------------------------------------------------------
+		
+		JMenuBar menuBar = new JMenuBar();		setJMenuBar(menuBar);
+			JMenu mnFile = new JMenu("File");										menuBar.add(mnFile);
+			JMenu mntmNew = new JMenu("New");										mnFile.add(mntmNew);
+			JMenuItem mntmKeystore = mntmNew.add(actKeystore);						mntmKeystore.setText("Keystore");
+			JMenuItem mntmKeypair = mntmNew.add(actKeypair);						mntmKeypair.setText("Keypair");
+			JMenuItem mntmOpen = mnFile.add(actOpen);								mntmOpen.setText("Open");
+			
+			JSeparator sepFile1 = new JSeparator();									mnFile.add(sepFile1);
+		
+			JMenuItem mntmSave = mnFile.add(actSave);								mntmSave.setText("Save");
+			JMenuItem mntmSaveAs = mnFile.add(actSaveAs);							mntmSaveAs.setText("Save as...");
+			
+			JSeparator sepFile2 = new JSeparator();									mnFile.add(sepFile2);
+		
+			JMenuItem mntmExit = mnFile.add(actExit);								mntmExit.setText("Exit");
+		
+		JMenu mnTools = new JMenu("Tools");		menuBar.add(mnTools);
+			JMenuItem mntmExportCertificate = mnTools.add(actExportCertificate);	mntmExportCertificate.setText("Export Certificate");
+			JMenuItem mntmExportAll = mnTools.add(actExportAll);					mntmExportAll.setText("Export All");
+		
+			JSeparator separator = new JSeparator();								mnTools.add(separator);
+		
+			JMenuItem mntmImportCertificate = mnTools.add(actImportCertificate);	mntmImportCertificate.setText("Import Certificate");
+		
 		// Components ------------------------------------------------------------------------
-		
-		JMenuBar menuBar = new JMenuBar();
-		setJMenuBar(menuBar);
-		
-		JMenu mnFile = new JMenu("File");
-		menuBar.add(mnFile);
-		
-		JMenu mntmNew = new JMenu("New");
-		mnFile.add(mntmNew);
-		
-		JMenuItem mntmKeystore = mntmNew.add(actKeystore);
-		mntmKeystore.setText("Keystore");
-		
-		JMenuItem mntmKeypair = mntmNew.add(actKeypair);
-		mntmKeypair.setText("Keypair");
-		
-		JMenuItem mntmOpen = mnFile.add(actOpen);
-		mntmOpen.setText("Open");
-		
-		JSeparator sepFile1 = new JSeparator();
-		mnFile.add(sepFile1);
-		
-		JMenuItem mntmSave = mnFile.add(actSave);
-		mntmSave.setText("Save");
-		
-		JMenuItem mntmSaveAs = mnFile.add(actSaveAs);
-		mntmSaveAs.setText("Save as...");
-		
-		JSeparator sepFile2 = new JSeparator();
-		mnFile.add(sepFile2);
-		
-		JMenuItem mntmExit = mnFile.add(actExit);
-		mntmExit.setText("Exit");
-		
-		JMenu mnTools = new JMenu("Tools");
-		menuBar.add(mnTools);
-		
-		JMenuItem mntmExportCertificate = mnTools.add(actExportCertificate);
-		mntmExportCertificate.setText("Export Certificate");
-		
-		JMenuItem mntmExportAll = mnTools.add(actExportAll);
-		mntmExportAll.setText("Export All");
-		
-		JSeparator separator = new JSeparator();
-		mnTools.add(separator);
-		
-		JMenuItem mntmImportCertificate = mnTools.add(actImportCertificate);
-		mntmImportCertificate.setText("Import Certificate");
-		
+			
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -235,14 +209,14 @@ public class MainWindow extends JFrame {
 		contentPane.add(panel, BorderLayout.NORTH);
 		panel.setLayout(new MigLayout("", "[100px][grow,fill]", "[22px]"));
 		
-		lblCurrentKeystore = new JLabel("Current keystore:");
-		panel.add(lblCurrentKeystore, "cell 0 0,alignx trailing,aligny center");
-		
-		txtCurrentKeystore = new JTextField();
-		txtCurrentKeystore.setEditable(false);
-		panel.add(txtCurrentKeystore, "cell 1 0,growx");
-		txtCurrentKeystore.setColumns(10);
-		txtCurrentKeystore.setText("");
+			lblCurrentKeystore = new JLabel("Current keystore:");
+			panel.add(lblCurrentKeystore, "cell 0 0,alignx trailing,aligny center");
+			
+			txtCurrentKeystore = new JTextField();
+			txtCurrentKeystore.setEditable(false);
+			txtCurrentKeystore.setColumns(10);
+			txtCurrentKeystore.setText("");
+			panel.add(txtCurrentKeystore, "cell 1 0,growx");
 	}
 	
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -500,24 +474,12 @@ public class MainWindow extends JFrame {
 			cd.setVisible(true);
 			
 			// After returning from the modal dialog.
-			if (cd.getCertificate() != null) {
-				try {
-					currentKeystore.setCertificateEntry(cd.getAlias(), cd.getCertificate());
-					
-					KeyStoreUtils.insertKey(currentKeystore, cd.getAlias(), kp.getPrivate(), cd.getPassword(), cd.getCertificate());
-
-					// Clean up password.
-					Arrays.fill(cd.getPassword(), '0');
-					
-					// Update view.
-					int rows = ((DefaultTableModel)keypairTable.getModel()).getRowCount();
-					((DefaultTableModel)keypairTable.getModel()).addRow(new Object[]{rows+1, cd.getAlias()});
-					
-			    	lblCurrentKeystore.setText("*Current keystore:");
-					
-				} catch (KeyStoreException e1) {
-					e1.printStackTrace();
-				}
+			if (cd.getCertificate() != null) {					
+				// Update view.
+				int rows = ((DefaultTableModel)keypairTable.getModel()).getRowCount();
+				((DefaultTableModel)keypairTable.getModel()).addRow(new Object[]{rows+1, cd.getAlias()});
+				
+		    	lblCurrentKeystore.setText("*Current keystore:");
 			}
 			cd.dispose();
 		}

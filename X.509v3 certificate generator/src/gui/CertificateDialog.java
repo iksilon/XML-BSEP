@@ -4,12 +4,16 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.SignatureException;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.NumberFormat;
 import java.util.Arrays;
@@ -18,6 +22,7 @@ import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.security.auth.x500.X500Principal;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -31,6 +36,7 @@ import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 
@@ -38,6 +44,7 @@ import data.IssuerData;
 import data.SubjectData;
 import net.miginfocom.swing.MigLayout;
 import security.CertificateUtils;
+import security.KeyStoreUtils;
 
 public class CertificateDialog extends JDialog {
 	
@@ -64,7 +71,6 @@ public class CertificateDialog extends JDialog {
 	
 	private X509Certificate createdCertificate = null;
 	private String alias = null;
-	private char[] password;
 	
 	
 	
@@ -73,12 +79,6 @@ public class CertificateDialog extends JDialog {
 	 * @return {@link X509Certificate}
 	 */
 	public X509Certificate getCertificate() { return createdCertificate; }
-	
-	/**
-	 * Returns the defined password.
-	 * @return char[]
-	 */
-	public char[] getPassword() { return password; }
 	
 	/**
 	 * Returns created certificate's alias from this modal dialog. 
@@ -167,13 +167,12 @@ public class CertificateDialog extends JDialog {
 		comboBox = new JComboBox<String>();
 		panelIssuer.add(comboBox, "cell 1 2,growx");
 		
-			// Populate comboBox with aliases from currentKeystore.
+			// Populate comboBox with aliases from currentKeystore. Only those having both keys.
 			Enumeration<String> aliases;
 			try {
 				aliases = currentKeystore.aliases();
 				while(aliases.hasMoreElements()) {
 					String a = aliases.nextElement();
-					System.out.println(a);
 					if(currentKeystore.isKeyEntry(a)) {
 						comboBox.addItem(a);
 					}
@@ -267,14 +266,14 @@ public class CertificateDialog extends JDialog {
 				
 				// Password validation.
 				
-				if(passField.getPassword().length == 0 || passwordRetype.getPassword().length == 0) {
+				if(passField.getPassword() == null || passwordRetype.getPassword() == null) {
 					lblError.setText("Both password fields are mandatory, please try again.");
 					passField.setText("");
 					passwordRetype.setText("");
 					return;
 				}
-				else if(passField.getPassword().length != passwordRetype.getPassword().length) {	// TODO: Z:Minor WTF
-					lblError.setText("Typed passwords do not match, please try again.");
+				else if(passField.getPassword().length == 0 || passwordRetype.getPassword().length == 0) {
+					lblError.setText("Both password fields are mandatory, please try again.");
 					passField.setText("");
 					passwordRetype.setText("");
 					return;
@@ -286,7 +285,10 @@ public class CertificateDialog extends JDialog {
 					return;
 				}
 				
-				// Generate certificate.
+		// Generate certificate --------------------------------------------------------------------------------------
+				alias = txtAlias.getText();
+				
+			// Subject info.
 				
 				X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
 				builder.addRDN(BCStyle.GIVENNAME,	txtName.getText());
@@ -318,21 +320,38 @@ public class CertificateDialog extends JDialog {
 			    String se = String.valueOf(this.hashCode());
 			    se = se.concat(String.valueOf(Calendar.getInstance().getTimeInMillis()));
 			    
-			    // Issuer
+			    // This will be subject's key pair.
+			    keypair = CertificateUtils.generateKeyPair();
+			    
+			// Issuer info.
+			    
+			    // Issuer's private key. If it's self signed, then it's from the keypair we just generated.
 			    if(chckbxSelfSigned.isSelected()) {
-			    	keypair = CertificateUtils.generateKeyPair();
 			    	issuerData.setPrivateKey(keypair.getPrivate());
+			    	issuerData.setPublicKey(keypair.getPublic());
+			    	issuerData.setX500name(builder.build());
 			    }
+			    // Get private key and certificate from the keystore using the chosen alias. They are chosen to sign us.
 			    else {
-			    	// Get selected alias from comboBox and extract private key from currentKeystore by that alias.
 			    	EnterPasswordDialog epd = new EnterPasswordDialog();
 			    	epd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 					epd.setVisible(true);
 					
 					// After returning from the dialog.
 					try {
-						PrivateKey pk = (PrivateKey) currentKeystore.getKey(alias, epd.getPassword());
+						// Issuer PK
+						PrivateKey pk = (PrivateKey) currentKeystore.getKey((String)comboBox.getSelectedItem(), epd.getPassword());
+						X509Certificate issuerCert = (X509Certificate) currentKeystore.getCertificate((String)comboBox.getSelectedItem());
+						Arrays.fill(epd.getPassword(), '0');
 						issuerData.setPrivateKey(pk);
+						
+						issuerData.setPublicKey(issuerCert.getPublicKey());
+						
+						// Issuer name
+						X500Principal prnc = issuerCert.getIssuerX500Principal();
+						X500Name name = X500Name.getInstance(prnc.getEncoded());
+						issuerData.setX500name(name);
+						
 					} catch (UnrecoverableKeyException e) {
 						JOptionPane.showMessageDialog(MainWindow.getInstance(), "Wrong password, please try again.");
 						e.printStackTrace();
@@ -345,18 +364,34 @@ public class CertificateDialog extends JDialog {
 						return;
 					}
 			    }
-			    issuerData.setX500name(builder.build());
 			    
-			    // Subject
+			// Subject info. Again.
+			    
 			    subjectData.setStartDate(startDate.getTime());
 			    subjectData.setEndDate(expireDate.getTime());
 			    subjectData.setSerialNumber(se);
 			    subjectData.setX500name(builder.build());
 			    subjectData.setPublicKey(keypair.getPublic());
 			    
+			// The generating part. (Get it? De-generating, the-generating)
+			    
 			    createdCertificate = CertificateUtils.generateCertificate(issuerData, subjectData);
-			    alias = txtAlias.getText();
-			    password = passField.getPassword();
+			    try {
+					createdCertificate.verify(issuerData.getPublicKey());
+				} catch (InvalidKeyException e) {
+					e.printStackTrace();
+				} catch (CertificateException e) {
+					e.printStackTrace();
+				} catch (NoSuchAlgorithmException e) {
+					e.printStackTrace();
+				} catch (NoSuchProviderException e) {
+					e.printStackTrace();
+				} catch (SignatureException e) {
+					e.printStackTrace();
+				}
+			    
+			    KeyStoreUtils.insertCertificate(currentKeystore, alias, createdCertificate);
+				KeyStoreUtils.insertKey(currentKeystore, alias, keypair.getPrivate(), passField.getPassword(), createdCertificate);
 			    
 			    // Clean up.
 			    Arrays.fill(passField.getPassword(), '0');

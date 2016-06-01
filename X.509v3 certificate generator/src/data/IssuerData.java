@@ -1,6 +1,7 @@
 package data;
 
 import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import org.bouncycastle.asn1.x500.X500Name;
 
@@ -13,13 +14,16 @@ public class IssuerData {
 	
 	private X500Name x500name;
 	private PrivateKey privateKey;
+	private PublicKey publicKey;
 	
 	public IssuerData() {
 	}
 	
-	public IssuerData(PrivateKey privateKey, X500Name x500name) {
+	public IssuerData(PrivateKey privateKey, PublicKey publicKey, X500Name x500name) {
 		this.privateKey = privateKey;
+		this.publicKey = publicKey;
 		this.x500name = x500name;
+		
 	}
 
 	public X500Name getX500name() {
@@ -37,6 +41,9 @@ public class IssuerData {
 	public void setPrivateKey(PrivateKey privateKey) {
 		this.privateKey = privateKey;
 	}
+	
+	public PublicKey getPublicKey() { return publicKey; }
+	public void setPublicKey(PublicKey publicKey) { this.publicKey = publicKey; }
 
 	@Override
 	public String toString() {

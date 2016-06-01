@@ -12,6 +12,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
 /**
@@ -117,6 +118,16 @@ public class KeyStoreUtils {
 	public static void insertKey(KeyStore keystore, String alias, PrivateKey privateKey, char[] password, Certificate certificate) {
 		try {
 			keystore.setKeyEntry(alias, privateKey, password, new Certificate[] {certificate});
+			System.out.println("inserted key: " + keystore.isKeyEntry(alias));
+		} catch (KeyStoreException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void insertCertificate(KeyStore keystore, String alias, X509Certificate certificate) {
+		try {
+			keystore.setCertificateEntry(alias, certificate);
+			System.out.println("inserted certificate: " + keystore.isCertificateEntry(alias));
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
 		}
