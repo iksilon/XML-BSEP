@@ -16,9 +16,11 @@ public class User extends Model {
 	public String username;
 
 	@Column(nullable = false)
+	@JsonIgnore
 	public String password;
 
 	@Column(name = "PASSWORD_SALT")
+	@JsonIgnore
 	public String salt;
 
 	@Column(length = 150)
@@ -28,7 +30,7 @@ public class User extends Model {
 	public String lastName;
 
 	@ManyToOne(fetch=FetchType.EAGER)
-	@JsonIgnore
+//	@JsonIgnore
 	public Role role;
 
 	public User() {

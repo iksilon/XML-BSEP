@@ -1,5 +1,6 @@
 package controllers;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,17 @@ import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
 
 public class Utils extends Controller {
+	
+	public static String responseTimestamp(String jsonResponse) {
+		StringBuilder sb = new StringBuilder(jsonResponse);
+		long time = System.currentTimeMillis();
+		sb.append(", \"timestamp\":");
+		sb.append(time);
+		sb.append("}");
+
+		System.out.println(sb);
+		return sb.toString();
+	}
 	
 	// prosledi role 0 za predsednika, 1 za odbornika itd
 	public static void usersByRole(long role) {

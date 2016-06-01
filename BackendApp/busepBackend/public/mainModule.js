@@ -1,7 +1,18 @@
 (function() {
 	var app = angular.module('mainApp');
 
-	app.config(function($routeProvider){ //, $locationProvider
+	app.factory('timestampInterceptor', function($q) {  
+	    var timestampInterceptor = {
+	    		response: function(response) {
+	    			response.config.responseTimestamp = new Date().getTime();
+	    			return response;
+	    		}
+	    };
+
+	    return timestampInterceptor;
+	})
+	.config(function($routeProvider, $httpProvider){ //, $locationProvider
+//		$httpProvider.interceptors.push('timestampInterceptor');
 		$routeProvider
 		.when("/", {
 			templateUrl: "angular/routes/main.html",
@@ -70,37 +81,37 @@
 			});
 		};
 	})
-	.directive("passwordVerify", function() {
-		return {
-			require: "ngModel",
-			scope: {
-				passwordVerify: '='
-			},
-			link: function(scope, element, attrs, ctrl) {
-				scope.$watch(function() {
-					var combined;
-
-					if (scope.passwordVerify || ctrl.$viewValue) {
-						combined = scope.passwordVerify + '_' + ctrl.$viewValue; 
-					}
-					return combined;
-				}, function(value) {
-					if (value) {
-						ctrl.$parsers.unshift(function(viewValue) {
-							var origin = scope.passwordVerify;
-							if (origin !== viewValue) {
-								ctrl.$setValidity("passwordVerify", false);
-								return undefined;
-							} else {
-								ctrl.$setValidity("passwordVerify", true);
-								return viewValue;
-							}
-						});
-					}
-				});
-			}
-		};
-	})
+//	.directive("passwordVerify", function() {
+//		return {
+//			require: "ngModel",
+//			scope: {
+//				passwordVerify: '='
+//			},
+//			link: function(scope, element, attrs, ctrl) {
+//				scope.$watch(function() {
+//					var combined;
+//
+//					if (scope.passwordVerify || ctrl.$viewValue) {
+//						combined = scope.passwordVerify + '_' + ctrl.$viewValue; 
+//					}
+//					return combined;
+//				}, function(value) {
+//					if (value) {
+//						ctrl.$parsers.unshift(function(viewValue) {
+//							var origin = scope.passwordVerify;
+//							if (origin !== viewValue) {
+//								ctrl.$setValidity("passwordVerify", false);
+//								return undefined;
+//							} else {
+//								ctrl.$setValidity("passwordVerify", true);
+//								return viewValue;
+//							}
+//						});
+//					}
+//				});
+//			}
+//		};
+//	})
 	.directive("compareTo", function() {
 	    return {
 	    	require: "ngModel",
@@ -120,12 +131,35 @@
 	    };
 	})
 	.run(function($rootScope, $cookies, $http, $window) {
+		$rootScope.userMenuChecks = {
+				isPredsednik: function(userRole) {
+					if(userRole != 1) {
+						return false;
+					}
+					return true;
+				},
+				isOdbornik: function(userRole) {
+					if(userRole != 2) {
+						return false;
+					}
+					
+					return true;
+				},
+				isAdmin: function(userRole) {
+					if(userRole != 3) {
+						return false;
+					}
+					return true;
+				}};
+		
+		$rootScope.user = null;
+		
 		$rootScope.logout = function() {
 			$http.get('/logout/' + $rootScope.user.username)
 				.then(
 						function(response) {
 							$rootScope.user = null;
-							$window.location.href = '#/';
+							$window.location.href = '#/login';
 						},
 						function(reason) {
 							console.error(reason.data);
