@@ -262,8 +262,6 @@ public class CertificateDialog extends JDialog {
 					return;
 				}
 				
-				// TODO: Check if parent's certificate expires before entered end date.
-				
 				// Password validation.
 				
 				if(passField.getPassword() == null || passwordRetype.getPassword() == null) {
@@ -351,6 +349,24 @@ public class CertificateDialog extends JDialog {
 						X500Principal prnc = issuerCert.getIssuerX500Principal();
 						X500Name name = X500Name.getInstance(prnc.getEncoded());
 						issuerData.setX500name(name);
+						
+						// Check if parent's certificate expires before entered end date.
+						Calendar icStart = Calendar.getInstance();
+						icStart.setTime(issuerCert.getNotBefore());
+						Calendar icEnd = Calendar.getInstance();
+						icEnd.setTime(issuerCert.getNotAfter());
+						
+						// TODO: Z:Minor: Show users when it's the end time.
+						if(startDate.compareTo(icStart) < 0 ) {
+							JOptionPane.showMessageDialog(MainWindow.getInstance(), 
+									"Invalid start date: certificate can only be valid since parent certificate start date.");
+							return;
+						}
+						else if(expireDate.compareTo(icEnd) >= 0) {
+							JOptionPane.showMessageDialog(MainWindow.getInstance(), 
+									"Invalid end date: certificate can only be valid until parent certificate end date.");
+							return;
+						}
 						
 					} catch (UnrecoverableKeyException e) {
 						JOptionPane.showMessageDialog(MainWindow.getInstance(), "Wrong password, please try again.");
