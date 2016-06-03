@@ -6,6 +6,9 @@ import sun.misc.BASE64Encoder;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+
+import com.sun.org.apache.xml.internal.security.utils.Base64;
+
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -24,8 +27,6 @@ import java.util.Arrays;
 public class HashAndSaltUtil {
 	public HashAndSaltUtil(){
 		//nema tu šta da se konstruiše
-		
-		// pa onda ti ne treba konstruktor, jer je ovo podrazumevani xD
 	}
 
 	public byte[] hashPassword(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -59,12 +60,12 @@ public class HashAndSaltUtil {
 		return decoder.decodeBuffer(base64Data);
 	}
 
-	public boolean authentificate(String inputPasswd, User user)
+	public boolean authenticate(String inputPasswd, User user)
 			throws IOException, NoSuchAlgorithmException, InvalidKeySpecException{   //nema potrebe da proveravamo username, jer smo ga vec nasli
 
-		byte[] hashAttemptedPassword = hashPassword(inputPasswd, user.salt.getBytes());
+		byte[] hashedAttemptedPassword = hashPassword(inputPasswd, base64Decode(user.salt));
+		return Arrays.equals(base64Decode(user.password), hashedAttemptedPassword);
 
-		return Arrays.equals(user.password.getBytes(), hashAttemptedPassword);
 	}
 
 }

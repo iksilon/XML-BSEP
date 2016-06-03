@@ -1,11 +1,8 @@
 package controllers;
 
-import java.io.IOException;
-import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
-import java.util.List;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import controllers.hashAndSaltUtils.HashAndSaltUtil;
 import models.User;
 import play.cache.Cache;
 import play.mvc.Controller;
@@ -13,18 +10,10 @@ import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
-import play.mvc.results.Unauthorized;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.security.InvalidKeyException;
+import java.security.spec.InvalidKeySpecException;
 
 public class Login extends Controller {
 	
@@ -34,8 +23,19 @@ public class Login extends Controller {
 		if (loggedUser == null)
 			return new BadRequest("Invalid login");
 
-		if (!loggedUser.password.equals(pwd))
-			return new BadRequest("Invalid login");
+		HashAndSaltUtil hasu = new HashAndSaltUtil();
+
+		try {
+			if (!hasu.authenticate(pwd, loggedUser))
+				return new BadRequest("Invalid login");
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			e.printStackTrace();
+		}
 
 		ObjectMapper om = new ObjectMapper();		
 		try {
