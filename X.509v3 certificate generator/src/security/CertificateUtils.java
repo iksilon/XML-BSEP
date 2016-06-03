@@ -224,7 +224,6 @@ public class CertificateUtils {
 													subjectData.getX500name(),
 													subjectData.getPublicKey());
 			X509CertificateHolder certificateHolder = certificateBuilder.build(contentSigner);
-			
 			// Convert the certificate from the holder object into an actual certificate.
 			JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
 			certificateConverter = certificateConverter.setProvider("BC");

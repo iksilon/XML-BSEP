@@ -11,10 +11,20 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CRLException;
 import java.security.cert.Certificate;
+import java.security.cert.X509CRL;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Enumeration;
 
+import javax.security.auth.x500.X500Principal;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JDialog;
@@ -35,6 +45,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.cert.X509CRLHolder;
+import org.bouncycastle.cert.X509v2CRLBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 import net.miginfocom.swing.MigLayout;
 import security.CertificateUtils;
@@ -70,6 +88,7 @@ public class MainWindow extends JFrame {
 	private final Action actExportCertificate = new ActionExportCertificate();
 	private final Action actExportAll = new ActionExportAll();
 	private final Action actImportCertificate = new ActionImportCertificate();
+	private final Action action = new ActionCRL();
 	
 	// Main ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -144,6 +163,9 @@ public class MainWindow extends JFrame {
 			JMenu mntmNew = new JMenu("New");										mnFile.add(mntmNew);
 			JMenuItem mntmKeystore = mntmNew.add(actKeystore);						mntmKeystore.setText("Keystore");
 			JMenuItem mntmKeypair = mntmNew.add(actKeypair);						mntmKeypair.setText("Keypair");
+						
+						JMenuItem mntmCRL = mntmNew.add(action);
+						mntmCRL.setText("CRL");
 			JMenuItem mntmOpen = mnFile.add(actOpen);								mntmOpen.setText("Open");
 			
 			JSeparator sepFile1 = new JSeparator();									mnFile.add(sepFile1);
@@ -685,6 +707,82 @@ public class MainWindow extends JFrame {
 		    	JOptionPane.showMessageDialog(MainWindow.getInstance(),
 		    			"Selected file type is not supported.");
 		    }
+		}
+	}
+	
+	/**
+	 * Creates a dialog for new Certificate revocation list (CRL)
+	 *
+	 */
+	private class ActionCRL extends AbstractAction {
+		private static final long serialVersionUID = -4655131886494842553L;
+		public ActionCRL() {
+			putValue(NAME, "SwingAction");
+			putValue(SHORT_DESCRIPTION, "Some short description");
+		}
+		public void actionPerformed(ActionEvent e) {
+			// Choose the CA to sign the CRL.
+			ArrayList<String> options = new ArrayList<>();
+			
+			Enumeration<String> aliases;
+			try {
+				aliases = currentKeystore.aliases();
+				while(aliases.hasMoreElements()) {
+					String a = aliases.nextElement();
+					if(currentKeystore.isKeyEntry(a)) {
+						options.add(a);
+					}
+				}
+				
+				String[] poss = new String[options.size()];
+				poss = (String[]) options.toArray();
+				String alias = (String)JOptionPane.showInputDialog(
+	                    MainWindow.getInstance(),
+	                    "Select the CA:",
+	                    "CA",
+	                    JOptionPane.PLAIN_MESSAGE,
+	                    null,
+	                    options.toArray(poss),
+	                    poss[0]);
+				
+				// Extract the certificate and CA data from the keystore.
+				EnterPasswordDialog epd = new EnterPasswordDialog();
+				epd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+				epd.setVisible(true);
+				PrivateKey pk = (PrivateKey) currentKeystore.getKey(alias, epd.getPassword());
+				X509Certificate cert = (X509Certificate) currentKeystore.getCertificate(alias);
+				
+				// Issuer name
+				X500Principal prnc = cert.getIssuerX500Principal();
+				X500Name CA = X500Name.getInstance(prnc.getEncoded());
+				
+				// Valid from
+				Date today = Calendar.getInstance().getTime();
+				
+				// Signed by our CA
+				JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
+				builder.setProvider("BC");
+				ContentSigner contentSigner = builder.build(pk);
+				
+				// Create the CRL
+				X509v2CRLBuilder crlBuilder = new X509v2CRLBuilder(CA, today);
+				X509CRLHolder holder = crlBuilder.build(contentSigner);
+				JcaX509CRLConverter cnv = new JcaX509CRLConverter();
+				cnv.setProvider("BC");
+				X509CRL crl = cnv.getCRL(holder);
+				
+			} catch (UnrecoverableKeyException e1) {
+				e1.printStackTrace();
+			} catch (NoSuchAlgorithmException e1) {
+				e1.printStackTrace();
+			} catch (KeyStoreException e2) {
+				e2.printStackTrace();
+			} catch (OperatorCreationException e1) {
+				e1.printStackTrace();
+			} catch (CRLException e1) {
+				e1.printStackTrace();
+			}
+			
 		}
 	}
 	
