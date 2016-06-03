@@ -46,6 +46,13 @@ public class CertificateUtils {
 		Security.addProvider(new BouncyCastleProvider());
 	}
 	
+	/**
+	 * Reads a {@link Certificate} from a certificate file. Supported file extensions are .cer, .crt, .pem and .der
+	 * 
+	 * @param path - Path to the certificate file.
+	 * @param ex - Extension of the certificate file.
+	 * @return {@link Certificate}
+	 */
 	public static Certificate openFile(String path, String ex) {
 		Certificate cert = null;
 		
@@ -240,6 +247,10 @@ public class CertificateUtils {
 			e.printStackTrace();
 			return null;
 		}
+		
+	}
+	
+	public static void revokeCertificate(X509Certificate cert) {
 		
 	}
 	

@@ -107,13 +107,13 @@ public class KeyStoreUtils {
 	}
 	
 	/**
-	 * Method for inserting a certificate into the keystore.
+	 * Method for inserting a key into the keystore. 
 	 * 
-	 * @param keystore
-	 * @param alias
-	 * @param privateKey
-	 * @param password
-	 * @param certificate
+	 * @param keystore - The keystore into which the key will be inserted.
+	 * @param alias - Alias of the key by which the key will be accessible.
+	 * @param privateKey - The key to be inserted.
+	 * @param password - Password used to secure the private key.
+	 * @param certificate - Certificate for the corresponding public key.
 	 */
 	public static void insertKey(KeyStore keystore, String alias, PrivateKey privateKey, char[] password, Certificate certificate) {
 		try {
@@ -123,7 +123,14 @@ public class KeyStoreUtils {
 			e.printStackTrace();
 		}
 	}
-	
+
+	/**
+	 * Method for inserting a certificate into the keystore.
+	 * 
+	 * @param keystore - The keystore into which the certificate will be inserted.
+	 * @param alias - Alias of the key by which the certificate will be accessible.
+	 * @param certificate - The certificate to be inserted.
+	 */
 	public static void insertCertificate(KeyStore keystore, String alias, X509Certificate certificate) {
 		try {
 			keystore.setCertificateEntry(alias, certificate);
@@ -132,4 +139,5 @@ public class KeyStoreUtils {
 			e.printStackTrace();
 		}
 	}
+	
 }
