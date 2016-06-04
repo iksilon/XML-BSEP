@@ -1,10 +1,32 @@
 (function() {
 	var app = angular.module('mainApp');
 
-	app.factory('timestampInterceptor', function($q) {  
+	app.factory('timestampInterceptor', function($rootScope, $http) {  
 	    var timestampInterceptor = {
 	    		response: function(response) {
-	    			response.config.responseTimestamp = new Date().getTime();
+	    			// server validirao da je sve ok
+	    			if(response.data.ok != undefined && response.data.ok != null) {
+	    				return response;
+	    			}
+	    			
+	    			// first time receiving server response for any action
+	    			if($rootScope.lastMsgNum >= response.data.msgNum || $rootScope.lastTimestamp >= response.data.timestamp) {
+	    				response.data = null;
+	    				response.config.invalid = true;
+	    				return response;
+	    			}
+	    			
+	    			$rootScope.lastMsgNum = response.data.msgNum;
+	    			$rootScope.lastTimestamp = response.data.timestamp;
+//	    			$http.post('/respawnschck', {msgNum:$rootScope.lastMsgNum, timestamp:new Date().getTime()})
+//	    				.then(
+//	    						function(resp) {
+//	    							return response;
+//	    						},
+//	    						function(reason) {
+//	    							return response;
+//	    						});
+	    			
 	    			return response;
 	    		}
 	    };
@@ -12,7 +34,7 @@
 	    return timestampInterceptor;
 	})
 	.config(function($routeProvider, $httpProvider){ //, $locationProvider
-//		$httpProvider.interceptors.push('timestampInterceptor');
+		$httpProvider.interceptors.push('timestampInterceptor');
 		$routeProvider
 		.when("/", {
 			templateUrl: "angular/routes/main.html",
@@ -81,37 +103,6 @@
 			});
 		};
 	})
-//	.directive("passwordVerify", function() {
-//		return {
-//			require: "ngModel",
-//			scope: {
-//				passwordVerify: '='
-//			},
-//			link: function(scope, element, attrs, ctrl) {
-//				scope.$watch(function() {
-//					var combined;
-//
-//					if (scope.passwordVerify || ctrl.$viewValue) {
-//						combined = scope.passwordVerify + '_' + ctrl.$viewValue; 
-//					}
-//					return combined;
-//				}, function(value) {
-//					if (value) {
-//						ctrl.$parsers.unshift(function(viewValue) {
-//							var origin = scope.passwordVerify;
-//							if (origin !== viewValue) {
-//								ctrl.$setValidity("passwordVerify", false);
-//								return undefined;
-//							} else {
-//								ctrl.$setValidity("passwordVerify", true);
-//								return viewValue;
-//							}
-//						});
-//					}
-//				});
-//			}
-//		};
-//	})
 	.directive("compareTo", function() {
 	    return {
 	    	require: "ngModel",
@@ -131,6 +122,9 @@
 	    };
 	})
 	.run(function($rootScope, $cookies, $http, $window) {
+		$rootScope.lastMsgNum = 0;
+		$rootScope.lastTimestamp = null;
+		
 		$rootScope.userMenuChecks = {
 				isPredsednik: function(userRole) {
 					if(userRole != 1) {

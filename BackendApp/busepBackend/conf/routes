@@ -7,8 +7,7 @@
 #GET     /home									Application.index
 
 #GET		/search									Search.show
-GET		/test/{testVal}/{qq}					Utils.TEST
-GET		/test/loggedUserTest					Utils.loggedUserTest
+GET		/respawnschck							Utils.csrfCheck
 
 #GET		/login									Login.show
 GET		/login/{uname}/{pwd}					Login.logIn

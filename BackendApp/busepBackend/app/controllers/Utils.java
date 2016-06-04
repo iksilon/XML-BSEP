@@ -17,11 +17,16 @@ import play.mvc.results.Result;
 
 public class Utils extends Controller {
 	
+	private static int msgNum = 0;
+	
 	public static String responseTimestamp(String jsonResponse) {
+		jsonResponse = jsonResponse.substring(0, jsonResponse.length() - 1);
 		StringBuilder sb = new StringBuilder(jsonResponse);
 		long time = System.currentTimeMillis();
 		sb.append(", \"timestamp\":");
 		sb.append(time);
+		sb.append(", \"msgNum\":");
+		sb.append(msgNum++);
 		sb.append("}");
 
 		System.out.println(sb);
