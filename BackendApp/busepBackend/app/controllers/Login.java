@@ -45,7 +45,7 @@ public class Login extends Controller {
 //			Cache.set("loggedUserTest", loggedUser);
 			System.out.println(uname + ": Work work.");
 
-			System.out.println(Cache.get(loggedUser.username + " vClanId"));
+			System.out.println(Cache.get(loggedUser.username + "ClanId"));
 			System.out.println(Cache.get(loggedUser.username + "DeoId"));
 			
 //			String userJsonString = om.writeValueAsString(loggedUser);
