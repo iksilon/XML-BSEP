@@ -40,11 +40,11 @@ import gui.MainWindow;
  *
  */
 public class CertificateUtils {
-	
+	/*
 	// Registracija providera
 	static {
 		Security.addProvider(new BouncyCastleProvider());
-	}
+	}*/
 	
 	/**
 	 * Reads a {@link Certificate} from a certificate file. Supported file extensions are .cer, .crt, .pem and .der

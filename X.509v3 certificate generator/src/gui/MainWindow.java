@@ -13,6 +13,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CRLException;
 import java.security.cert.Certificate;
@@ -50,11 +51,13 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509v2CRLBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 import net.miginfocom.swing.MigLayout;
+import security.CRLUtils;
 import security.CertificateUtils;
 import security.KeyStoreUtils;
 
@@ -67,6 +70,10 @@ import security.KeyStoreUtils;
  * 
  */
 public class MainWindow extends JFrame {
+	// Registracija providera
+	static {
+		Security.addProvider(new BouncyCastleProvider());
+	}
 
 	private static final long serialVersionUID = 1198734643308937757L;
 	
@@ -88,7 +95,7 @@ public class MainWindow extends JFrame {
 	private final Action actExportCertificate = new ActionExportCertificate();
 	private final Action actExportAll = new ActionExportAll();
 	private final Action actImportCertificate = new ActionImportCertificate();
-	private final Action action = new ActionCRL();
+	private final Action actCRL = new ActionCRL();
 	
 	// Main ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -164,7 +171,7 @@ public class MainWindow extends JFrame {
 			JMenuItem mntmKeystore = mntmNew.add(actKeystore);						mntmKeystore.setText("Keystore");
 			JMenuItem mntmKeypair = mntmNew.add(actKeypair);						mntmKeypair.setText("Keypair");
 						
-						JMenuItem mntmCRL = mntmNew.add(action);
+						JMenuItem mntmCRL = mntmNew.add(actCRL);
 						mntmCRL.setText("CRL");
 			JMenuItem mntmOpen = mnFile.add(actOpen);								mntmOpen.setText("Open");
 			
@@ -735,7 +742,9 @@ public class MainWindow extends JFrame {
 				}
 				
 				String[] poss = new String[options.size()];
-				poss = (String[]) options.toArray();
+				for(int i = 0; i < options.size(); i++) {
+					poss[i] = options.get(i);
+				}
 				String alias = (String)JOptionPane.showInputDialog(
 	                    MainWindow.getInstance(),
 	                    "Select the CA:",
@@ -770,6 +779,13 @@ public class MainWindow extends JFrame {
 				JcaX509CRLConverter cnv = new JcaX509CRLConverter();
 				cnv.setProvider("BC");
 				X509CRL crl = cnv.getCRL(holder);
+				
+				// Set the path
+				String path = System.getProperty("user.dir");
+				path = Paths.get(path, "crls").toString();
+				path = Paths.get(path, alias+".crl").toString();
+				
+				CRLUtils.saveCRLfile(path, crl);
 				
 			} catch (UnrecoverableKeyException e1) {
 				e1.printStackTrace();
