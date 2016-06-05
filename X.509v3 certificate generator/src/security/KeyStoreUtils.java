@@ -13,7 +13,13 @@ import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
+
+import javax.swing.JOptionPane;
+
+import gui.MainWindow;
 
 /**
  * Utility class for {@link KeyStore} managing.
@@ -138,6 +144,41 @@ public class KeyStoreUtils {
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static String selectCA(KeyStore ks) {
+		ArrayList<String> options = new ArrayList<>();
+		
+		Enumeration<String> aliases;
+		try {
+			aliases = ks.aliases();
+			
+			while(aliases.hasMoreElements()) {
+				String a = aliases.nextElement();
+				if(ks.isKeyEntry(a)) {
+					options.add(a);
+				}
+			}
+			
+			String[] poss = new String[options.size()];
+			for(int i = 0; i < options.size(); i++) {
+				poss[i] = options.get(i);
+			}
+			String alias = (String)JOptionPane.showInputDialog(
+	                MainWindow.getInstance(),
+	                "Select the CA:",
+	                "CA",
+	                JOptionPane.PLAIN_MESSAGE,
+	                null,
+	                options.toArray(poss),
+	                poss[0]);
+			
+			return alias;
+		} catch (KeyStoreException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
 	}
 	
 }

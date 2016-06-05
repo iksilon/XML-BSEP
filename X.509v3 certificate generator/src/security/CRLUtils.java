@@ -1,11 +1,17 @@
 package security;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.cert.CRLException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509CRL;
+import java.security.cert.X509Certificate;
+
+import org.bouncycastle.cert.X509CRLHolder;
 
 public class CRLUtils {
 	
@@ -23,6 +29,40 @@ public class CRLUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (CRLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public static X509CRL openFromFile(String path) {
+		try {
+			FileInputStream fis = new FileInputStream(path);			
+			CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			X509CRL crl = (X509CRL) cf.generateCRL(fis);
+			System.out.println(crl);
+			
+			return crl;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		} catch (CertificateException e) {
+			e.printStackTrace();
+		} catch (CRLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static void revokeCertificate(X509CRL crl, X509Certificate cert) {
+		
+		try {
+			X509CRLHolder holder = new X509CRLHolder(crl.getEncoded());
+			
+			
+		} catch (CRLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		

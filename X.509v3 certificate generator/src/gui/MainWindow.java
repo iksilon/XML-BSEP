@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -19,7 +20,6 @@ import java.security.cert.CRLException;
 import java.security.cert.Certificate;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -48,6 +48,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x509.CRLReason;
 import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509v2CRLBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
@@ -96,6 +97,7 @@ public class MainWindow extends JFrame {
 	private final Action actExportAll = new ActionExportAll();
 	private final Action actImportCertificate = new ActionImportCertificate();
 	private final Action actCRL = new ActionCRL();
+	private final Action actRevoke = new ActionRevokeCertificate();
 	
 	// Main ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -191,6 +193,9 @@ public class MainWindow extends JFrame {
 			JSeparator separator = new JSeparator();								mnTools.add(separator);
 		
 			JMenuItem mntmImportCertificate = mnTools.add(actImportCertificate);	mntmImportCertificate.setText("Import Certificate");
+	
+	JMenuItem mntmRevokeCertificate = mnTools.add(actRevoke);
+	mntmRevokeCertificate.setText("Revoke Certificate");
 		
 		// Components ------------------------------------------------------------------------
 			
@@ -719,7 +724,6 @@ public class MainWindow extends JFrame {
 	
 	/**
 	 * Creates a dialog for new Certificate revocation list (CRL)
-	 *
 	 */
 	private class ActionCRL extends AbstractAction {
 		private static final long serialVersionUID = -4655131886494842553L;
@@ -728,31 +732,13 @@ public class MainWindow extends JFrame {
 			putValue(SHORT_DESCRIPTION, "Some short description");
 		}
 		public void actionPerformed(ActionEvent e) {
-			// Choose the CA to sign the CRL.
-			ArrayList<String> options = new ArrayList<>();
+			// Select CA which will sign.
+			String alias = KeyStoreUtils.selectCA(currentKeystore);
 			
-			Enumeration<String> aliases;
 			try {
-				aliases = currentKeystore.aliases();
-				while(aliases.hasMoreElements()) {
-					String a = aliases.nextElement();
-					if(currentKeystore.isKeyEntry(a)) {
-						options.add(a);
-					}
-				}
 				
-				String[] poss = new String[options.size()];
-				for(int i = 0; i < options.size(); i++) {
-					poss[i] = options.get(i);
-				}
-				String alias = (String)JOptionPane.showInputDialog(
-	                    MainWindow.getInstance(),
-	                    "Select the CA:",
-	                    "CA",
-	                    JOptionPane.PLAIN_MESSAGE,
-	                    null,
-	                    options.toArray(poss),
-	                    poss[0]);
+				// Valid from
+				Date today = Calendar.getInstance().getTime();
 				
 				// Extract the certificate and CA data from the keystore.
 				EnterPasswordDialog epd = new EnterPasswordDialog();
@@ -764,10 +750,7 @@ public class MainWindow extends JFrame {
 				// Issuer name
 				X500Principal prnc = cert.getIssuerX500Principal();
 				X500Name CA = X500Name.getInstance(prnc.getEncoded());
-				
-				// Valid from
-				Date today = Calendar.getInstance().getTime();
-				
+
 				// Signed by our CA
 				JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
 				builder.setProvider("BC");
@@ -789,10 +772,10 @@ public class MainWindow extends JFrame {
 				
 			} catch (UnrecoverableKeyException e1) {
 				e1.printStackTrace();
+			} catch (KeyStoreException e1) {
+				e1.printStackTrace();
 			} catch (NoSuchAlgorithmException e1) {
 				e1.printStackTrace();
-			} catch (KeyStoreException e2) {
-				e2.printStackTrace();
 			} catch (OperatorCreationException e1) {
 				e1.printStackTrace();
 			} catch (CRLException e1) {
@@ -801,6 +784,108 @@ public class MainWindow extends JFrame {
 			
 		}
 	}
+	
+	/**
+	 * Revokes the certificate selected in the table.
+	 */
+	private class ActionRevokeCertificate extends AbstractAction {
+		private static final long serialVersionUID = -1212925295287886365L;
+		public ActionRevokeCertificate() {
+			putValue(NAME, "RevokeCertificate");
+			putValue(SHORT_DESCRIPTION, "Revoke selected certificate");
+		}
+		public void actionPerformed(ActionEvent e) {
+			if(keypairTable.getSelectedRow() == -1) {
+				JOptionPane.showMessageDialog(MainWindow.getInstance(), "No certificate is selected. Please select a certificate and try again.");
+				return;
+			}
+			
+			try {
+				// Get revoked certificate
+				String alias = (String) keypairTable.getValueAt(keypairTable.getSelectedRow(), 1);
+				X509Certificate cert = (X509Certificate) currentKeystore.getCertificate(alias);
+				
+				// Revoke to which CRL?
+				String workingDir = System.getProperty("user.dir");
+				workingDir = Paths.get(workingDir, "crls").toString();
+				JFileChooser chooser = new JFileChooser(workingDir);
+			    FileNameExtensionFilter filterDef = new FileNameExtensionFilter("Certificate Revokation List files", "crl");
+			    chooser.setFileFilter(filterDef);
+			    
+			    // User gave up.
+			    int returnVal = chooser.showOpenDialog(MainWindow.getInstance());
+			    if (returnVal == JFileChooser.CANCEL_OPTION) {
+			    	return;
+			    }
+			    
+			    // User approved.
+			    if (returnVal == JFileChooser.APPROVE_OPTION) {
+			    	String path = chooser.getSelectedFile().getAbsolutePath();
+			    	
+			    	if(!path.endsWith(".crl")) {
+			    		JOptionPane.showMessageDialog(MainWindow.getInstance(), "Selected file is not a Certificate Revocation List (.crl) file.");
+			    		return;
+			    	}
+			    	
+			    	// Old CRL to be updated
+			    	X509CRL chosenCRL = CRLUtils.openFromFile(path);
+			    	
+			    	// Select CA which will sign.
+					String CAalias = KeyStoreUtils.selectCA(currentKeystore);
+					
+					// Extract the certificate and CA data from the keystore.
+					EnterPasswordDialog epd = new EnterPasswordDialog();
+					epd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+					epd.setVisible(true);
+					PrivateKey pk = (PrivateKey) currentKeystore.getKey(CAalias, epd.getPassword());
+					X509Certificate CAcert = (X509Certificate) currentKeystore.getCertificate(CAalias);
+					
+					// Is it the right CA?
+					if(!CAcert.getSubjectX500Principal().equals(chosenCRL.getIssuerX500Principal())) {
+						JOptionPane.showMessageDialog(MainWindow.getInstance(), "The issuer you selected is not the original issuer. Please try again.");
+			    		return;
+					}
+					
+					// Issuer name
+					X500Principal prnc = chosenCRL.getIssuerX500Principal();
+					X500Name CA = X500Name.getInstance(prnc.getEncoded());
+					
+					// Signed by our CA
+					JcaContentSignerBuilder builder = new JcaContentSignerBuilder("SHA256WithRSAEncryption");
+					builder.setProvider("BC");
+					ContentSigner contentSigner = builder.build(pk);
+					
+					// Valid from
+					Date today = Calendar.getInstance().getTime();
+					
+					// Create the CRL which will replace old
+					X509v2CRLBuilder crlBuilder = new X509v2CRLBuilder(CA, today);
+			    	crlBuilder.addCRL(new X509CRLHolder(chosenCRL.getEncoded()));
+			    	crlBuilder.addCRLEntry(cert.getSerialNumber(), today, CRLReason.unspecified);
+			    	X509CRLHolder holder = crlBuilder.build(contentSigner);
+					JcaX509CRLConverter cnv = new JcaX509CRLConverter();
+					cnv.setProvider("BC");
+					X509CRL crl = cnv.getCRL(holder);					
+					
+					CRLUtils.saveCRLfile(chooser.getSelectedFile().getAbsolutePath(), crl);
+			    }
+				 
+			} catch (KeyStoreException e1) {
+				e1.printStackTrace();
+			} catch (UnrecoverableKeyException e1) {
+				e1.printStackTrace();
+			} catch (NoSuchAlgorithmException e1) {
+				e1.printStackTrace();
+			} catch (OperatorCreationException e1) {
+				e1.printStackTrace();
+			} catch (CRLException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+	
 	
 // Window stuff --------------------------------------------------------------------------------------------------------------------------------------------------------------
 	
@@ -817,4 +902,5 @@ public class MainWindow extends JFrame {
 			MainWindow.getInstance().dispatchEvent(new WindowEvent(MainWindow.getInstance(), WindowEvent.WINDOW_CLOSING));
 		}
 	}
+	
 }
