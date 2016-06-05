@@ -247,8 +247,4 @@ public class CertificateUtils {
 		
 	}
 	
-	public static void revokeCertificate(X509Certificate cert) {
-		
-	}
-	
 }

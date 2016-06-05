@@ -346,7 +346,7 @@ public class CertificateDialog extends JDialog {
 						issuerData.setPublicKey(issuerCert.getPublicKey());
 						
 						// Issuer name
-						X500Principal prnc = issuerCert.getIssuerX500Principal();
+						X500Principal prnc = issuerCert.getSubjectX500Principal();
 						X500Name name = X500Name.getInstance(prnc.getEncoded());
 						issuerData.setX500name(name);
 						

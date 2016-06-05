@@ -9,9 +9,6 @@ import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509CRL;
-import java.security.cert.X509Certificate;
-
-import org.bouncycastle.cert.X509CRLHolder;
 
 public class CRLUtils {
 	
@@ -52,20 +49,6 @@ public class CRLUtils {
 		}
 		
 		return null;
-	}
-	
-	public static void revokeCertificate(X509CRL crl, X509Certificate cert) {
-		
-		try {
-			X509CRLHolder holder = new X509CRLHolder(crl.getEncoded());
-			
-			
-		} catch (CRLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
 	}
 
 }
