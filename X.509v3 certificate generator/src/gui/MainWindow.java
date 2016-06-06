@@ -30,7 +30,7 @@ import javax.swing.border.EmptyBorder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import actions.ActionExit;
-import actions.certificate.ActionCRL;
+import actions.certificate.ActionCreateCRL;
 import actions.certificate.ActionExportAll;
 import actions.certificate.ActionExportCertificate;
 import actions.certificate.ActionImportCertificate;
@@ -76,7 +76,7 @@ public class MainWindow extends JFrame {
 	private final Action actExportCertificate = new ActionExportCertificate();
 	private final Action actExportAll = new ActionExportAll();
 	private final Action actImportCertificate = new ActionImportCertificate();
-	private final Action actCRL = new ActionCRL();
+	private final Action actCRL = new ActionCreateCRL();
 	private final Action actRevoke = new ActionRevokeCertificate();
 	
 	

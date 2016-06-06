@@ -33,9 +33,9 @@ import security.KeyStoreUtils;
 /**
  * Creates a dialog for new Certificate revocation list (CRL)
  */
-public class ActionCRL extends AbstractAction {
+public class ActionCreateCRL extends AbstractAction {
 	private static final long serialVersionUID = -4655131886494842553L;
-	public ActionCRL() {
+	public ActionCreateCRL() {
 		putValue(NAME, "SwingAction");
 		putValue(SHORT_DESCRIPTION, "Some short description");
 	}

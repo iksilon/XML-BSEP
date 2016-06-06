@@ -1,9 +1,11 @@
 package gui;
 
+import java.awt.Checkbox;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyStore;
@@ -27,6 +29,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -35,6 +38,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
@@ -68,9 +72,11 @@ public class CertificateDialog extends JDialog {
 	private IssuerData issuerData;
 	private SubjectData subjectData;
 	private KeyPair keypair;
+	private KeyStore issuerKeystore = null;
 	
 	private X509Certificate createdCertificate = null;
 	private String alias = null;
+	private JTextField txtIssuerKeystore;
 	
 	
 	
@@ -87,6 +93,26 @@ public class CertificateDialog extends JDialog {
 	public String getAlias() { return alias; }
 	
 	public boolean isSelfSigned() { return chckbxSelfSigned.isSelected(); }
+	
+	/**
+	 * Fills the issuer selection {@link Checkbox} with keys from given {@link KeyStore}.
+	 * @param from - {@link KeyStore} from which issuer will be selected 
+	 */
+	private void populateCheckBox(KeyStore from) {
+		// Populate comboBox with aliases from currentKeystore. Only those having both keys.
+		Enumeration<String> aliases;
+		try {
+			aliases = from.aliases();
+			while(aliases.hasMoreElements()) {
+				String a = aliases.nextElement();
+				if(from.isKeyEntry(a)) {
+					comboBox.addItem(a);
+				}
+			}
+		} catch (KeyStoreException e2) {
+			e2.printStackTrace();
+		}
+	}
 
 	/**
 	 * Create the dialog.
@@ -135,16 +161,63 @@ public class CertificateDialog extends JDialog {
 		
 		JPanel panelIssuer = new JPanel();
 		getContentPane().add(panelIssuer, "cell 0 2,grow");
-		panelIssuer.setLayout(new MigLayout("", "[][grow][right]", "[][][]"));
+		panelIssuer.setLayout(new MigLayout("", "[][grow][right]", "[][][][][]"));
 		
 		JLabel lblIssuerData = new JLabel("Issuer Data:");
 		lblIssuerData.setFont(new Font("Tahoma", Font.BOLD, 13));
 		panelIssuer.add(lblIssuerData, "cell 0 0");
 		
+		JLabel lblIssuerKeystore = new JLabel("Issuer keystore");
+		panelIssuer.add(lblIssuerKeystore, "cell 0 2,alignx trailing");
+		
+		txtIssuerKeystore = new JTextField();
+		txtIssuerKeystore.setEditable(false);
+		panelIssuer.add(txtIssuerKeystore, "cell 1 2,growx");
+		txtIssuerKeystore.setColumns(10);
+		
+		JButton btnChoose = new JButton("Choose");
+		// Choose the .jks file from which we'll get issuer.
+		btnChoose.addActionListener(new ActionListener() {		
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				// Set default file chooser directory. Create the dialog.
+				String workingDir = System.getProperty("user.dir");
+				workingDir = Paths.get(workingDir, "certificates").toString();
+				JFileChooser chooser = new JFileChooser(workingDir);
+			    FileNameExtensionFilter filter = new FileNameExtensionFilter("Java keystore files", "jks");
+			    chooser.setFileFilter(filter);
+			    
+			    String path = "";
+			    		    
+			    // User gave up.
+			    int returnVal = chooser.showOpenDialog(MainWindow.getInstance());
+			    if (returnVal == JFileChooser.CANCEL_OPTION) {
+			    	return;
+			    }
+			    
+			    // User approved.
+			    if (returnVal == JFileChooser.APPROVE_OPTION) {
+			    	// Enter password.
+			    	EnterPasswordDialog ksd = new EnterPasswordDialog();
+					ksd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+					ksd.setVisible(true);
+					
+					// After returning from the modal dialog.
+					path = chooser.getSelectedFile().getAbsolutePath();
+			    	KeyStore loaded = KeyStoreUtils.loadKeyStore(path, ksd.getPassword());
+			    	issuerKeystore = loaded;
+			    	populateCheckBox(issuerKeystore);
+			    }
+				
+			}
+		});
+		panelIssuer.add(btnChoose, "cell 2 2");
+		
 		// Label
 		
 		JLabel lblIssuer = new JLabel("Issuer");
-		panelIssuer.add(lblIssuer, "flowy,cell 0 2,alignx leading");
+		panelIssuer.add(lblIssuer, "flowy,cell 0 4,alignx leading");
 		
 		// Fields
 		
@@ -156,30 +229,21 @@ public class CertificateDialog extends JDialog {
 				
 				if(state) {
 					comboBox.setEnabled(false);
+					btnChoose.setEnabled(false);
+					txtIssuerKeystore.setEnabled(false);
 				}
 				else {
 					comboBox.setEnabled(true);
+					btnChoose.setEnabled(true);
+					txtIssuerKeystore.setEnabled(true);
 				}
 			}
 		});
 		panelIssuer.add(chckbxSelfSigned, "cell 0 1");		
 		
 		comboBox = new JComboBox<String>();
-		panelIssuer.add(comboBox, "cell 1 2,growx");
-		
-			// Populate comboBox with aliases from currentKeystore. Only those having both keys.
-			Enumeration<String> aliases;
-			try {
-				aliases = currentKeystore.aliases();
-				while(aliases.hasMoreElements()) {
-					String a = aliases.nextElement();
-					if(currentKeystore.isKeyEntry(a)) {
-						comboBox.addItem(a);
-					}
-				}
-			} catch (KeyStoreException e2) {
-				e2.printStackTrace();
-			}
+		panelIssuer.add(comboBox, "cell 1 4,growx");
+		populateCheckBox(currentKeystore);
 		
 		
 	// Subject panel section -----------------------------------------------------------------------
@@ -338,8 +402,8 @@ public class CertificateDialog extends JDialog {
 					// After returning from the dialog.
 					try {
 						// Issuer PK
-						PrivateKey pk = (PrivateKey) currentKeystore.getKey((String)comboBox.getSelectedItem(), epd.getPassword());
-						X509Certificate issuerCert = (X509Certificate) currentKeystore.getCertificate((String)comboBox.getSelectedItem());
+						PrivateKey pk = (PrivateKey) issuerKeystore.getKey((String)comboBox.getSelectedItem(), epd.getPassword());
+						X509Certificate issuerCert = (X509Certificate) issuerKeystore.getCertificate((String)comboBox.getSelectedItem());
 						Arrays.fill(epd.getPassword(), '0');
 						issuerData.setPrivateKey(pk);
 						
