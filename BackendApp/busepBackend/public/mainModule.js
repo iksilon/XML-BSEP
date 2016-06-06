@@ -34,7 +34,7 @@
 	    return timestampInterceptor;
 	})
 	.config(function($routeProvider, $httpProvider){ //, $locationProvider
-		$httpProvider.interceptors.push('timestampInterceptor');
+		//$httpProvider.interceptors.push('timestampInterceptor');
 		$routeProvider
 		.when("/", {
 			templateUrl: "angular/routes/main.html",
