@@ -64,6 +64,11 @@ public class ActionOpen extends AbstractAction {
 	    	Arrays.fill(ksd.getPassword(), '0');
 	    	ksd.dispose();
 	    	
+	    	// Empty table
+	    	while(((DefaultTableModel)keypairTable.getModel()).getRowCount() != 0) {
+	    		((DefaultTableModel)keypairTable.getModel()).removeRow(0);
+	    	}
+	    	
 	    	// Populate the table.
 	    	Enumeration<String> aliases;
 			try {
