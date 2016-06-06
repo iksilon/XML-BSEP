@@ -208,6 +208,7 @@ public class CertificateDialog extends JDialog {
 			    	KeyStore loaded = KeyStoreUtils.loadKeyStore(path, ksd.getPassword());
 			    	issuerKeystore = loaded;
 			    	populateCheckBox(issuerKeystore);
+			    	txtIssuerKeystore.setText(chooser.getSelectedFile().getName());
 			    }
 				
 			}
