@@ -15,8 +15,20 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.SignedObject;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
+
+import org.apache.xml.security.exceptions.XMLSecurityException;
+import org.apache.xml.security.signature.XMLSignature;
+import org.apache.xml.security.signature.XMLSignatureException;
+import org.apache.xml.security.transforms.TransformationException;
+import org.apache.xml.security.transforms.Transforms;
+import org.apache.xml.security.utils.Constants;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Contains static utility methods for securing the application.
@@ -27,6 +39,54 @@ import java.util.Arrays;
  *
  */
 public class SecurityUtils {
+	
+	public static Document signDocument(Document doc, PrivateKey privateKey, Certificate cert) {
+        
+        try {
+			Element rootEl = doc.getDocumentElement();
+			
+			//kreira se signature objekat
+			XMLSignature sig = new XMLSignature(doc, null, XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA1);
+			//kreiraju se transformacije nad dokumentom
+			Transforms transforms = new Transforms(doc);
+			    
+			//iz potpisa uklanja Signature element
+			//Ovo je potrebno za enveloped tip po specifikaciji
+			transforms.addTransform(Transforms.TRANSFORM_ENVELOPED_SIGNATURE);
+			//normalizacija
+			transforms.addTransform(Transforms.TRANSFORM_C14N_WITH_COMMENTS);
+			    
+			//potpisuje se citav dokument (URI "")
+			sig.addDocument("", transforms, Constants.ALGO_ID_DIGEST_SHA1);
+			    
+			//U KeyInfo se postavalja Javni kljuc samostalno i citav sertifikat
+			sig.addKeyInfo(cert.getPublicKey());
+			sig.addKeyInfo((X509Certificate) cert);
+			    
+			//poptis je child root elementa
+			rootEl.appendChild(sig.getElement());
+			    
+			//potpisivanje
+			sig.sign(privateKey);
+			
+			return doc;
+			
+		} catch (TransformationException e) {
+			e.printStackTrace();
+			return null;
+		} catch (XMLSignatureException e) {
+			e.printStackTrace();
+			return null;
+		} catch (DOMException e) {
+			e.printStackTrace();
+			return null;
+		} catch (XMLSecurityException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	
 
 	/**
 	 * Method for transforming given digest into a signature.
