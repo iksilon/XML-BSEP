@@ -21,6 +21,9 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
 import org.apache.xml.security.exceptions.XMLSecurityException;
+import org.apache.xml.security.keys.KeyInfo;
+import org.apache.xml.security.keys.keyresolver.implementations.RSAKeyValueResolver;
+import org.apache.xml.security.keys.keyresolver.implementations.X509CertificateResolver;
 import org.apache.xml.security.signature.XMLSignature;
 import org.apache.xml.security.signature.XMLSignatureException;
 import org.apache.xml.security.transforms.TransformationException;
@@ -29,6 +32,7 @@ import org.apache.xml.security.utils.Constants;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * Contains static utility methods for securing the application.
@@ -40,33 +44,38 @@ import org.w3c.dom.Element;
  */
 public class SecurityUtils {
 	
+	/**
+	 * Signs the given XML document using given private and public key.
+	 * Enveloped signature style. 
+	 * 
+	 * @param doc - {@link Document} that is to be signed 
+	 * @param privateKey - {@link PrivateKey} which will be used to sign the document
+	 * @param cert - {@link Certificate} with the corresponding public key
+	 * @return - signed {@link Document}
+	 */
 	public static Document signDocument(Document doc, PrivateKey privateKey, Certificate cert) {
         
         try {
 			Element rootEl = doc.getDocumentElement();
 			
-			//kreira se signature objekat
+			// Create the signature element.
 			XMLSignature sig = new XMLSignature(doc, null, XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA1);
-			//kreiraju se transformacije nad dokumentom
+			
+			// Create transformations and apply them.
 			Transforms transforms = new Transforms(doc);
-			    
-			//iz potpisa uklanja Signature element
-			//Ovo je potrebno za enveloped tip po specifikaciji
 			transforms.addTransform(Transforms.TRANSFORM_ENVELOPED_SIGNATURE);
-			//normalizacija
 			transforms.addTransform(Transforms.TRANSFORM_C14N_WITH_COMMENTS);
 			    
-			//potpisuje se citav dokument (URI "")
+			// The whole document is signed.
 			sig.addDocument("", transforms, Constants.ALGO_ID_DIGEST_SHA1);
-			    
-			//U KeyInfo se postavalja Javni kljuc samostalno i citav sertifikat
+			
 			sig.addKeyInfo(cert.getPublicKey());
 			sig.addKeyInfo((X509Certificate) cert);
-			    
-			//poptis je child root elementa
+			
+			// Enveloped signature.
 			rootEl.appendChild(sig.getElement());
 			    
-			//potpisivanje
+			// Sign the document.
 			sig.sign(privateKey);
 			
 			return doc;
@@ -86,53 +95,53 @@ public class SecurityUtils {
 		}
 	}
 	
-	
-
 	/**
-	 * Method for transforming given digest into a signature.
-	 * The returned {@link SignedObject} contains both the original message and the signature.
-	 * Right now is hardcoded to one private key.
+	 * Verifies if the XML document is signed by the key that the stored certificate corresponds to.
+	 * If the public key does not correspond to the signature or there is no public key or certificate, verification will fail. 
 	 * 
-	 * @param data - {@link String} presumably representing the document hash.
-	 * @return {@link SignedObject}
+	 * @param doc - signed {@link Document} which is to be verified.
+	 * @return boolean
 	 */
-	public static SignedObject signDigest(String data) {
+	public static boolean verifySignature(Document doc) {
+		
 		try {
-			// TODO: Signing: Get logged user info. Hardcoded keystore and private key for now. 
+			// Find the first signature element.
+			NodeList signatures = doc.getElementsByTagNameNS("http://www.w3.org/2000/09/xmldsig#", "Signature");
+			Element signatureEl = (Element) signatures.item(0);
+			XMLSignature signature = new XMLSignature(signatureEl, null);
 			
-			String ksName = "odbornik1.jks";
-			String ksPass = "odbornik1";
-			
-			KeyStore keystore = SecurityUtils.getKeyStore(ksName, ksPass.toCharArray());
-			
-			PrivateKey pk = (PrivateKey) keystore.getKey(ksPass, ksPass.toCharArray());
-			
-			Signature sig = Signature.getInstance("SHA1withRSA");
-			SignedObject so = new SignedObject(data, pk, sig);
-			
-			return so;
-			
-		} catch (NoSuchAlgorithmException e) {
+			KeyInfo keyInfo = signature.getKeyInfo();
+			// Is there a key?
+			if(keyInfo != null) {
+				// Register public key and certificate resolvers.
+				keyInfo.registerInternalKeyResolver(new RSAKeyValueResolver());
+			    keyInfo.registerInternalKeyResolver(new X509CertificateResolver());
+			    
+			    //Is certificate contained?
+			    if(keyInfo.containsX509Data() && keyInfo.itemX509Data(0).containsCertificate()) {
+			        Certificate cert = keyInfo.itemX509Data(0).itemCertificate(0).getX509Certificate();
+			        // Is certificate existing?
+			        if(cert != null) {
+			        	return signature.checkSignatureValue((X509Certificate) cert);
+			        }
+			        else {
+			        	return false;
+			        }
+			    }
+			    else {
+			    	return false;
+			    }
+			}
+			else {
+				return false;
+			}
+		
+		} catch (XMLSignatureException e) {
 			e.printStackTrace();
-			return null;
-		} catch (FileNotFoundException e) {
+			return false;
+		} catch (XMLSecurityException e) {
 			e.printStackTrace();
-			return null;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		} catch (UnrecoverableKeyException e) {
-			e.printStackTrace();
-			return null;
-		} catch (KeyStoreException e) {
-			e.printStackTrace();
-			return null;
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-			return null;
-		} catch (SignatureException e) {
-			e.printStackTrace();
-			return null;
+			return false;
 		}
 	}
 	
