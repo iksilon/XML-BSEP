@@ -19,6 +19,8 @@ GET		/documents								Utils.latestDocuments(count:'0')
 GET		/documents/{count}						Utils.latestDocuments
 POST	/act/new								Acts.newAct
 
+POST	/xml/submit								Acts.submitXML
+
 # unosenje novog korisnika
 GET     /user/create/{uname}/{role}/{passwd}    AddUser.addUser
 

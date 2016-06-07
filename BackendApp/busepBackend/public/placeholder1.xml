@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<am:Dokument xmlns:pro="http://www.ftn.uns.ac.rs/propisi"
+ xmlns:am="http://www.ftn.uns.ac.rs/amandman"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.ftn.uns.ac.rs/amandman file:/R:/CETVRTA%20GODINA/XML-BSEP-Projekat/XML-BSEP/xml/Amandman.xsd" Naziv="NRDIClySYuWEvO9Ed7">
+    <am:Pravni_osnov>TlCGuErie.FWlVMKrH8LHJ_7</am:Pravni_osnov>
+    <am:Predlog_propisa>TFvWk6bdAp1latj6SzIrm.uXlJ</am:Predlog_propisa>
+    <am:Amandman Redni_Broj="217121270" Naziv="AMANDMAN">
+        <am:Odredba>mhQBvxIIb1Cr3rUfYsvT</am:Odredba>
+        <am:Predlog_resenja tipPredloga="dopuna">
+            <pro:Tacka Redni_broj="740527895">
+                <pro:Podtacka Redni_broj="1502568527">
+                    <pro:Alineja>iBD64vd1PBWdQ3tbNf</pro:Alineja>
+                    <pro:Alineja>o4vbG4SQ</pro:Alineja>
+                </pro:Podtacka>
+                <pro:Podtacka Redni_broj="1786959390">
+                    <pro:Alineja>BFVqcWV</pro:Alineja>
+                    <pro:Alineja>AtXlrqKXj</pro:Alineja>
+                </pro:Podtacka>
+            </pro:Tacka>
+        </am:Predlog_resenja>
+        <am:Obrazlozenje>cuRkza</am:Obrazlozenje>
+    </am:Amandman>
+    <am:Amandman Redni_Broj="1632669811" Naziv="AMANDMAN">
+        <am:Odredba>mtTKnSSxx.S</am:Odredba>
+        <am:Predlog_resenja tipPredloga="izmena">
+            <pro:Alineja>AAVf_XUgMpp_fIxiN_K</pro:Alineja>
+        </am:Predlog_resenja>
+        <am:Obrazlozenje>VN89GgD</am:Obrazlozenje>
+    </am:Amandman>
+</am:Dokument>
