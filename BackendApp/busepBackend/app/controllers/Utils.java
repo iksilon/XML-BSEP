@@ -1,10 +1,6 @@
-package utils;
+package controllers;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyStore;
@@ -14,7 +10,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +26,7 @@ import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
+import utils.SecurityUtils;
 
 public class Utils extends Controller {
 	
@@ -45,7 +41,7 @@ public class Utils extends Controller {
 		long time = System.currentTimeMillis();//Long.parseLong(request.headers.get("timestamp").value());
 		
 		String ksPass = "odbornik1";
-		KeyStore ks = Utils.getKeyStore("odbornik1.jks", ksPass);
+		KeyStore ks = SecurityUtils.getKeyStore("odbornik1.jks", ksPass.toCharArray());
 		String encryTime;
 		String encryMsgNum;
 		try {
@@ -112,33 +108,6 @@ public class Utils extends Controller {
 	    }
 	    
 	    return new String(hexChars);
-	}
-	
-	/**
-	 * 
-	 * @param ksName - kingslayer name - Name of keystore, including extension (e.g. "keystore.jks")
-	 * @param ksPass  - killstealer pass - Password to access the keystore
-	 * @return {@link KeyStore}
-	 */
-	public static KeyStore getKeyStore(String ksName, String ksPass) {
-		String workingDir = System.getProperty("user.dir");
-		workingDir = Paths.get(workingDir, "app", "keystores").toString();
-		
-		// TODO: Signing: Hardcoded keystore for now.
-		String filepath = Paths.get(workingDir, ksName).toString();
-		
-		BufferedInputStream in;
-		KeyStore keystore = null;
-		try {
-			in = new BufferedInputStream(new FileInputStream(filepath));
-			keystore = KeyStore.getInstance("JKS", "SUN");
-			keystore.load(in, ksPass.toCharArray());
-		} catch (KeyStoreException | NoSuchProviderException | IllegalArgumentException
-				| NoSuchAlgorithmException | CertificateException | IOException | SecurityException e) {
-			e.printStackTrace();
-		}
-
-		return keystore;
 	}
 	
 	// prosledi role 0 za predsednika, 1 za odbornika itd
