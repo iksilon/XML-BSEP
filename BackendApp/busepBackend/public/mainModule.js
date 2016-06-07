@@ -1,40 +1,20 @@
 (function() {
 	var app = angular.module('mainApp');
 
-	app.factory('timestampInterceptor', function($rootScope, $http) {  
+	app.factory('timestampInterceptor', function($rootScope) {  
 	    var timestampInterceptor = {
-	    		response: function(response) {
-	    			// server validirao da je sve ok
-	    			if(response.data.ok != undefined && response.data.ok != null) {
-	    				return response;
-	    			}
-	    			
-	    			// first time receiving server response for any action
-	    			if($rootScope.lastMsgNum >= response.data.msgNum || $rootScope.lastTimestamp >= response.data.timestamp) {
-	    				response.data = null;
-	    				response.config.invalid = true;
-	    				return response;
-	    			}
-	    			
-	    			$rootScope.lastMsgNum = response.data.msgNum;
-	    			$rootScope.lastTimestamp = response.data.timestamp;
-//	    			$http.post('/respawnschck', {msgNum:$rootScope.lastMsgNum, timestamp:new Date().getTime()})
-//	    				.then(
-//	    						function(resp) {
-//	    							return response;
-//	    						},
-//	    						function(reason) {
-//	    							return response;
-//	    						});
-	    			
-	    			return response;
+	    		request: function(request) {
+    				request.headers.timestamp = new Date().getTime(); // UTC
+    				request.headers.timestampHash = sha256(time.toString());
+    				
+	    			return request;
 	    		}
 	    };
 
 	    return timestampInterceptor;
 	})
 	.config(function($routeProvider, $httpProvider){ //, $locationProvider
-		//$httpProvider.interceptors.push('timestampInterceptor');
+		$httpProvider.interceptors.push('timestampInterceptor');
 		$routeProvider
 		.when("/", {
 			templateUrl: "angular/routes/main.html",

@@ -36,19 +36,22 @@ public class Acts extends Controller {
 	 */
 	private static SignedObject signTextDocument(String data) {
 		try {
-			String workingDir = System.getProperty("user.dir");
-			workingDir = Paths.get(workingDir, "app", "keystores").toString();
-			
-			// TODO: Signing: Hardcoded keystore for now.
-			String filepath = Paths.get(workingDir, "odbornik1.jks").toString();
-			String password = "odbornik1";
-			
-			BufferedInputStream in = new BufferedInputStream(new FileInputStream(filepath));
-			KeyStore keystore = KeyStore.getInstance("JKS", "SUN");;
-			keystore.load(in, password.toCharArray());
+			String ksName = "odbornik1.jks";
+			String ksPass = "odbornik1";
+//			String workingDir = System.getProperty("user.dir");
+//			workingDir = Paths.get(workingDir, "app", "keystores").toString();
+//			
+//			// TODO: Signing: Hardcoded keystore for now.
+//			String filepath = Paths.get(workingDir, "odbornik1.jks").toString();
+//			String password = "odbornik1";
+//			
+//			BufferedInputStream in = new BufferedInputStream(new FileInputStream(filepath));
+//			KeyStore keystore = KeyStore.getInstance("JKS", "SUN");;
+//			keystore.load(in, password.toCharArray());
+			KeyStore keystore = Utils.getKeyStore(ksName, ksPass);
 			
 			// TODO: Signing: Hardcoded private key for now.
-			PrivateKey pk = (PrivateKey) keystore.getKey(password, password.toCharArray());
+			PrivateKey pk = (PrivateKey) keystore.getKey(ksPass, ksPass.toCharArray());
 			
 			Signature sig = Signature.getInstance("SHA1withRSA");
 			SignedObject so = new SignedObject(data, pk, sig);
@@ -62,9 +65,9 @@ public class Acts extends Controller {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return null;
-		} catch (CertificateException e) {
-			e.printStackTrace();
-			return null;
+//		} catch (CertificateException e) {
+//			e.printStackTrace();
+//			return null;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
@@ -80,9 +83,9 @@ public class Acts extends Controller {
 		} catch (SignatureException e) {
 			e.printStackTrace();
 			return null;
-		} catch (NoSuchProviderException e) {
-			e.printStackTrace();
-			return null;
+//		} catch (NoSuchProviderException e) {
+//			e.printStackTrace();
+//			return null;
 		}
 	}
 }

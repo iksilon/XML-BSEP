@@ -8,6 +8,7 @@
 
 #GET		/search									Search.show
 GET		/respawnschck							Utils.csrfCheck
+GET		/ts										Utils.getTimestamp
 
 #GET		/login									Login.show
 GET		/login/{uname}/{pwd}					Login.logIn

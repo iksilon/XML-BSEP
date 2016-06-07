@@ -1,16 +1,33 @@
 package controllers;
 
-import java.sql.Time;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
+import controllers.encription.AsymmetricEncryption;
 import models.Document;
 import models.User;
 import play.cache.Cache;
 import play.mvc.Controller;
-import play.mvc.results.Error;
+import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
@@ -19,18 +36,109 @@ public class Utils extends Controller {
 	
 	private static int msgNum = 0;
 	
+	// VEROVATNO NECE TREBATI
 	public static String responseTimestamp(String jsonResponse) {
 		jsonResponse = jsonResponse.substring(0, jsonResponse.length() - 1);
-		StringBuilder sb = new StringBuilder(jsonResponse);
-		long time = System.currentTimeMillis();
-		sb.append(", \"timestamp\":");
-		sb.append(time);
-		sb.append(", \"msgNum\":");
-		sb.append(msgNum++);
-		sb.append("}");
+		// https://docs.angularjs.org/api/ng/service/$http#json-vulnerability-protection
+		StringBuilder sb = new StringBuilder(")]}',\n");
+		sb.append(jsonResponse);
+		long time = System.currentTimeMillis();//Long.parseLong(request.headers.get("timestamp").value());
+		
+		String ksPass = "odbornik1";
+		KeyStore ks = Utils.getKeyStore("odbornik1.jks", ksPass);
+		String encryTime;
+		String encryMsgNum;
+		try {
+			Key key = ks.getKey(ksPass, ksPass.toCharArray());
+			AsymmetricEncryption ae = new AsymmetricEncryption();
+			encryTime = ae.encrypt(String.valueOf(time), key).toString();
+			encryMsgNum = ae.encrypt(String.valueOf(msgNum++), key).toString();
+		} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException 
+				| InvalidKeyException | NoSuchPaddingException | NoSuchProviderException 
+				| BadPaddingException | IllegalBlockSizeException e) 
+		{
+			e.printStackTrace();
+			System.out.println("Failed to get private key for TIMESTAMP");
+			return null;
+		}
+		
+		sb.append(", \"timestamp\":\"");		
+		sb.append(encryTime);
+		sb.append("\", \"msgNum\":\"");
+		sb.append(encryMsgNum);
+		sb.append("\"}");
 
 		System.out.println(sb);
 		return sb.toString();
+	}
+
+	public static int checkTimestamp(String tsString, String tsHashString) {
+		try { // check timestamp hash
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			byte[] hashBytes = digest.digest(tsString.getBytes(StandardCharsets.UTF_8));
+		    String hexCharsHash = Utils.byteToHex(hashBytes);
+//			System.out.println(hexCharsHash);
+
+			byte[] asd = tsHashString.getBytes(StandardCharsets.UTF_8);			
+//			System.out.println(new String(asd));
+			
+			String hexHash = new String(hexCharsHash).toUpperCase();
+			String hexTsHash = new String(asd).toUpperCase();
+			if(!hexHash.equals(hexTsHash)) {
+				return 1;
+			}
+		} catch (NoSuchAlgorithmException e1) {
+			e1.printStackTrace();
+			return 2;
+		}
+		
+		Long timestamp = Long.parseLong(tsString);
+		Long serverTimestamp = System.currentTimeMillis();
+		Long timestampDiff = serverTimestamp - timestamp;
+		if(timestampDiff <= 0 || timestampDiff > 5000) { // 5 sekundi. mozda treba manje?
+			return 3;
+		}
+		
+		return 0;
+	}
+
+	public static String byteToHex(byte[] bytes) {
+		char[] hexArray = "0123456789ABCDEF".toCharArray();
+		char[] hexChars= new char[bytes.length * 2];
+	    for ( int j = 0; j < bytes.length; j++ ) {
+	        int v = bytes[j] & 0xFF;
+	        hexChars[j * 2] = hexArray[v >>> 4];
+	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+	    }
+	    
+	    return new String(hexChars);
+	}
+	
+	/**
+	 * 
+	 * @param ksName - kingslayer name - Name of keystore, including extension (e.g. "keystore.jks")
+	 * @param ksPass  - killstealer pass - Password to access the keystore
+	 * @return {@link KeyStore}
+	 */
+	public static KeyStore getKeyStore(String ksName, String ksPass) {
+		String workingDir = System.getProperty("user.dir");
+		workingDir = Paths.get(workingDir, "app", "keystores").toString();
+		
+		// TODO: Signing: Hardcoded keystore for now.
+		String filepath = Paths.get(workingDir, ksName).toString();
+		
+		BufferedInputStream in;
+		KeyStore keystore = null;
+		try {
+			in = new BufferedInputStream(new FileInputStream(filepath));
+			keystore = KeyStore.getInstance("JKS", "SUN");
+			keystore.load(in, ksPass.toCharArray());
+		} catch (KeyStoreException | NoSuchProviderException | IllegalArgumentException
+				| NoSuchAlgorithmException | CertificateException | IOException | SecurityException e) {
+			e.printStackTrace();
+		}
+
+		return keystore;
 	}
 	
 	// prosledi role 0 za predsednika, 1 za odbornika itd
@@ -42,26 +150,7 @@ public class Utils extends Controller {
 		
 		Cache.set("users", users);
 	}
-	
-	public static Result TEST(String testVal, String qq) {
-		Object test = testVal + " " + qq;
-		return new RenderJson(test);
-	}
-	
-	public static Result loggedUserTest() {
-		try {
-			User user = (User) Cache.get("loggedUserTest");
-			
-			ObjectMapper om = new ObjectMapper();
-			
-			return new RenderJson(om.writeValueAsString(user));
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return new Error("Could not fetch requested data due to an exception");
-		}
-	}
-	
+
 	public static void latestDocuments(int count) {
 		List<Document> latestDocuments = Document.findAll();
 		if(count <= 0) {
