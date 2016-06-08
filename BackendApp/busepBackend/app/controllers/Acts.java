@@ -25,6 +25,7 @@ public class Acts extends Controller {
 	
 	public static void submitXML() {
 		// TODO: XML will be sent from the editor.
+		org.apache.xml.security.Init.init();
 		
 		System.out.println("Beginning signature demo:\n\n");
 		String workingDir = System.getProperty("user.dir");
@@ -41,7 +42,7 @@ public class Acts extends Controller {
 		
 		// TODO: User will be extracted.
 		String kp = "odbornik1";
-		KeyStore ks = SecurityUtils.getKeyStore("odbornik1.jsk", kp.toCharArray());
+		KeyStore ks = SecurityUtils.getKeyStore("odbornik1.jks", kp.toCharArray());
 		
 		System.out.println("Loaded default user odbornik1");
 		
