@@ -77,6 +77,9 @@
 					<md-button go-click="/cp/odbornik" ng-show="userMenuChecks.isOdbornik(user.role.id) || userMenuChecks.isPredsednik(user.role.id)">Odbornik meni</md-button>
 					<md-button go-click="/cp/highlord" ng-show="userMenuChecks.isPredsednik(user.role.id)">Predsednik meni</md-button>
 					<md-button go-click="/cp/wa" ng-show="userMenuChecks.isAdmin(user.role.id)">Web admin meni</md-button>
+					<md-button class="md-warn md-raised" go-click="/xml/submit">Potpis (demo)</md-button>
+					<md-button class="md-warn md-raised" go-click="/encry">XML Enkripcija (trial)</md-button>
+					<md-button class="md-warn md-raised" go-click="/decry">XML Dekripcija (eval)</md-button>
 					<md-button go-click="/" ng-if="!mainPage">Povratak</md-button>
 				</span>
 				<span>

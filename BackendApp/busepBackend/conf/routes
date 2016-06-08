@@ -3,45 +3,46 @@
 # ~~~~
 
 # Home page
-#GET     /										Application.index
-#GET     /home									Application.index
+#GET     /												Application.index
+#GET     /home											Application.index
 
-GET		/login/{uname}/{pwd}					Login.logIn
+GET		/login/{uname}/{pwd}							Login.logIn
 
-GET		/search									Search.show
-GET		/respawnschck							Utils.csrfCheck
-GET		/ts										Utils.getTimestamp
+GET		/search											Search.show
+GET		/respawnschck									Utils.csrfCheck
+GET		/ts												Utils.getTimestamp
 
-#GET		/login									Login.show
-GET		/logout/{uname}							Login.logOut
+#GET		/login										Login.show
+GET		/logout/{uname}									Login.logOut
 
-GET		/documents								Utils.latestDocuments(count:'0')
-GET		/documents/{count}						Utils.latestDocuments
-POST	/act/new								Acts.newAct
+GET		/documents										Utils.latestDocuments(count:'0')
+GET		/documents/{count}								Utils.latestDocuments
+POST	/act/new										Acts.newAct
 
-POST	/xml/submit								Acts.submitXML
-
+POST	/xml/submit										Acts.submitXML
+GET		/encry/{doc}/{key}/{certificate}/{encryptTag}	EncryptXML.encrypt
+GET		/encry/{doc}/{privateKey}						DecryptXML.decrypt
 # unosenje novog korisnika
-GET     /user/create/{uname}/{role}/{passwd}    AddUser.addUser
+GET     /user/create/{uname}/{role}/{passwd}    		AddUser.addUser
 
-GET		/xml-schema/							staticDir:xml-schema
-GET		/xml/									staticDir:xml
+GET		/xml-schema/									staticDir:xml-schema
+GET		/xml/											staticDir:xml
 
 # za uzimanje podataka o korisnicima
-GET		/users/highlord							Utils.usersByRole(role:'0')
-GET		/users/odbornici						Utils.usersByRole(role:'1')
-GET		/users/usersAll							Utils.usersByRole(role:'-1')
+GET		/users/highlord									Utils.usersByRole(role:'0')
+GET		/users/odbornici								Utils.usersByRole(role:'1')
+GET		/users/usersAll									Utils.usersByRole(role:'-1')
 
-GET		/get/panelIds/{uname}					Utils.getPanelIds
-POST	/set/deoId/{uname}						Utils.setDeoId
-POST	/set/clanId/{uname}						Utils.setClanId
+GET		/get/panelIds/{uname}							Utils.getPanelIds
+POST	/set/deoId/{uname}								Utils.setDeoId
+POST	/set/clanId/{uname}								Utils.setClanId
 
 # Ignore favicon requests
 #GET     /favicon.ico                            404
 
 # Map static resources from the /app/public folder to the /public path
 #GET     /public/                                staticDir:public
-GET     /		                                staticDir:public
+GET     /		                                		staticDir:public
 
 # Catch all
-*       /{controller}/{action}                  {controller}.{action}
+*       /{controller}/{action}                  		{controller}.{action}

@@ -36,11 +36,11 @@
 	})
 	.directive("xmlEditor", function($http) {
 		return {
-			restrict: 'AE',
-			scope: {
-				xmlEditorScope: '=xmlEditor'
-			},
-			template: '<div id="xml_editor"></div>', //<script>$("#xml_editor").xmlEditor({documentTitle : "Novi akt",ajaxOptions: {xmlRetrievalPath: "/xml/akt.xml"},schema : "/xml-schema/akt.json"});</script>
+//			restrict: 'AE',
+//			scope: {
+//				xmlEditorScope: '=xmlEditor'
+//			},
+//			template: '<div id="xml_editor"></div>', //<script>$("#xml_editor").xmlEditor({documentTitle : "Novi akt",ajaxOptions: {xmlRetrievalPath: "/xml/akt.xml"},schema : "/xml-schema/akt.json"});</script>
 			link: function(scope, elem, attrs) {
 				var extractor = new Xsd2Json("Propis.xsd", {"schemaURI":"/xml-schema/", "rootElement":"Propis"});
 				var xmlSchema = undefined;
@@ -50,19 +50,20 @@
 								xmlSchema = response.data;
 								console.log(xmlSchema); //provera
 							},
-							function(reason) {
-								//failed
+							function(reason) { //failed
+								xmlSchema = extractor.xsdManager.originatingRoot;
+								console.log(xmlSchema); //provera
 							}
 					);
 				$(elem).xmlEditor({
-					confirmExitWhenUnsubmitted: true,
-					documentTitle : "Novi akt",
-					ajaxOptions: {
-						xmlUploadPath: "/xml/submit",
-						xmlRetrievalPath: "/xml/akt.xml"
-					},
-					schema : xmlSchema //extractor.xsdManager.originatingRoot //"/xml-schema/akt.json"
-				});
+//					confirmExitWhenUnsubmitted: true,
+//					documentTitle : "Novi akt",
+//					ajaxOptions: {
+//						xmlUploadPath: "/xml/submit",
+//						xmlRetrievalPath: "/xml/akt.xml"
+//					},
+					schema : xmlSchema
+				});  //extractor.xsdManager.originatingRoot //"/xml-schema/akt.json"
 				
 				scope.root = elem;
 		    }
