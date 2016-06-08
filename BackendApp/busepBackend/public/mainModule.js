@@ -53,15 +53,15 @@
 			templateUrl: "angular/routes/search.html",
 			controller: "SearchCtrl"
 		})
-		.when("/cp/odbornik", {
+		.when("/odbornik", {
 			templateUrl: "angular/routes/panelOdbornik.html",
 			controller: "PanelCtrl"
 		})
-		.when("/cp/highlord", {
+		.when("/highlord", {
 			templateUrl: "angular/routes/panelHighlord.html",
 			controller: "PanelCtrl"
 		})
-		.when("/cp/wa", {
+		.when("/wa", {
 			templateUrl: "angular/routes/panelWebAdmin.html",
 			controller: "WebAdminCtrl"
 		})
@@ -137,6 +137,7 @@
 				.then(
 						function(response) {
 							$rootScope.user = null;
+							$cookies.remove("user");
 							$window.location.href = '#/login';
 						},
 						function(reason) {

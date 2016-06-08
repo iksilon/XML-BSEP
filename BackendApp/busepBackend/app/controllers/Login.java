@@ -19,7 +19,7 @@ import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
 
-public class Login extends Controller {
+public class Login extends AppController {
 	
 	public static Result logIn(String uname, String pwd/*, String body*/) {
 		// param 'body' i sledece dve linije su ako zelimo da pokupimo JSON iz requesta
@@ -28,17 +28,17 @@ public class Login extends Controller {
 //		System.out.println(json);
 		
 		//TODO: OVO VEZANO ZA TIMESTAMP ZA SVAKI REQUEST TREBA
-		String tsString = request.headers.get("timestamp").value();
-		String tsHashString = request.headers.get("timestamphash").value();
-		
-		int tsCheck = Utils.checkTimestamp(tsString, tsHashString);		
-		if(tsCheck == 1) {
+//		String tsString = request.headers.get("timestamp").value();
+//		String tsHashString = request.headers.get("timestamphash").value();
+//		
+//		int tsCheck = Utils.checkTimestamp(tsString, tsHashString);		
+		if(timestampCheckResult == 1) {
 			return new BadRequest("Invalid request");
 		}
-		else if(tsCheck == 2) {
+		else if(timestampCheckResult == 2) {
 			return new play.mvc.results.Error("Request processing failed");
 		}
-		else if(tsCheck == 3) {
+		else if(timestampCheckResult == 3) {
 			return new BadRequest("Request timed out");
 		}
 		//KRAJ TIMESTAMP PROVERE

@@ -4,20 +4,7 @@
 	<meta charset="utf-8">
 
 	<link rel="shortcut icon" type="image/png" href="images/favicon.png">
-      
-	<script src="javascripts/jquery.xmleditor-master/lib/ace/src-min/ace.js"></script>
-	<script src="javascripts/jquery-1.6.4.min.js"></script>
-<!-- 	<script src="javascripts/jquery.xmleditor-master/lib/jquery.min.js"></script> -->
-	<script src="javascripts/jquery.xmleditor-master/lib/jquery-ui.min.js"></script>
-	<script src="javascripts/jquery.xmleditor-master/lib/json2.js"></script>
-	<script src="javascripts/jquery.xmleditor-master/lib/cycle.js"></script>
-	<script src="javascripts/jquery.xmleditor-master/lib/jquery.autosize-min.js"></script>
-<!-- 	<script src="javascripts/jquery.xmleditor-master/xsd/src/schema_manager.js"></script> -->
-<!-- 	<script src="javascripts/jquery.xmleditor-master/xsd/src/schema_processor.js"></script> -->
-<!-- 	<script src="javascripts/jquery.xmleditor-master/xsd/src/xsd2json.js"></script> -->
-	<script src="javascripts/jquery.xmleditor-master/xsd/xsd2json.js"></script>
-	<script src="javascripts/jquery.xmleditor-master/jquery.xmleditor.js"></script>
-	<link rel="stylesheet" href="javascripts/jquery.xmleditor-master/css/jquery.xmleditor.css" type="text/css" />
+	
 	
 	<script src="javascripts/sha256-224.min.js"></script>
 	
@@ -45,9 +32,6 @@
 </head>
 <body ng-app="mainApp" ng-cloak>
 	<md-content layout="row" layout-align="space-around center">
-<!-- 	<md-toolbar width="99"> -->
-<!-- 		<img src="images/sgnsLogo.png" alt="logo" width="99" height="99"> -->
-<!-- 	</md-toolbar> -->
 	<md-toolbar layout-align="space-around center">
 		<h1>SKUPŠTINA GRADA NOVOG SADA</h1>
 	</md-toolbar>
@@ -74,9 +58,9 @@
 					<md-button go-click="/akti/vazeci">Važeći akti</md-button>
 					<md-button go-click="/akti/proc">Akti u proceduri</md-button>
 					<md-button go-click="/search">Pretraga akata</md-button>
-					<md-button go-click="/cp/odbornik" ng-show="userMenuChecks.isOdbornik(user.role.id) || userMenuChecks.isPredsednik(user.role.id)">Odbornik meni</md-button>
-					<md-button go-click="/cp/highlord" ng-show="userMenuChecks.isPredsednik(user.role.id)">Predsednik meni</md-button>
-					<md-button go-click="/cp/wa" ng-show="userMenuChecks.isAdmin(user.role.id)">Web admin meni</md-button>
+					<md-button go-click="/odbornik" ng-show="userMenuChecks.isOdbornik(user.role.id) || userMenuChecks.isPredsednik(user.role.id)">Odbornik meni</md-button>
+					<md-button go-click="/highlord" ng-show="userMenuChecks.isPredsednik(user.role.id)">Predsednik meni</md-button>
+					<md-button go-click="/wa" ng-show="userMenuChecks.isAdmin(user.role.id)">Web admin meni</md-button>
 					<md-button class="md-warn md-raised" ng-click="demoFs.submitXML()">Potpis (demo)</md-button>
 					<md-button class="md-warn md-raised" ng-click="demoFs.encrXML()">XML Enkripcija (trial)</md-button>
 					<md-button class="md-warn md-raised" ng-click="demoFs.decrXML()">XML Dekripcija (eval)</md-button>
@@ -94,5 +78,16 @@
 	<md-toolbar layout-align="space-around center">
 		Copyright &copy; Tim 27
 	</md-toolbar>
+	
+	<script src="javascripts/jquery.xmleditor-master/lib/ace/src-min/ace.js"></script>
+<!-- 	<script src="javascripts/jquery-1.6.4.min.js"></script> -->
+	<script src="javascripts/jquery.xmleditor-master/lib/jquery.min.js"></script>
+	<script src="javascripts/jquery.xmleditor-master/lib/jquery-ui.min.js"></script>
+	<script src="javascripts/jquery.xmleditor-master/lib/json2.js"></script>
+	<script src="javascripts/jquery.xmleditor-master/lib/cycle.js"></script>
+	<script src="javascripts/jquery.xmleditor-master/lib/jquery.autosize-min.js"></script>
+	<script src="javascripts/jquery.xmleditor-master/xsd/xsd2json.js"></script>
+	<script src="javascripts/jquery.xmleditor-master/jquery.xmleditor.js"></script>
+	<link rel="stylesheet" href="javascripts/jquery.xmleditor-master/css/jquery.xmleditor.css" type="text/css" />
 </body>
 </html>

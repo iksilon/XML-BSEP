@@ -15,7 +15,7 @@ import java.security.spec.InvalidKeySpecException;
 /**
  * Created by Nemanja on 5/29/2016.
  */
-public class AddUser extends Controller {
+public class AddUser extends AppController {
 
 	public static Result addUser(String uname, String role, String passwd){
 

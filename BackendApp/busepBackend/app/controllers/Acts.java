@@ -10,14 +10,15 @@ import java.security.cert.Certificate;
 
 import org.w3c.dom.Document;
 
-import play.libs.XML;
 import play.mvc.Controller;
+import play.mvc.With;
 import play.mvc.results.Ok;
 import play.mvc.results.Result;
 import utils.MarkLogicUtils;
 import utils.SecurityUtils;
 import utils.XMLUtils;
-public class Acts extends Controller {
+
+public class Acts extends AppController {
 	
 	public static Result newAct() {
 		return new Ok();

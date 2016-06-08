@@ -28,7 +28,7 @@ import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
 import utils.SecurityUtils;
 
-public class Utils extends Controller {
+public class Utils extends AppController {
 	
 	private static int msgNum = 0;
 	

@@ -339,6 +339,7 @@ $.widget( "xml.xmlEditor", {
 						"self.onmessage = function(e) {" +
 						"importScripts(e.data.libPath + 'cycle.js');" +
 						"var schema;" +
+//						"debugger;" +
 						"if (typeof e.data.schema == 'string' || typeof e.data.schema instanceof String) {" +
 						"	var xmlhttp = new XMLHttpRequest();" +
 						"	xmlhttp.onreadystatechange = function() {" +

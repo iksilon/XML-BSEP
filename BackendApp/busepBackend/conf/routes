@@ -2,10 +2,6 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-#GET     /												Application.index
-#GET     /home											Application.index
-
 GET		/login/{uname}/{pwd}							Login.logIn
 
 GET		/search											Search.show
@@ -37,12 +33,9 @@ GET		/get/panelIds/{uname}							Utils.getPanelIds
 POST	/set/deoId/{uname}								Utils.setDeoId
 POST	/set/clanId/{uname}								Utils.setClanId
 
-# Ignore favicon requests
-#GET     /favicon.ico                            404
-
-# Map static resources from the /app/public folder to the /public path
-#GET     /public/                                staticDir:public
 GET     /		                                		staticDir:public
+# Import Secure routes
+#*      /                								module:secure
 
 # Catch all
 *       /{controller}/{action}                  		{controller}.{action}
