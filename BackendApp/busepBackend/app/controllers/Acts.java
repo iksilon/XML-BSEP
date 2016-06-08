@@ -35,7 +35,6 @@ public class Acts extends Controller {
 		System.out.println("> Files located at: " + workingDir);
 		
 		String sorcPath = Paths.get(workingDir, "placeholder1.xml").toString();
-		String destPath = Paths.get(workingDir, "signature.xml").toString();
 		
 		Document xmlDoc = XMLUtils.loadDocument(sorcPath);
 		

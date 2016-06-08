@@ -75,9 +75,10 @@ public class MarkLogicUtils {
 			DocumentMetadataHandle metadata = new DocumentMetadataHandle();
 			metadata.getCollections().add(collectionID);
 			
-			//TODO: Document ID is hardcoded, needs schema revision.
 			// Document section
-			String documentID = "test/test1.xml";
+			String documentID = doc.getDocumentElement().getAttribute("Naziv");
+			documentID = documentID.concat(".xml");
+			System.out.println("Inserting: " + documentID);
 			InputStreamHandle ish = new InputStreamHandle(createInputStream(doc, false));
 			
 			xmlManager.write(documentID, metadata, ish);
