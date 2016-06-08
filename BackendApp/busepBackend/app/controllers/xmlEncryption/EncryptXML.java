@@ -32,29 +32,6 @@ public class EncryptXML {
 		org.apache.xml.security.Init.init();
 	}
 
-	private Document loadDocument(String file) {
-		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			dbf.setNamespaceAware(true);
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document document = db.parse(new File(file));
-
-			return document;
-		} catch (FactoryConfigurationError e) {
-			e.printStackTrace();
-			return null;
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-			return null;
-		} catch (SAXException e) {
-			e.printStackTrace();
-			return null;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
 	private SecretKey generateDataEncryptionKey() {
 
 		try {
