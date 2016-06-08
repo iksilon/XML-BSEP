@@ -169,8 +169,17 @@ public class SecurityUtils {
 			keystore.load(in, ksPass);
 			// Clean up.
 			Arrays.fill(ksPass, '0');
-		} catch (KeyStoreException | NoSuchProviderException | IllegalArgumentException
-				| NoSuchAlgorithmException | CertificateException | IOException | SecurityException e) {
+		} catch (KeyStoreException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (CertificateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	
