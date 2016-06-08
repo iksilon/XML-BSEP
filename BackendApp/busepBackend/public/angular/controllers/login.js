@@ -1,7 +1,7 @@
 (function() {
 	var app = angular.module('mainApp');
 	
-	app.controller('LoginCtrl', function($scope, $window, $http, $rootScope){
+	app.controller('LoginCtrl', function($scope, $window, $http, $rootScope, $cookies){
 		$rootScope.mainPage = false;
 		$scope.formData = {username:'', funnyString:''};
 		
@@ -10,6 +10,10 @@
 				.then(
 						function(response) {
 							$rootScope.user = response.data;
+							
+							var now = new Date(),
+						    exp = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);
+							$cookies.putObject("user", $rootScope.user, {"expires":exp, "path":"/"}); //za sad se cuva u cookie
 							$window.location.href = '#/';
 						},
 						function(reason) {

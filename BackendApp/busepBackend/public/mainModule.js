@@ -4,7 +4,8 @@
 	app.factory('timestampInterceptor', function($rootScope) {  
 	    var timestampInterceptor = {
 	    		request: function(request) {
-    				request.headers.timestamp = new Date().getTime(); // UTC
+	    			var time = new Date().getTime();
+    				request.headers.timestamp = time; // UTC
     				request.headers.timestampHash = sha256(time.toString());
     				
 	    			return request;
@@ -68,39 +69,6 @@
 			redirectTo:"/"
 		});
 	})
-	.directive('goClick', function($location) {
-		return function(scope, element, attrs) {
-			var path;
-
-			attrs.$observe('goClick', function(val) {
-				path = val;
-			});
-
-			element.bind('click', function() {
-				scope.$apply(function() {
-					$location.path(path);
-				});
-			});
-		};
-	})
-	.directive("compareTo", function() {
-	    return {
-	    	require: "ngModel",
-	        scope: {
-	            otherModelValue: "=compareTo"
-	        },
-	        link: function(scope, element, attributes, ngModel) {
-	             
-	            ngModel.$validators.compareTo = function(modelValue) {
-	                return modelValue == scope.otherModelValue;
-	            };
-	 
-	            scope.$watch("otherModelValue", function() {
-	                ngModel.$validate();
-	            });
-	        }
-	    };
-	})
 	.run(function($rootScope, $cookies, $http, $window) {
 		$rootScope.lastMsgNum = 0;
 		$rootScope.lastTimestamp = null;
@@ -126,7 +94,7 @@
 					return true;
 				}};
 		
-		$rootScope.user = null;
+		$rootScope.user = $cookies.getObject('user'); //za sad se cuva u cookie
 		
 		$rootScope.logout = function() {
 			$http.get('/logout/' + $rootScope.user.username)
@@ -139,5 +107,5 @@
 							console.error(reason.data);
 						});
 		}
-	});;
+	});
 }());

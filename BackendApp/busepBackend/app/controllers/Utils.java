@@ -8,7 +8,6 @@ import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +16,13 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import controllers.encription.AsymmetricEncryption;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import controllers.encryption.AsymmetricEncryption;
 import models.Document;
 import models.User;
 import play.cache.Cache;
 import play.mvc.Controller;
-import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
@@ -133,9 +133,14 @@ public class Utils extends Controller {
 	public static Result getPanelIds(String uname) {
 		int panelDeoId = (int) Cache.get(uname + "DeoId");
 		int panelClanId = (int) Cache.get(uname + "ClanId");
-		Object[] resp = new Object[] {panelDeoId, panelClanId};
-		System.out.println("I WERK");
-		return new RenderJson(resp);
+		
+		StringBuilder sb = new StringBuilder("{\"panelDeoId\":");
+		sb.append(panelDeoId);
+		sb.append(", \"panelClanId\":");
+		sb.append(panelClanId);
+		sb.append("}");
+		
+		return new RenderJson(sb.toString());
 	}
 	
 	public static Result setDeoId(String uname) {

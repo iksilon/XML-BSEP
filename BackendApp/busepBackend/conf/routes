@@ -6,13 +6,13 @@
 #GET     /										Application.index
 #GET     /home									Application.index
 
-#GET		/search									Search.show
+GET		/login/{uname}/{pwd}					Login.logIn
+
+GET		/search									Search.show
 GET		/respawnschck							Utils.csrfCheck
 GET		/ts										Utils.getTimestamp
 
 #GET		/login									Login.show
-GET		/login/{uname}/{pwd}					Login.logIn
-#GET		/logout									Login.show(mode:'logout')
 GET		/logout/{uname}							Login.logOut
 
 GET		/documents								Utils.latestDocuments(count:'0')
@@ -24,6 +24,9 @@ POST	/xml/submit								Acts.submitXML
 # unosenje novog korisnika
 GET     /user/create/{uname}/{role}/{passwd}    AddUser.addUser
 
+GET		/xml-schema/							staticDir:xml-schema
+GET		/xml/									staticDir:xml
+
 # za uzimanje podataka o korisnicima
 GET		/users/highlord							Utils.usersByRole(role:'0')
 GET		/users/odbornici						Utils.usersByRole(role:'1')
@@ -34,7 +37,7 @@ POST	/set/deoId/{uname}						Utils.setDeoId
 POST	/set/clanId/{uname}						Utils.setClanId
 
 # Ignore favicon requests
-GET     /favicon.ico                            404
+#GET     /favicon.ico                            404
 
 # Map static resources from the /app/public folder to the /public path
 #GET     /public/                                staticDir:public

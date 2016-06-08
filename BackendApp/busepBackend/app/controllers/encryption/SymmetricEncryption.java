@@ -1,4 +1,4 @@
-package controllers.encription;
+package controllers.encryption;
 
 import javax.crypto.*;
 import java.security.InvalidKeyException;

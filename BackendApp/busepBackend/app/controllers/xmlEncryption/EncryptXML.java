@@ -1,4 +1,4 @@
-package controllers.xmlEncription;
+package controllers.xmlEncryption;
 
 import org.apache.xml.security.encryption.EncryptedData;
 import org.apache.xml.security.encryption.EncryptedKey;
@@ -25,7 +25,7 @@ import java.security.cert.CertificateException;
 /**
  * Created by Nemanja on 7/6/2016.
  */
-public class EncriptXML {
+public class EncryptXML {
 	static {
 		//staticka inicijalizacija
 		Security.addProvider(new BouncyCastleProvider());

@@ -1,4 +1,4 @@
-package controllers.encription;
+package controllers.encryption;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
