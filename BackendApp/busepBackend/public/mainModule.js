@@ -94,6 +94,42 @@
 					return true;
 				}};
 		
+		$rootScope.demoFs = {
+				submitXML: function() {
+					$http.get('/xml/submit')
+						.then(
+								function(response) {
+									console.log('xml submitted');
+								},
+								function(reason) {
+									console.error('xml not submitted');
+								}
+						);
+				},
+				encrXML: function() {
+					$http.get('/encry')
+							.then(
+									function(response) {
+										console.log('xml encrypted');
+									},
+									function(reason) {
+										console.error('xml not encrypted');
+									}
+							);
+				},
+				decrXML: function() {
+					$http.get('/decry')
+							.then(
+									function(response) {
+										console.log('xml decrypted');
+									},
+									function(reason) {
+										console.error('xml not decrypted');
+									}
+							);
+				}
+		};
+		
 		$rootScope.user = $cookies.getObject('user'); //za sad se cuva u cookie
 		
 		$rootScope.logout = function() {
