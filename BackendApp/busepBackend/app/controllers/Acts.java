@@ -25,17 +25,25 @@ public class Acts extends Controller {
 	
 	public static void submitXML() {
 		// TODO: XML will be sent from the editor.
+		
+		System.out.println("Beginning signature demo:\n\n");
 		String workingDir = System.getProperty("user.dir");
 		workingDir = Paths.get(workingDir, "public").toString();
 		
-		String sorcPath = Paths.get(workingDir, "placeholder.xml").toString();
+		System.out.println("Files located at: " + workingDir);
+		
+		String sorcPath = Paths.get(workingDir, "placeholder1.xml").toString();
 		String destPath = Paths.get(workingDir, "signature.xml").toString();
 		
 		Document xmlDoc = XMLUtils.loadDocument(sorcPath);
 		
+		System.out.println("Loaded placehoder1.xml");
+		
 		// TODO: User will be extracted.
 		String kp = "odbornik1";
 		KeyStore ks = SecurityUtils.getKeyStore("odbornik1.jsk", kp.toCharArray());
+		
+		System.out.println("Loaded default user odbornik1");
 		
 		try {
 			PrivateKey pk = (PrivateKey) ks.getKey(kp, kp.toCharArray());
@@ -43,8 +51,12 @@ public class Acts extends Controller {
 			
 			Document signedDoc = SecurityUtils.signDocument(xmlDoc, pk, cert);
 			
+			System.out.println("Document signed.");
+			
 			//TODO: XML will be inserted into the database.
 			XMLUtils.saveDocument(signedDoc, destPath);
+			
+			System.out.println("Document saved as signature.xml");
 			
 		} catch (UnrecoverableKeyException e) {
 			e.printStackTrace();
