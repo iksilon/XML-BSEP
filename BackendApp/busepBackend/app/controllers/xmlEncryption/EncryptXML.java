@@ -128,11 +128,9 @@ public class EncryptXML {
 			NodeList targetTags = doc.getElementsByTagName(encryptTag);
 
 			Element targetTag = (Element) targetTags.item(0);
-			for (int i=1; targetTag != null; i++) {
-				xmlCipher.doFinal(doc, targetTag, true); //kriptuje sa sadrzaj
 
-				targetTag = (Element) targetTags.item(i);
-			}
+			xmlCipher.doFinal(doc, targetTag, true); //kriptuje sa sadrzaj
+
 			return doc;
 
 		} catch (XMLEncryptionException e) {
