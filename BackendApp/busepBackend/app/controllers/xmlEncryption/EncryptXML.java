@@ -96,10 +96,10 @@ public class EncryptXML {
 	 * @param doc XML dokument koji se kriptuje
 	 * @param key Tajni ključ koji se koristi za AES simetričnu enkripciju
 	 * @param certificate Sertifikat onoga za koga se kriptuje XML. Odavde se izvlači public key
-	 * @param encriptTag Tag od kojeg će se enkriptovati XML. Svi njegovi potomci se enkriptuju takođe.
+	 * @param encryptTag Tag od kojeg će se enkriptovati XML. Svi njegovi potomci se enkriptuju takođe.
 	 * @return Enkriptovan XML dokument
 	 */
-	private Document encrypt(Document doc, SecretKey key, Certificate certificate, String encriptTag) {
+	private Document encrypt(Document doc, SecretKey key, Certificate certificate, String encryptTag) {
 
 		try {
 			//cipher za kriptovanje tajnog kljuca,
@@ -125,7 +125,7 @@ public class EncryptXML {
 			encryptedData.setKeyInfo(keyInfo);
 
 			//trazi se element ciji sadrzaj se kriptuje
-			NodeList targetTags = doc.getElementsByTagName(encriptTag);
+			NodeList targetTags = doc.getElementsByTagName(encryptTag);
 			Element targetTag = (Element) targetTags.item(0);
 
 			xmlCipher.doFinal(doc, targetTag, true); //kriptuje sa sadrzaj
