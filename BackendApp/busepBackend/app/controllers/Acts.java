@@ -14,6 +14,7 @@ import play.libs.XML;
 import play.mvc.Controller;
 import play.mvc.results.Ok;
 import play.mvc.results.Result;
+import utils.MarkLogicUtils;
 import utils.SecurityUtils;
 import utils.XMLUtils;
 public class Acts extends Controller {
@@ -27,24 +28,24 @@ public class Acts extends Controller {
 		// TODO: XML will be sent from the editor.
 		org.apache.xml.security.Init.init();
 		
-		System.out.println("Beginning signature demo:\n\n");
+		System.out.println("Beginning signature demo:");
 		String workingDir = System.getProperty("user.dir");
 		workingDir = Paths.get(workingDir, "public").toString();
 		
-		System.out.println("Files located at: " + workingDir);
+		System.out.println("> Files located at: " + workingDir);
 		
 		String sorcPath = Paths.get(workingDir, "placeholder1.xml").toString();
 		String destPath = Paths.get(workingDir, "signature.xml").toString();
 		
 		Document xmlDoc = XMLUtils.loadDocument(sorcPath);
 		
-		System.out.println("Loaded placehoder1.xml");
+		System.out.println("> Loaded placehoder1.xml");
 		
 		// TODO: User will be extracted.
 		String kp = "odbornik1";
 		KeyStore ks = SecurityUtils.getKeyStore("odbornik1.jks", kp.toCharArray());
 		
-		System.out.println("Loaded default user odbornik1");
+		System.out.println("> Loaded default user odbornik1");
 		
 		try {
 			PrivateKey pk = (PrivateKey) ks.getKey(kp, kp.toCharArray());
@@ -52,12 +53,10 @@ public class Acts extends Controller {
 			
 			Document signedDoc = SecurityUtils.signDocument(xmlDoc, pk, cert);
 			
-			System.out.println("Document signed.");
+			System.out.println("> Document signed.");
 			
-			//TODO: XML will be inserted into the database.
-			XMLUtils.saveDocument(signedDoc, destPath);
-			
-			System.out.println("Document saved as signature.xml");
+			// Inserting into database:
+			MarkLogicUtils.insertDocument(signedDoc, MarkLogicUtils.ACT_PROPOSAL);
 			
 		} catch (UnrecoverableKeyException e) {
 			e.printStackTrace();
