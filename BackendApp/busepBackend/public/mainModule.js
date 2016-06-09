@@ -110,7 +110,7 @@
 					$http.get('/encry')
 							.then(
 									function(response) {
-										console.log('xml encrypted');
+										console.log('xml transferred');
 									},
 									function(reason) {
 										console.error('xml not encrypted');
