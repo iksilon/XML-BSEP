@@ -16,7 +16,7 @@ GET		/documents/{count}								Utils.latestDocuments
 POST	/act/new										Acts.newAct
 
 GET		/xml/submit										Acts.submitXML
-GET		/encry/{doc}/{key}/{certificate}/{encryptTag}	EncryptXML.encrypt
+GET		/encry                                      	TransferXML.transfer
 GET		/encry/{doc}/{privateKey}						DecryptXML.decrypt
 # unosenje novog korisnika
 GET     /user/create/{uname}/{role}/{passwd}    		AddUser.addUser

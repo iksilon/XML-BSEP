@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><Propis xmlns="http://www.ftn.uns.ac.rs/propisi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Naziv="Propis" xsi:schemaLocation="http://www.ftn.uns.ac.rs/propisi file:/E:/Faks/BUSEP/Projekat/xml/Propis.xsd"><xenc:EncryptedData xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" Type="http://www.w3.org/2001/04/xmlenc#Content"><xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:KeyName>Kriptovani tajni kljuc</ds:KeyName>
+<xenc:EncryptedKey xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"><xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-1_5"/><xenc:CipherData><xenc:CipherValue>cQgQu7m70aX47BwToVfTbOd5Im0IQx3JDc+515T8yPKMZcnzIW8O1X0KiGMiE1XNJJw7JuMAnLcQ
+TZRCFSvrAyGSMawcKObYOT5jf76BlzsSbBL+3io6fNfWRCWW/HiM02u08F5Ekg91BdVRu7ZQMcmM
+dA/Ynx0pUhRM793rmK8=</xenc:CipherValue></xenc:CipherData></xenc:EncryptedKey></ds:KeyInfo><xenc:CipherData><xenc:CipherValue>f8bZ7j0k3ntAkAI2LPxgKQT8zPguVfUD2BEHNs3U1K1n/zySWREtnDuo9ez8M67cQdW4kCoPHLdD
+uJWLMy30Wi+WJX0oE2DC/easSBJacnjgoV/YFCMrb18G33c49XOeOhYvOaNy6A8t6i4tIB0XxKVY
+Xl3YWcOOvDNKQYOpJSPfOhvmduQ/wtEJ5bjy7Hsj8xEdhmRbvlCPgayj9frHoQ==</xenc:CipherValue></xenc:CipherData></xenc:EncryptedData></Propis>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><Propis xmlns="http://www.ftn.uns.ac.rs/propisi" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Naziv="Propis" xsi:schemaLocation="http://www.ftn.uns.ac.rs/propisi file:/E:/Faks/BUSEP/Projekat/xml/Propis.xsd">
+    <Clan Naziv="Chlanko" Redni_broj="303929012">
+        <Stav>
+            <Tekst>Stavko Stavić</Tekst>
+        </Stav>
+    </Clan>
+</Propis>

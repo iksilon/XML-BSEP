@@ -31,7 +31,7 @@ public class DecryptXML {
 	 * @param alias Alias KeyStore-a
 	 * @param password Lozinka KeyStore-a
 	 */
-	private PrivateKey readPrivateKey(String KEY_STORE_FILE, String alias, String password) {
+	public PrivateKey readPrivateKey(String KEY_STORE_FILE, String alias, String password) {
 		try {
 			//kreiramo instancu KeyStore
 			KeyStore ks = KeyStore.getInstance("JKS", "SUN");
@@ -73,7 +73,7 @@ public class DecryptXML {
 	/**
 	 * Kriptuje sadrzaj prvog elementa odsek
 	 */
-	private Document decrypt(Document doc, PrivateKey privateKey) {
+	public Document decrypt(Document doc, PrivateKey privateKey) {
 
 		try {
 			//cipher za dekritpovanje XML-a

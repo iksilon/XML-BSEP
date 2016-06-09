@@ -32,7 +32,7 @@ public class EncryptXML {
 		org.apache.xml.security.Init.init();
 	}
 
-	private SecretKey generateDataEncryptionKey() {
+	public SecretKey generateDataEncryptionKey() {
 
 		try {
 			KeyGenerator keyGenerator = KeyGenerator.getInstance("AES"); //Koristimo AES jer je brz i siguran
@@ -53,7 +53,7 @@ public class EncryptXML {
 	 * @param KEY_STORE_FILE putanja do keystore-a
 	 * @return Vraća pročitani sertifikat iz KeyStore fajla
 	 */
-	private Certificate readCertificate(String KEY_STORE_FILE, String alias, String password) {    //putanja do keystore-a
+	public Certificate readCertificate(String KEY_STORE_FILE, String alias, String password) {    //putanja do keystore-a
 		try {
 			//kreiramo instancu KeyStore
 			KeyStore ks = KeyStore.getInstance("JKS", "SUN");
@@ -99,7 +99,7 @@ public class EncryptXML {
 	 * @param encryptTag Tag od kojeg će se enkriptovati XML. Svi njegovi potomci se enkriptuju takođe.
 	 * @return Enkriptovan XML dokument
 	 */
-	private Document encrypt(Document doc, SecretKey key, Certificate certificate, String encryptTag) {
+	public Document encrypt(Document doc, SecretKey key, Certificate certificate, String encryptTag) {
 
 		try {
 			//cipher za kriptovanje tajnog kljuca,
