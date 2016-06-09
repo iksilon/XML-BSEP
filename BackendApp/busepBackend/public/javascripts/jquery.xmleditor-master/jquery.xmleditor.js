@@ -889,11 +889,18 @@ $.widget( "xml.xmlEditor", {
 		var xmlString = this.xml2Str(this.xmlState.xml);
 		$("." + submissionStatusClass).html("Submitting...");
 		var self = this;
+		var time = new Date().getTime(); // UTC
+		var shaTime = sha256(time.toString());
+		alert(time);
+		alert(shaTime);
 		$.ajax({
 			url : config.url,
 			contentType : "application/xml",
 			type : "POST",
 			data : xmlString,
+			headers: { 
+				'timestamp': time,
+				'timestamphash': shaTime },
 			success : function(response) {
 				// Process the response from the server using the provided response handler
 				// If the result of the handler evaluates true, then it is assumed to be an error

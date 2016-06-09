@@ -1,110 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
-    targetNamespace="http://www.parlament.gov.rs/akt" xmlns:akt="http://www.parlament.gov.rs/akt">
-    <xs:element name="Akt">
+    targetNamespace="http://www.ftn.uns.ac.rs/propisi" xmlns:pro="http://www.ftn.uns.ac.rs/propisi">
+    <xs:element name="Propis">
         <xs:complexType>
             <xs:choice>
                 <xs:sequence>
-                    <xs:element name="Deo" type="akt:Deo" maxOccurs="unbounded" minOccurs="2"/>
+                    <xs:element name="Deo" type="pro:Deo"/>
                 </xs:sequence>
                 <xs:sequence>
-                    <xs:element name="Glava" type="akt:Glava" maxOccurs="unbounded" minOccurs="2"/>
+                    <xs:element maxOccurs="20" name="Clan" type="pro:Clan"/>
                 </xs:sequence>
             </xs:choice>
-            <xs:attribute default="PREDLOZEN" name="status" type="akt:Status"/>
+            <xs:attribute name="Naziv" type="xs:string"/>
         </xs:complexType>
     </xs:element>
-    <xs:complexType name="Pododeljak">
+    <xs:complexType name="Deo">
         <xs:sequence>
-            <xs:element name="Naziv" type="xs:string"/>
-            <xs:element maxOccurs="unbounded" minOccurs="1" name="Clan" type="akt:Clan"/>
+            <xs:element maxOccurs="unbounded" minOccurs="1" name="Glava" type="pro:Glava"/>
         </xs:sequence>
-    </xs:complexType>
-    <xs:complexType name="Odeljak">
-        <xs:sequence>
-            <xs:element name="Naziv" type="xs:string"/>
-            <xs:choice>
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="2" name="Pododeljak"
-                        type="akt:Pododeljak"/>
-                </xs:sequence>
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="1" name="Clan" type="akt:Clan"/>
-                </xs:sequence>
-            </xs:choice>
-        </xs:sequence>
+        <xs:attribute name="Redni_broj" type="xs:string"/>
+        <xs:attribute name="Naziv" type="xs:string"/>
     </xs:complexType>
     <xs:complexType name="Glava">
         <xs:sequence>
-            <xs:element name="Naziv" type="xs:string"/>
-            <xs:choice>
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="2" name="Odeljak"
-                        type="akt:Odeljak"/>
-                </xs:sequence>
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" name="Clan" type="akt:Clan"/>
-                </xs:sequence>
-            </xs:choice>
+            <xs:element maxOccurs="unbounded" minOccurs="1" name="Odeljak" type="pro:Odeljak"/>
         </xs:sequence>
-        <xs:attribute name="redni_broj" type="xs:string"/>
+        <xs:attribute name="Naziv" type="xs:string"/>
+        <xs:attribute name="Redni_broj" type="xs:positiveInteger"/>
     </xs:complexType>
-    <xs:complexType name="Deo">
-        <xs:sequence>
-            <xs:element minOccurs="0" name="Naziv" type="xs:string"/>
-            <xs:element maxOccurs="unbounded" minOccurs="2" name="Glava" type="akt:Glava"/>
-        </xs:sequence>
-        <xs:attribute name="redni_broj" type="xs:string"/>
+    <xs:complexType name="Odeljak">
+        <xs:choice>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="1" name="Pododeljak"
+                    type="pro:Pododeljak"/>
+            </xs:sequence>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="1" name="Clan" type="pro:Clan"/>
+            </xs:sequence>
+        </xs:choice>
+        <xs:attribute name="Naziv" type="xs:string"/>
+        <xs:attribute name="Redni_broj" type="xs:positiveInteger"/>
     </xs:complexType>
-    <xs:complexType name="Podtacka">
+    <xs:complexType name="Pododeljak">
         <xs:sequence>
-            <xs:element name="Tekst" type="xs:string"/>
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="Alineja" type="xs:string"/>
+            <xs:element maxOccurs="unbounded" minOccurs="1" name="Clan" type="pro:Clan"/>
         </xs:sequence>
-        <xs:attribute name="redni_broj" type="xs:positiveInteger"/>
-    </xs:complexType>
-    <xs:complexType name="Tacka">
-        <xs:sequence>
-            <xs:element name="Tekst" type="xs:string"/>
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="Podtacka" type="akt:Podtacka"/>
-        </xs:sequence>
-        <xs:attribute name="redni_broj" type="xs:positiveInteger"/>
-    </xs:complexType>
-    <xs:complexType name="Stav">
-        <xs:sequence>
-            <xs:element name="Tekst" type="xs:string"/>
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="Tacka" type="akt:Tacka"/>
-        </xs:sequence>
+        <xs:attribute name="Naziv" type="xs:string"/>
+        <xs:attribute name="Slovo">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:length value="1"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
     </xs:complexType>
     <xs:complexType name="Clan">
         <xs:sequence>
-            <xs:element minOccurs="0" name="Naziv" type="xs:string"/>
-            <xs:element maxOccurs="unbounded" name="Stav" type="akt:Stav"/>
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="Amandman" type="akt:Amandman"/>
+            <xs:element maxOccurs="unbounded" name="Stav" type="pro:Stav"/>
         </xs:sequence>
-        <xs:attribute name="redni_broj" type="xs:positiveInteger"/>
+        <xs:attribute name="Redni_broj" type="xs:positiveInteger"/>
+        <xs:attribute name="Naziv" type="xs:string"/>
     </xs:complexType>
-    <xs:simpleType name="Status">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="USVOJEN"/>
-            <xs:enumeration value="ODBIJEN"/>
-            <xs:enumeration value="PREDLOZEN"/>
-            <xs:enumeration value="U_PROCESU"/>
-        </xs:restriction>
-    </xs:simpleType>
-    <xs:complexType name="Amandman">
-        <xs:sequence>
-            <xs:element name="Naziv" type="akt:NazivAmandmana"/>
-            <xs:element name="Clan" type="xs:string"/>
-        </xs:sequence>
+    <xs:complexType name="Stav">
+        <xs:choice>
+            <xs:element name="Tekst" type="pro:Tekst"/>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="2" name="Tacka" type="pro:Tacka"/>
+            </xs:sequence>
+        </xs:choice>
     </xs:complexType>
-    <xs:simpleType name="NazivAmandmana">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="Propis o izmeni"/>
-            <xs:enumeration value="Propis o dopuni"/>
-            <xs:enumeration value="Propis o izmeni i dopunama"/>
-            <xs:enumeration value="Propis o izmenama i dopuni"/>
-            <xs:enumeration value="Propis o izmenama i dopunama"/>
-        </xs:restriction>
-    </xs:simpleType>
+    <xs:complexType name="Tacka">
+        <xs:choice>
+            <xs:element name="Tekst" type="pro:Tekst"/>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="2" name="Podtacka" type="pro:Podtacka"
+                />
+            </xs:sequence>
+        </xs:choice>
+        <xs:attribute name="Redni_broj" type="xs:positiveInteger"/>
+    </xs:complexType>
+    <xs:complexType name="Podtacka">
+        <xs:choice>
+            <xs:element name="Tekst" type="pro:Tekst"/>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="2" name="Alineja" type="pro:Alineja"/>
+            </xs:sequence>
+        </xs:choice>
+        <xs:attribute name="Redni_broj" type="xs:positiveInteger"/>
+    </xs:complexType>
+    <xs:complexType name="Alineja">
+        <xs:simpleContent>
+            <xs:extension base="xs:string"/>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="Tekst">
+        <xs:simpleContent>
+            <xs:extension base="xs:string"/>
+        </xs:simpleContent>
+    </xs:complexType>
 </xs:schema>

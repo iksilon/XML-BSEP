@@ -22,7 +22,7 @@ POST	/xml/submit/final								Acts.submitFinal
 # Slanje XML-a arhivu
 POST	/xml/submit/archive								Acts.submitArchive
 
-GET		/xml/submit										Acts.submitXML
+POST	/xml/submit										Acts.submitXML
 GET		/encry                                      	TransferXML.transfer
 GET		/encry/{doc}/{privateKey}						DecryptXML.decrypt
 # unosenje novog korisnika
