@@ -5,16 +5,33 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.Properties;
 
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.DatabaseClientFactory;
 import com.marklogic.client.DatabaseClientFactory.Authentication;
+import com.marklogic.client.document.DocumentPatchBuilder;
+import com.marklogic.client.document.DocumentPatchBuilder.Position;
 import com.marklogic.client.document.XMLDocumentManager;
+import com.marklogic.client.io.DOMHandle;
 import com.marklogic.client.io.DocumentMetadataHandle;
 import com.marklogic.client.io.InputStreamHandle;
+import com.marklogic.client.io.marker.DocumentPatchHandle;
+import com.marklogic.client.util.EditableNamespaceContext;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
@@ -29,6 +46,7 @@ public class MarkLogicUtils {
 	public static final int ACT_PROPOSAL = 0;
 	public static final int AMENDMENT = 1;
 	public static final int ACT_FINAL = 2;
+	public static final int ARCHIVE = 3;
 	
 	//---------------------------------------------------------------------------------------------------
 	// Document handling
@@ -36,10 +54,10 @@ public class MarkLogicUtils {
 	
 	/**
 	 * Inserts a given XML {@link Document} into the XML database.
-	 * Database is specified in a property file.
+	 * Database is specified in the {@code connection.properties} file.
 	 * 
 	 * @param doc - {@link Document} object representing the XML document
-	 * @param collection - one of three possible collections specified in the static fields
+	 * @param collection - one of four possible collections specified in the static fields
 	 */
 	public static void insertDocument(Document doc, int collection) {
 		
@@ -58,6 +76,9 @@ public class MarkLogicUtils {
 				break;
 			case ACT_FINAL:
 				collectionID = "team27/finals";
+				break;
+			case ARCHIVE:
+				collectionID = "team27/archive";
 				break;
 			default:
 				System.out.println(">> ERROR: Bad collection ID <<\n giving up\n");
@@ -90,6 +111,117 @@ public class MarkLogicUtils {
 		
 	}
 	
+	/**
+	 * Reads a XML entry into a {@link Document} from the MarkLogic database specified in the {@code connection.properties}.
+	 * 
+	 * @param documentID - Full URI of the entry
+	 * @return {@link Document}
+	 */
+	public static Document readDocument(String documentID) {
+		
+		try {
+			// Connection parameters for the database.
+			System.out.println("> Loading connection properties.");
+			ConnectionProperties cn = loadProperties();
+			DatabaseClient client = DatabaseClientFactory.newClient(cn.host, cn.port, cn.database, cn.user, cn.password, cn.authType);
+			
+			// Create a document manager to work with XML files.
+			XMLDocumentManager xmlManager = client.newXMLDocumentManager();
+			
+			// Handles
+			DOMHandle content = new DOMHandle();
+			DocumentMetadataHandle metadata = new DocumentMetadataHandle();
+			
+			// Document section
+			System.out.println("Reading: " + documentID);
+			xmlManager.read(documentID, metadata, content);
+			Document doc = content.get();
+			client.release();
+			
+			return doc;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static void updateDocument(String documentID, Document amendment) {
+		try {
+			// Connection parameters for the database.
+			System.out.println("> Loading connection properties.");
+			ConnectionProperties cn = loadProperties();
+			
+			DatabaseClient client = DatabaseClientFactory.newClient(cn.host, cn.port, cn.database, cn.user, cn.password, cn.authType);
+			
+			// Create a document manager to work with XML files.
+			XMLDocumentManager xmlManager = client.newXMLDocumentManager();
+			
+			// Defining namespace mappings
+			System.out.println("> Namespace " + amendment.getDocumentElement().getPrefix() + " : " + amendment.getDocumentElement().getNamespaceURI());
+			EditableNamespaceContext namespaces = new EditableNamespaceContext();
+			namespaces.put(amendment.getDocumentElement().getPrefix(), amendment.getDocumentElement().getNamespaceURI());
+			namespaces.put("fn", "http://www.w3.org/2005/xpath-functions");
+			
+			// Assigning namespaces to patch builder
+			DocumentPatchBuilder patchBuilder = xmlManager.newPatchBuilder();
+			patchBuilder.setNamespaces(namespaces);
+			
+			// Data
+			Element predlogResenja = (Element)( amendment.getElementsByTagName("Predlog_resenja").item(0));
+			String tipPredloga = predlogResenja.getAttribute("tippredloga");
+			// Type of amendment
+			switch (tipPredloga) {
+			case "izmena": {
+				String tipElementa = predlogResenja.getAttribute("tipElementa");			
+				Element izmena = (Element)( predlogResenja.getElementsByTagName(tipElementa).item(0));
+				
+				String xpath = ((Element)(amendment.getElementsByTagName("Odredba").item(0))).getTextContent();
+				
+				patchBuilder.replaceFragment(xpath, izmena);
+				
+				DocumentPatchHandle patchHandle = patchBuilder.build();
+				xmlManager.patch(documentID, patchHandle);
+				client.release();
+				
+				break;
+			}
+			case "dopuna": {
+				String tipElementa = predlogResenja.getAttribute("tipElementa");			
+				Element izmena = (Element)( predlogResenja.getElementsByTagName(tipElementa).item(0));
+				
+				String xpath = ((Element)(amendment.getElementsByTagName("Odredba").item(0))).getTextContent();
+				
+				patchBuilder.insertFragment(xpath, Position.BEFORE, izmena);
+				
+				DocumentPatchHandle patchHandle = patchBuilder.build();
+				xmlManager.patch(documentID, patchHandle);
+				client.release();
+				
+				break;
+			}
+			case "brisanje": {				
+				String xpath = ((Element)(amendment.getElementsByTagName("Odredba").item(0))).getTextContent();
+				
+				patchBuilder.delete(xpath);
+				
+				DocumentPatchHandle patchHandle = patchBuilder.build();
+				xmlManager.patch(documentID, patchHandle);
+				client.release();
+				break;
+			}
+			default:
+				System.out.println("ERROR: Wrong amendment type.");
+				return;
+			}
+			
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Streams ----------------------------------------------------------------------
+	
 	 /**
 	  * Creates an {@link InputStream} from the given {@link Document}.
 	  * 
@@ -110,6 +242,37 @@ public class MarkLogicUtils {
 		XMLSerializer serializer = new XMLSerializer(outputStream, outputFormat);
 		serializer.serialize(document);
 		return new ByteArrayInputStream(outputStream.toByteArray());
+	}
+	
+	/**
+	 * Creates an {@link OutputStream} from the given {@link Node}.
+	 * This can then be used to print in the console or some other use.
+	 *
+	 * @param node - a node to be serialized, can also be a {@link Document}
+	 * @param out - an output stream to write the serialized DOM representation to
+	 * 
+	 */
+	public static void createOutputStream(Node node, OutputStream out) {
+		try {
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+
+			transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2");
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			
+			DOMSource source = new DOMSource(node);
+ 
+			StreamResult result = new StreamResult(out);
+
+			transformer.transform(source, result);
+			
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		} catch (TransformerFactoryConfigurationError e) {
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	

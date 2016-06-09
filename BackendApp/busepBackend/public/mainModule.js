@@ -96,7 +96,7 @@
 		
 		$rootScope.demoFs = {
 				submitXML: function() {
-					$http.get('/xml/submit')
+					$http.post('/xml/submit')
 						.then(
 								function(response) {
 									console.log('xml submitted');
