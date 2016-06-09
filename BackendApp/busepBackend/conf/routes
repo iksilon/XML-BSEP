@@ -15,6 +15,13 @@ GET		/documents										Utils.latestDocuments(count:'0')
 GET		/documents/{count}								Utils.latestDocuments
 POST	/act/new										Acts.newAct
 
+# Slanje XML-a iz editora:
+POST	/xml/submit/proposition							Acts.submitProposition
+POST	/xml/submit/amendment							Acts.submitAmendment
+POST	/xml/submit/final								Acts.submitFinal
+# Slanje XML-a arhivu
+POST	/xml/submit/archive								Acts.submitArchive
+
 GET		/xml/submit										Acts.submitXML
 GET		/encry                                      	TransferXML.transfer
 GET		/encry/{doc}/{privateKey}						DecryptXML.decrypt

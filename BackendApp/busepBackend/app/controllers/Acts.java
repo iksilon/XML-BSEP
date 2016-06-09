@@ -24,6 +24,21 @@ public class Acts extends AppController {
 		return new Ok();
 	}
 	
+	public static void submitProposition() {
+		
+	}
+	
+	public static void submitAmendment() {
+		
+	}
+	
+	public static void submitFinal() {
+		
+	}
+	
+	public static void submitArchive() {
+		
+	}
 	
 	public static void submitXML() {
 		// TODO: XML will be sent from the editor.
