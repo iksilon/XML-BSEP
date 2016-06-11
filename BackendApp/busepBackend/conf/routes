@@ -2,7 +2,7 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET		/login/{uname}/{pwd}							Login.logIn
+POST	/login											Login.logIn
 
 GET		/search											Search.show
 GET		/respawnschck									Utils.csrfCheck

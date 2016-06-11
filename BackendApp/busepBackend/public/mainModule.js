@@ -7,7 +7,9 @@
 	    			var time = new Date().getTime();
     				request.headers.timestamp = time; // UTC
     				request.headers.timestampHash = sha256(time.toString());
-    				request.headers.username = $rootScope.user.username;
+    				if($rootScope.user != undefined && $rootScope.user != null) {
+    					request.headers.username = $rootScope.user.username;
+    				}
     				
 	    			return request;
 	    		}

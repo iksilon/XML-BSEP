@@ -1,10 +1,9 @@
 package controllers;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,39 +12,38 @@ import com.google.gson.Gson;
 import controllers.hashAndSaltUtils.HashAndSaltUtil;
 import models.User;
 import play.cache.Cache;
-import play.mvc.Controller;
 import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
 
 public class Login extends AppController {
-	
-	public static Result logIn(String uname, String pwd/*, String body*/) {
-		// param 'body' i sledece dve linije su ako zelimo da pokupimo JSON iz requesta
-		// param se mora zvati 'body'
-//		Object json = new Gson().fromJson(body, Object.class);
-//		System.out.println(json);
+	/**
+	 * Metoda za logovanje korisnika
+	 * @param body - JSON podaci u "telu" request objekta
+	 * @return {@link play.mvc.results.Result} u zavisnosti od podataka u {@code body}
+	 */
+	public static Result logIn(String body) {
+		ArrayList<String> data = new Gson().fromJson(body, ArrayList.class);
+		String uname = data.get(0);
+		String pwd = data.get(1);
 		
-		//TODO: OVO VEZANO ZA TIMESTAMP ZA SVAKI REQUEST TREBA
-//		String tsString = request.headers.get("timestamp").value();
-//		String tsHashString = request.headers.get("timestamphash").value();
-//		
-//		int tsCheck = Utils.checkTimestamp(tsString, tsHashString);		
-		if(timestampCheckResult == 1) {
-			return new BadRequest("Invalid request");
-		}
-		else if(timestampCheckResult == 2) {
+		//TODO: TIMESTAMP: OVO VEZANO ZA TIMESTAMP ZA SVAKI REQUEST TREBA
+		//TODO: TIMESTAMP (i ostalo): Mislim da je ovako najbolje, samo vratiti "request fail" ako nesto nije u redu, jer drukcije dajemo neke informacije
+		if(timestampCheckResult != 0) {
+//			return new BadRequest("Invalid request");
+//		}
+//		else if(timestampCheckResult == 2) {
 			return new play.mvc.results.Error("Request processing failed");
+//		}
+//		else if(timestampCheckResult == 3) {
+//			return new BadRequest("Request timed out");
 		}
-		else if(timestampCheckResult == 3) {
-			return new BadRequest("Request timed out");
-		}
-		//KRAJ TIMESTAMP PROVERE
+		//TODO: TIMESTAMP: KRAJ TIMESTAMP PROVERE
 		
 		User loggedUser = User.find("byUsername", uname).first();
 		if (loggedUser == null) {
-			return new BadRequest("Invalid login");
+			return new BadRequest("Invalid login"); //TODO: TIMESTAMP pogledati komentar za timestamp
 		}
 
 		HashAndSaltUtil hasu = new HashAndSaltUtil();
