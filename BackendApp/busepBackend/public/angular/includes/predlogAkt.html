@@ -1,26 +1,5 @@
-<md-content layout="column" ng-cloak>
 <md-content layout="row">
 <md-content layout="column" flex="95">
-<!-- 	<div data-ng-include data-src="'angular/includes/act/optionsMenu.html'"></div> -->
-<!-- 	<div data-ng-include data-src="'angular/includes/act/documentInput.html'" layout="column"></div> -->
-<!-- 		<div id="xml_editor"> -->
-<!-- 		</div> -->
-		<xml-editor></xml-editor>
-<!--  		<script>
-// 		$(function() {
-// 			alert("A");
-// 			$("#xml_editor").xmlEditor({
-// 				confirmExitWhenUnsubmitted: true,
-// 				documentTitle : "Novi akt",
-// 				ajaxOptions: {
-// 					xmlUploadPath: "/xml/submit",
-// 					xmlRetrievalPath: "../../xml/akt.xml"
-// 				},
-// 				schema : "../../xml-schema/akt.json"
-// 			});
-// 			alert("B");
-// 		});
-  		</script> -->
-</md-content>
+		<xml-editor schema="akt" doc="akt" root="akt"></xml-editor>
 </md-content>
 </md-content>
