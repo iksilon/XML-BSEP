@@ -34,28 +34,36 @@
 	        }
 	    };
 	})
-	.directive("xmlEditor", function($http) {
+	.directive("xmlEditor", function() {
 		return {
-//			restrict: 'AE',
+			restrict: 'E',
 //			scope: {
-//				xmlEditorScope: '=xmlEditor'
+//				schemaName: '=schema',
+//				docName: '=doc',
+//				rootElement: '=root'
 //			},
-//			template: '<div id="xml_editor"></div>', //<script>$("#xml_editor").xmlEditor({documentTitle : "Novi akt",ajaxOptions: {xmlRetrievalPath: "/xml/akt.xml"},schema : "/xml-schema/akt.json"});</script>
 			link: function(scope, elem, attrs) {
-				var extractor = new Xsd2Json("akt.xsd", {"schemaURI":"/xml-schema/", "rootElement":"akt"});
-//				var extractor = new Xsd2Json("Propis.xsd", {"schemaURI":"/xml-schema/", "rootElement":"Propis"});
+				if(attrs.doc == undefined || attrs.doc == null) {
+					attrs.doc = attrs.schema;
+				}
+				if(attrs.root == undefined || attrs.root == null) {
+					attrs.root = attrs.schema;
+				}
+				
+				var extractor = new Xsd2Json(attrs.schema + '.xsd', {'schemaURI':'/xml-schema/', 'rootElement': attrs.root});
+
 				$(elem).xmlEditor({
 					confirmExitWhenUnsubmitted: true,
-					documentTitle : "Novi akt",
+					documentTitle : attrs.doc,
 					ajaxOptions: {
-						xmlUploadPath: "/xml/submit",
-						xmlRetrievalPath: "/xml/akt2.xml"
+						xmlUploadPath: '/xml/submit',
+						xmlRetrievalPath: '/xml/' + attrs.doc + '.xml'
 					},
 					libPath: "/javascripts/jquery.xmleditor-master/lib/",
 					schema : extractor.xsdManager.originatingRoot
-				});  //extractor.xsdManager.originatingRoot //"/xml-schema/akt.json"
+				});
 				
-				scope.root = elem;
+//				scope.root = elem;
 		    }
 		}
 	});
