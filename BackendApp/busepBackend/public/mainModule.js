@@ -58,11 +58,11 @@
 		})
 		.when("/odbornik", {
 			templateUrl: "angular/routes/panelOdbornik.html",
-			controller: "PanelCtrl"
+			controller: "OdbornikCtrl"
 		})
 		.when("/highlord", {
 			templateUrl: "angular/routes/panelHighlord.html",
-			controller: "PanelCtrl"
+			controller: "PredsednikCtrl"
 		})
 		.when("/wa", {
 			templateUrl: "angular/routes/panelWebAdmin.html",

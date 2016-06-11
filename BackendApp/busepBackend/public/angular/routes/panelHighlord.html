@@ -1,3 +1,23 @@
-<md-content>
-	jos nista
+<md-card>
+<md-content layout="row">
+	<md-card flex="30" id="toastParent" class="docList">
+		<md-toolbar layout="row" class="md-hue-3">
+	      <div class="md-toolbar-tools">
+	        <span>Dokumenti u proceduri</span>
+	      </div>
+	    </md-toolbar>
+		<md-list id="toastParent">
+			<md-list-item ng-repeat="doc in docList" class="noright">
+				<h4>{{ doc.title }}</h4>
+				<md-content class="md-secondary">
+					<md-button class="sm-btn material-icons" aria-label="Usvoji" ng-click="docAccept(doc)">done</md-button>
+					<md-button class="sm-btn material-icons" aria-label="Odbij" ng-click="docReject(doc)">clear</md-button>
+				</md-content>
+			</md-list-item>
+		</md-list>
+	</md-card>
+	<md-card flex>
+		asd
+	</md-card>
 </md-content>
+</md-card>

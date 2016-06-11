@@ -3,24 +3,17 @@
 
 	//TODO mozda bolje kao servis, koji koriste (trenutno nepostojeci) kontroleri za odbornika i predsednika
 	//radi lakse provere da li je u pitanju korisnik koji ne treba da ima pristup ovom delu aplikacije
-	app.controller('PanelCtrl', function($scope, $window, $http, $rootScope) {
+	app.controller('OdbornikCtrl', function($window, $rootScope) {
 		$rootScope.mainPage = false;
 		
 		var user = $rootScope.user; // cuvacemo u Java Web Token (JWT),
 		// POST-om saljemo na server, server skonta koji je user,
 		// i vrati username i sta god vec treba
-
-//		(function() {
-//			if ($rootScope.user.role != 0 && $rootScope.user.role != 1) {
-//				$window.location.href = "#/";
-//			}
-//		}());
-
-		if (user == undefined || user == null) {
+		if (user.role.name != "Odbornik") {
 			$window.location.href = "#/";
 		}
 
-		$scope.aktData = [{
+		/*$scope.aktData = [{
 								'tip' : '',
 								'oznaka' : '',
 								'ustanova' : '',
@@ -119,6 +112,6 @@
 		};
 		$scope.predloziAmandman = function() {
 
-		};
+		};*/
 	});
 }());

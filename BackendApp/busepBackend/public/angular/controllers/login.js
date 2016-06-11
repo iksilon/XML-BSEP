@@ -19,16 +19,15 @@
 						},
 						function(reason) {
 							$mdToast.show({
-								template: '<md-toast><center>Prijava neuspešna</center></md-toast>',
+								template: '<md-toast>Prijava neuspešna</md-toast>',
 								hideDelay: 3000,
 								position: 'top',
 								parent: '#toastParent'
 							});
-							console.log(reason.data); //ukloniti kasnije
 						}
 				);
 			$mdToast.show({
-				template: '<md-toast><center>Prijava u toku</center></md-toast>',
+				template: '<md-toast>Prijava u toku</md-toast>',
 				hideDelay: 0,
 				position: 'top',
 				parent: '#toastParent'

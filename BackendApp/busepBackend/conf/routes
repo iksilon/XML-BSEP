@@ -11,8 +11,9 @@ GET		/ts												Utils.getTimestamp
 #GET		/login										Login.show
 GET		/logout/{uname}									Login.logOut
 
-GET		/documents										Utils.latestDocuments(count:'0')
-GET		/documents/{count}								Utils.latestDocuments
+GET		/acts											Utils.latestDocuments(count:'0')
+GET		/acts/{count}									Utils.latestDocuments
+GET		/acts/proc										Acts.inProcedure
 POST	/act/new										Acts.newAct
 
 # Slanje XML-a iz editora:
