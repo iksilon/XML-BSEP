@@ -6,15 +6,14 @@ POST	/login											Login.logIn
 
 GET		/search											Search.show
 GET		/respawnschck									Utils.csrfCheck
-GET		/ts												Utils.getTimestamp
 
-#GET		/login										Login.show
 GET		/logout/{uname}									Login.logOut
+POST	/loginCheck										Login.check
 
-GET		/acts											Utils.latestDocuments(count:'0')
-GET		/acts/{count}									Utils.latestDocuments
+GET		/acts											Acts.latestDocuments(count:'0')
+GET		/acts/{count}									Acts.latestDocuments
 GET		/acts/proc										Acts.inProcedure
-POST	/act/new										Acts.newAct
+#POST	/act/new										Acts.newAct
 
 # Slanje XML-a iz editora:
 POST	/xml/submit/proposition							Acts.submitProposition

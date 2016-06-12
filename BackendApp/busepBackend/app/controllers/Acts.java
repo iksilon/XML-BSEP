@@ -2,7 +2,6 @@ package controllers;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -17,14 +16,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import play.mvc.Controller;
-import play.mvc.With;
 import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
+import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
 import utils.MarkLogicUtils;
 import utils.SecurityUtils;
-import utils.XMLUtils;
 
 public class Acts extends AppController {
 	
@@ -148,5 +145,18 @@ public class Acts extends AppController {
 			e.printStackTrace();
 		}
 		*/
+	}
+	
+	public static Result inProcedure() {
+		//TODO: Uzeti akte iz baze koji jos nisu usvojeni i vratiti u JSON/XML-tekst formatu
+		
+		return new RenderJson(""); //ili sta vec bude trebalo
+	}
+
+	public static Result latestDocuments(int count) {
+		//TODO: Uzeti COUNT akata iz baze koji su usvojeni i vratiti listu u JSON formatu
+		//JSON je moguce dobiti ObjectMapper-om (zahteva try-catch) i Gson-om (ne zahteva try-catch)
+
+		return new RenderJson(""); //ili sta vec bude trebalo
 	}
 }

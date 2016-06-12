@@ -133,7 +133,16 @@
 				}
 		};
 		
-		$rootScope.user = $cookies.getObject('user'); //za sad se cuva u cookie
+		var user = $cookies.getObject('user'); //za sad se cuva u cookie
+		$http.post('/loginCheck', user)
+			.then(
+					function(response) {
+						$rootScope.user = user;
+					},
+					function(reason) {
+						$rootScope.user = undefined;
+					}
+			);
 		
 		$rootScope.logout = function() {
 			$http.get('/logout/' + $rootScope.user.username)
