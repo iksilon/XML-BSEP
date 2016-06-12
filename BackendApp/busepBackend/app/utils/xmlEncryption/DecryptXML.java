@@ -25,52 +25,6 @@ public class DecryptXML {
 	}
 
 	/**
-	 * Ucitava privatni kljuc is KS fajla
-	 *
-	 * @param KEY_STORE_FILE putanja do keystore-a
-	 * @param alias Alias KeyStore-a
-	 * @param password Lozinka KeyStore-a
-	 */
-	public PrivateKey readPrivateKey(String KEY_STORE_FILE, String alias, String password) {
-		try {
-			//kreiramo instancu KeyStore
-			KeyStore ks = KeyStore.getInstance("JKS", "SUN");
-			//ucitavamo podatke
-			BufferedInputStream in = new BufferedInputStream(new FileInputStream(KEY_STORE_FILE));
-			ks.load(in, password.toCharArray());
-
-			if(ks.isKeyEntry(alias)) {
-				PrivateKey pk = (PrivateKey) ks.getKey(alias, password.toCharArray());
-				return pk;
-			}
-			else
-				return null;
-
-		} catch (KeyStoreException e) {
-			e.printStackTrace();
-			return null;
-		} catch (NoSuchProviderException e) {
-			e.printStackTrace();
-			return null;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		} catch (CertificateException e) {
-			e.printStackTrace();
-			return null;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		} catch (UnrecoverableKeyException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	/**
 	 * Kriptuje sadrzaj prvog elementa odsek
 	 */
 	public Document decrypt(Document doc, PrivateKey privateKey) {
