@@ -11,8 +11,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.google.gson.annotations.Expose;
 
 import play.db.jpa.Model;
 
@@ -20,15 +19,18 @@ import play.db.jpa.Model;
 public class Role extends Model {
 	
 	@Column(length = 50, nullable = false)
+	@Expose
 	public String name;
 
 	@OneToMany(fetch=FetchType.EAGER, mappedBy="role")
 	@JsonIgnore
+//	@Expose(serialize=false, deserialize=false)
 	public List<User> users = new ArrayList<User>();
 	
 	@ManyToMany
 	@JoinTable(name="ROLE_PERMISSIONS")
 	@JsonIgnore
+//	@Expose(serialize=false, deserialize=false)
 	public List<Permission> permissions = new ArrayList<Permission>();
 	
 	public Role() {

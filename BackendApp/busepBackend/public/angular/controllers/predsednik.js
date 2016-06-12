@@ -32,6 +32,7 @@
 
 		$scope.docAccept = function(doc) {
 			//TODO http zahtev, pa ovo u success funkciju
+//			$http.post('')
 			$mdToast.show({
 				template: '<md-toast>Dokument \'' + doc.title + '\' prihvaćen</md-toast>',
 				hideDelay: 3000,

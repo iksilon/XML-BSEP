@@ -6,6 +6,7 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.gson.annotations.Expose;
 
 import play.db.jpa.Model;
 
@@ -13,24 +14,29 @@ import play.db.jpa.Model;
 public class User extends Model {
 
 	@Column(length = 30, unique = true, nullable = false)
+	@Expose
 	public String username;
 
 	@Column(nullable = false)
 	@JsonIgnore
+//	@Expose(serialize=false, deserialize=false)
 	public String password;
 
 	@Column(name = "PASSWORD_SALT")
 	@JsonIgnore
+//	@Expose(serialize=false, deserialize=false)
 	public String salt;
 
 	@Column(length = 150)
+	@Expose
 	public String name;
 	
 	@Column(name = "LAST_NAME", length = 150)
+	@Expose
 	public String lastName;
 
 	@ManyToOne(fetch=FetchType.EAGER)
-//	@JsonIgnore
+	@Expose
 	public Role role;
 
 	public User() {

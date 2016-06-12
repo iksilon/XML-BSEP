@@ -32,9 +32,10 @@ GET		/xml-schema/									staticDir:xml-schema
 GET		/xml/											staticDir:xml
 
 # za uzimanje podataka o korisnicima
-GET		/users/highlord									Utils.usersByRole(role:'0')
-GET		/users/odbornici								Utils.usersByRole(role:'1')
-GET		/users/usersAll									Utils.usersByRole(role:'-1')
+GET		/users/highlord									Utils.usersByRole(roleId:'1')
+GET		/users/odbornici								Utils.usersByRole(roleId:'2')
+#GET		/users/list										Utils.usersList
+GET		/users/usersAll									Utils.usersByRole(roleId:'-1')
 
 GET		/get/panelIds/{uname}							Utils.getPanelIds
 POST	/set/deoId/{uname}								Utils.setDeoId

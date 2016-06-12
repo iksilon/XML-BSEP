@@ -20,15 +20,16 @@
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.css">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-	<script src="angular/controllers/index.js"></script>
+<!-- 	<script src="angular/controllers/index.js"></script> -->
+	<script src="mainModule.js"></script>
 	<script src="angular/controllers/login.js"></script>
 	<script src="angular/controllers/latestActs.js"></script>
 	<script src="angular/controllers/akti.js"></script>
+	<script src="angular/controllers/odbornici.js"></script>
 	<script src="angular/controllers/odbornik.js"></script>
 	<script src="angular/controllers/predsednik.js"></script>
 	<script src="angular/controllers/search.js"></script>
 	<script src="angular/controllers/webAdmin.js"></script>
-	<script src="mainModule.js"></script>
 	<script src="appDirectives.js"></script>
 </head>
 <body ng-app="mainApp" ng-cloak>
@@ -65,7 +66,7 @@
 					<md-button class="md-warn md-raised" ng-click="demoFs.submitXML()">Potpis (demo)</md-button>
 					<md-button class="md-warn md-raised" ng-click="demoFs.encrXML()">XML enkriptovani transfer (trial)</md-button>
 <!--					<md-button class="md-warn md-raised" ng-click="demoFs.decrXML()">XML Dekripcija (eval)</md-button>-->
-					<md-button go-click="/" ng-if="!mainPage">Povratak</md-button>
+<!-- 					<md-button go-click="/" ng-if="!mainPage">Povratak</md-button> -->
 				</span>
 				<span>
 					<md-button class="md-warn" go-click="/login" ng-if="user == undefined || user == null">Prijava</md-button>

@@ -1,5 +1,5 @@
 (function() {
-	var app = angular.module('mainApp');
+	var app = angular.module('mainApp', ['ngMaterial', 'ngMessages', 'ngRoute', 'ngCookies']);
 
 	app.factory('timestampInterceptor', function($rootScope) {  
 	    var timestampInterceptor = {
@@ -21,20 +21,28 @@
 		$httpProvider.interceptors.push('timestampInterceptor');
 		$routeProvider
 		.when("/", {
-			templateUrl: "angular/routes/main.html",
-			controller: "IndexCtrl"			
+			templateUrl: "angular/routes/odbornici.html",
+			controller: "OdborniciCtrl"
+//			templateUrl: "angular/routes/main.html",
+//			controller: "IndexCtrl"			
 		})
 		.when("/main", {
-			templateUrl: "angular/routes/main.html",
-			controller: "IndexCtrl"
+			templateUrl: "angular/routes/odbornici.html",
+			controller: "OdborniciCtrl"
+//			templateUrl: "angular/routes/main.html",
+//			controller: "IndexCtrl"
 		})
 		.when("/index", {
-			templateUrl: "angular/routes/main.html",
-			controller: "IndexCtrl"
+			templateUrl: "angular/routes/odbornici.html",
+			controller: "OdborniciCtrl"
+//			templateUrl: "angular/routes/main.html",
+//			controller: "IndexCtrl"
 		})
 		.when("/home", {
-			templateUrl: "angular/routes/main.html",
-			controller: "IndexCtrl"
+			templateUrl: "angular/routes/odbornici.html",
+			controller: "OdborniciCtrl"
+//			templateUrl: "angular/routes/main.html",
+//			controller: "IndexCtrl"
 		})
 		.when("/odbornici", {
 			templateUrl: "angular/routes/odbornici.html",
