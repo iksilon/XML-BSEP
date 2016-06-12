@@ -83,6 +83,6 @@ public class Login extends AppController {
 			return new Ok();
 		}
 		
-		return new NotFound("Not logged in");
+		return new NotFound("");
 	}
 }
