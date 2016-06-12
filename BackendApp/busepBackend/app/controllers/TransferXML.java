@@ -1,7 +1,7 @@
 package controllers;
 
-import controllers.xmlEncryption.DecryptXML;
-import controllers.xmlEncryption.EncryptXML;
+import utils.xmlEncryption.DecryptXML;
+import utils.xmlEncryption.EncryptXML;
 import org.w3c.dom.Document;
 import play.mvc.results.Ok;
 import play.mvc.results.Result;

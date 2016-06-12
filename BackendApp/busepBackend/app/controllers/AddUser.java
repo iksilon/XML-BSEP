@@ -1,9 +1,8 @@
 package controllers;
 
-import controllers.hashAndSaltUtils.HashAndSaltUtil;
+import utils.hashAndSaltUtils.HashAndSaltUtil;
 import models.Role;
 import models.User;
-import play.mvc.Controller;
 import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
 import play.mvc.results.Result;

@@ -1,4 +1,4 @@
-package controllers.hashAndSaltUtils;
+package utils.hashAndSaltUtils;
 
 import models.User;
 import sun.misc.BASE64Decoder;

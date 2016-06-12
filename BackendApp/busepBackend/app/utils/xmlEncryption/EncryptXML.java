@@ -1,4 +1,4 @@
-package controllers.xmlEncryption;
+package utils.xmlEncryption;
 
 import org.apache.xml.security.encryption.EncryptedData;
 import org.apache.xml.security.encryption.EncryptedKey;
@@ -9,14 +9,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;

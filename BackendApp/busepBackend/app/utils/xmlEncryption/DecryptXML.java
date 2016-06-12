@@ -1,4 +1,4 @@
-package controllers.xmlEncryption;
+package utils.xmlEncryption;
 
 import org.apache.xml.security.encryption.XMLCipher;
 import org.apache.xml.security.encryption.XMLEncryptionException;
