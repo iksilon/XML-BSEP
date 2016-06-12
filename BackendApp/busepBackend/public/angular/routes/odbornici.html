@@ -1,3 +1,20 @@
-<md-content layout="row" layout-align="center">
-	OVI JAKO VOLU DA KRADU
+<md-card layout="row" layout-align="center">
+<md-content layout="column" layout-align="center" flex>
+<!-- 	<md-toolbar layout="row" layout-align="center" class="md-hue-3" flex> -->
+<!-- 		<div class="md-toolbar-tools"> -->
+<!-- 			<span>Odbornici</span> -->
+<!-- 		</div> -->
+<!-- 	</md-toolbar> -->
+	<md-list flex="95">
+		<md-subheader class="md-no-sticky" id="toastParent1" flex="95">Predsednici</md-subheader>
+		<md-list-item ng-repeat="user in predList" class="noright">
+			<h2>{{user.name}} {{user.lastName}}</h2>
+		</md-list-item>
+		
+		<md-subheader class="md-no-sticky" id="toastParent2" flex="95">Odbornici</md-subheader>
+		<md-list-item ng-repeat="user in odbList" class="noright">
+			<h2>{{user.name}} {{user.lastName}}</h2>
+		</md-list-item>
+	</md-list>
 </md-content>
+</md-card>

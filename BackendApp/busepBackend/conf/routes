@@ -6,14 +6,14 @@ POST	/login											Login.logIn
 
 GET		/search											Search.show
 GET		/respawnschck									Utils.csrfCheck
-GET		/ts												Utils.getTimestamp
 
-#GET		/login										Login.show
 GET		/logout/{uname}									Login.logOut
+POST	/loginCheck										Login.check
 
-GET		/documents										Utils.latestDocuments(count:'0')
-GET		/documents/{count}								Utils.latestDocuments
-POST	/act/new										Acts.newAct
+GET		/acts											Acts.latestDocuments(count:'0')
+GET		/acts/{count}									Acts.latestDocuments
+GET		/acts/proc										Acts.inProcedure
+#POST	/act/new										Acts.newAct
 
 # Slanje XML-a iz editora:
 POST	/xml/submit/proposition							Acts.submitProposition
@@ -32,9 +32,10 @@ GET		/xml-schema/									staticDir:xml-schema
 GET		/xml/											staticDir:xml
 
 # za uzimanje podataka o korisnicima
-GET		/users/highlord									Utils.usersByRole(role:'0')
-GET		/users/odbornici								Utils.usersByRole(role:'1')
-GET		/users/usersAll									Utils.usersByRole(role:'-1')
+GET		/users/highlord									Utils.usersByRole(roleId:'1')
+GET		/users/odbornici								Utils.usersByRole(roleId:'2')
+#GET		/users/list										Utils.usersList
+GET		/users/usersAll									Utils.usersByRole(roleId:'-1')
 
 GET		/get/panelIds/{uname}							Utils.getPanelIds
 POST	/set/deoId/{uname}								Utils.setDeoId

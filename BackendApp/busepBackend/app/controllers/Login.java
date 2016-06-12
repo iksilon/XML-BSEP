@@ -13,6 +13,7 @@ import controllers.hashAndSaltUtils.HashAndSaltUtil;
 import models.User;
 import play.cache.Cache;
 import play.mvc.results.BadRequest;
+import play.mvc.results.NotFound;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
@@ -51,13 +52,7 @@ public class Login extends AppController {
 			if (!hasu.authenticate(pwd, loggedUser)) {
 				return new BadRequest("Invalid login");
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			return new play.mvc.results.Error("Request processing failed");
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return new play.mvc.results.Error("Request processing failed");
-		} catch (InvalidKeySpecException e) {
+		} catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
 			e.printStackTrace();
 			return new play.mvc.results.Error("Request processing failed");
 		}
@@ -65,19 +60,12 @@ public class Login extends AppController {
 		ObjectMapper om = new ObjectMapper();		
 		try {
 			Cache.set(loggedUser.username, loggedUser);
-			Cache.set(loggedUser.username + "DeoId", 1);
-			Cache.set(loggedUser.username + "ClanId", 1);
 			return new RenderJson(/*Utils.responseTimestamp(*/om.writeValueAsString(loggedUser));
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			Cache.delete(loggedUser.username);
-			Cache.delete(loggedUser.username + "DeoId");
-			Cache.delete(loggedUser.username + "ClanId");
 			return new play.mvc.results.Error("Unable to log in");
 		}
-		// Proslediti uvek username kad je neka akcija koja zavisi od korisnika (npr predlaganje amandmana)
-		//potrebno radi pronalazenja korisnika u Cache, jer je kljuc njegov username
-		//takodje, korisnika ukloniti iz Cache kad se izloguje
 	}
 	
 	public static Result logOut(String uname) {
@@ -85,5 +73,16 @@ public class Login extends AppController {
 		Cache.delete(uname + "DeoId");
 		Cache.delete(uname + "ClanId");
 		return new Ok();
+	}
+	
+	public static Result check(String body) {
+		User user = new Gson().fromJson(body, User.class);
+		User cached = (User) Cache.get(user.username);
+		
+		if(cached != null && cached.id == user.id) {
+			return new Ok();
+		}
+		
+		return new NotFound("Not logged in");
 	}
 }

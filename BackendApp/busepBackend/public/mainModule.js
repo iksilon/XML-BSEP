@@ -1,5 +1,5 @@
 (function() {
-	var app = angular.module('mainApp');
+	var app = angular.module('mainApp', ['ngMaterial', 'ngMessages', 'ngRoute', 'ngCookies']);
 
 	app.factory('timestampInterceptor', function($rootScope) {  
 	    var timestampInterceptor = {
@@ -21,20 +21,28 @@
 		$httpProvider.interceptors.push('timestampInterceptor');
 		$routeProvider
 		.when("/", {
-			templateUrl: "angular/routes/main.html",
-			controller: "IndexCtrl"			
+			templateUrl: "angular/routes/odbornici.html",
+			controller: "OdborniciCtrl"
+//			templateUrl: "angular/routes/main.html",
+//			controller: "IndexCtrl"			
 		})
 		.when("/main", {
-			templateUrl: "angular/routes/main.html",
-			controller: "IndexCtrl"
+			templateUrl: "angular/routes/odbornici.html",
+			controller: "OdborniciCtrl"
+//			templateUrl: "angular/routes/main.html",
+//			controller: "IndexCtrl"
 		})
 		.when("/index", {
-			templateUrl: "angular/routes/main.html",
-			controller: "IndexCtrl"
+			templateUrl: "angular/routes/odbornici.html",
+			controller: "OdborniciCtrl"
+//			templateUrl: "angular/routes/main.html",
+//			controller: "IndexCtrl"
 		})
 		.when("/home", {
-			templateUrl: "angular/routes/main.html",
-			controller: "IndexCtrl"
+			templateUrl: "angular/routes/odbornici.html",
+			controller: "OdborniciCtrl"
+//			templateUrl: "angular/routes/main.html",
+//			controller: "IndexCtrl"
 		})
 		.when("/odbornici", {
 			templateUrl: "angular/routes/odbornici.html",
@@ -58,11 +66,11 @@
 		})
 		.when("/odbornik", {
 			templateUrl: "angular/routes/panelOdbornik.html",
-			controller: "PanelCtrl"
+			controller: "OdbornikCtrl"
 		})
 		.when("/highlord", {
 			templateUrl: "angular/routes/panelHighlord.html",
-			controller: "PanelCtrl"
+			controller: "PredsednikCtrl"
 		})
 		.when("/wa", {
 			templateUrl: "angular/routes/panelWebAdmin.html",
@@ -133,7 +141,16 @@
 				}
 		};
 		
-		$rootScope.user = $cookies.getObject('user'); //za sad se cuva u cookie
+		var user = $cookies.getObject('user'); //za sad se cuva u cookie
+		$http.post('/loginCheck', user)
+			.then(
+					function(response) {
+						$rootScope.user = user;
+					},
+					function(reason) {
+						$rootScope.user = undefined;
+					}
+			);
 		
 		$rootScope.logout = function() {
 			$http.get('/logout/' + $rootScope.user.username)
