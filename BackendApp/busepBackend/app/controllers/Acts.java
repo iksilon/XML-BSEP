@@ -20,6 +20,7 @@ import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
+import utils.KeystoreUtils;
 import utils.MarkLogicUtils;
 import utils.SecurityUtils;
 
@@ -60,7 +61,7 @@ public class Acts extends AppController {
 			
 			// TODO: User will be extracted.
 			String kp = "odbornik1";
-			KeyStore ks = SecurityUtils.getKeyStore("odbornik1.jks", kp.toCharArray());
+			KeyStore ks = KeystoreUtils.getKeyStore("odbornik1.jks", kp.toCharArray());
 			System.out.println(">> Loaded default user odbornik1");
 			
 			PrivateKey pk = (PrivateKey) ks.getKey(kp, kp.toCharArray());
