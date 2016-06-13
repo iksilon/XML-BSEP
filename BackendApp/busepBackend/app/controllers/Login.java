@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
-import controllers.hashAndSaltUtils.HashAndSaltUtil;
+import utils.hashAndSaltUtils.HashAndSaltUtil;
 import models.User;
 import play.cache.Cache;
 import play.mvc.results.BadRequest;

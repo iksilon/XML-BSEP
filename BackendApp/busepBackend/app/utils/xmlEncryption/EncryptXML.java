@@ -1,4 +1,4 @@
-package controllers.xmlEncryption;
+package utils.xmlEncryption;
 
 import org.apache.xml.security.encryption.EncryptedData;
 import org.apache.xml.security.encryption.EncryptedKey;
@@ -9,14 +9,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;
@@ -43,53 +38,6 @@ public class EncryptXML {
 			return null;
 		}
 	}
-
-	/**
-	 * <p>Čita sertifikat iz kojeg će izvući ključ koji je potreban za enkripciju.</p>
-	 * <p>Primer parametra KEY_STORE_FILE je: </p>
-	 * <p><code>String KEY_STORE_FILE = "./data/primer.jks";</code></p>
-	 *
-	 *
-	 * @param KEY_STORE_FILE putanja do keystore-a
-	 * @return Vraća pročitani sertifikat iz KeyStore fajla
-	 */
-	public Certificate readCertificate(String KEY_STORE_FILE, String alias, String password) {    //putanja do keystore-a
-		try {
-			//kreiramo instancu KeyStore
-			KeyStore ks = KeyStore.getInstance("JKS", "SUN");
-			//ucitavamo podatke
-			BufferedInputStream in = new BufferedInputStream(new FileInputStream(KEY_STORE_FILE));
-			//učitavamo keystore iz inputStream-a
-			ks.load(in, password.toCharArray());    //drugi parametar je šifra keystore-a
-
-			if (ks.isKeyEntry(alias)) {
-				Certificate cert = ks.getCertificate(alias);
-				return cert;
-
-			} else
-				return null;
-
-		} catch (KeyStoreException e) {
-			e.printStackTrace();
-			return null;
-		} catch (NoSuchProviderException e) {
-			e.printStackTrace();
-			return null;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		} catch (CertificateException e) {
-			e.printStackTrace();
-			return null;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
 
 	/**
 	 *
