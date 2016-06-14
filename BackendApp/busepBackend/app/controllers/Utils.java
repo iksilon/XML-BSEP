@@ -2,11 +2,12 @@ package controllers;
 
 import java.util.List;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import models.Role;
 import models.User;
+import play.cache.Cache;
+import play.mvc.results.NotFound;
 import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
 
@@ -35,6 +36,15 @@ public class Utils extends AppController {
 	    builder.excludeFieldsWithoutExposeAnnotation();
 //	    final Gson gson = builder.create();
 		return new RenderJson(builder.create().toJson(users, List.class));
+	}
+	
+	public static Result getUserMessageNumber() {
+		Object msgNum = Cache.get(request.headers.get("username").value() + "msgNum");
+		if(msgNum == null) {
+			return new NotFound("");
+		}
+		
+		return new RenderJson(Long.parseLong(msgNum.toString()));
 	}
 	
 //	public static Result usersList() {

@@ -891,8 +891,6 @@ $.widget( "xml.xmlEditor", {
 		var self = this;
 		var time = new Date().getTime(); // UTC
 		var shaTime = sha256(time.toString());
-		alert(time);
-		alert(shaTime);
 		$.ajax({
 			url : config.url,
 			contentType : "application/xml",
