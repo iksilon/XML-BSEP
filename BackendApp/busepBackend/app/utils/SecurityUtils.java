@@ -201,6 +201,13 @@ public class SecurityUtils {
 		return crl.isRevoked(cert);
 	}
 	
+	/**
+	 * Checks whether certificate was revoked after signing the document.
+	 * 
+	 * @param time - {@link Long} milliseconds, timestamp of the signature
+	 * @param cert - {@link X509Certificate}
+	 * @return
+	 */
 	public static boolean wasSignedBeforeRevocation(Long time, X509Certificate cert) {
 		String workingDir = System.getProperty("user.dir");
 		workingDir = Paths.get(workingDir, "crls", "rootca.crl").toString();
