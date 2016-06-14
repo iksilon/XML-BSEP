@@ -165,7 +165,21 @@
 							$cookies.remove("user");
 						}
 				);
-		}
+		};
+		
+		$rootScope.sekund = {
+				click: function() {
+					$http.post('http://localhost:9090/xml/submit')
+						.then(
+								function(response) {
+									alert("ASD");
+								},
+								function(reason) {
+									alert("e jebiga ne moze");
+								}
+						);
+				}
+		};
 		
 		$rootScope.logout = function() {
 			$http.get('/logout/' + $rootScope.user.username)
@@ -178,6 +192,6 @@
 						function(reason) {
 							console.error(reason.data);
 						});
-		}
+		};
 	});
 }());

@@ -36,9 +36,9 @@ GET		/users/odbornici								Utils.usersByRole(roleId:'2')
 #GET		/users/list										Utils.usersList
 GET		/users/usersAll									Utils.usersByRole(roleId:'-1')
 
-GET     /		                                		staticDir:public
 # Import Secure routes
-*      /                								module:secure
+#*      	/sec               								module:secure
+GET     /		                                		staticDir:public
 
 # Catch all
 *       /{controller}/{action}                  		{controller}.{action}
