@@ -62,7 +62,7 @@ public class Acts extends AppController {
 			System.out.println(">> Document signed.");
 			
 			// Inserting into database:
-			MarkLogicUtils.insertDocument(signedDoc, type);
+			MarkLogicUtils.insertDocument(signedDoc, type, username);
 			
 			System.out.println(">> Document inserted into database.");
 			

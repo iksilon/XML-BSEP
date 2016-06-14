@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.Calendar;
 import java.util.Properties;
 
 import javax.xml.transform.OutputKeys;
@@ -59,7 +60,7 @@ public class MarkLogicUtils {
 	 * @param doc - {@link Document} object representing the XML document
 	 * @param collection - one of four possible collections specified in the static fields
 	 */
-	public static void insertDocument(Document doc, int collection) {
+	public static void insertDocument(Document doc, int collection, String user) {
 		
 		try {
 			System.out.println("Beginning database insert:");
@@ -99,6 +100,10 @@ public class MarkLogicUtils {
 			// Document section
 			String documentID = doc.getDocumentElement().getAttribute("Naziv");
 			//TODO: Proveri da li ima naziv.
+			if(documentID.equals("") || documentID == null) {
+				documentID = documentID.concat(user).concat(String.valueOf(Calendar.getInstance().getTimeInMillis()));
+			}
+			doc.getDocumentElement().setAttribute("Naziv", documentID);
 			documentID = documentID.concat(".xml");
 			System.out.println("Inserting: " + documentID);
 			InputStreamHandle ish = new InputStreamHandle(createInputStream(doc, false));
