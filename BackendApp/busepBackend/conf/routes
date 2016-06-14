@@ -3,12 +3,11 @@
 # ~~~~
 
 POST	/login											Login.logIn
-
+GET		/msgnum											Utils.getUserMessageNumber
 GET		/search											Search.show
-GET		/respawnschck									Utils.csrfCheck
 
 GET		/logout/{uname}									Login.logOut
-POST	/loginCheck										Login.check
+POST	/loginCheck										Login.loginCheck
 
 GET		/acts											Acts.latestDocuments(count:'0')
 GET		/acts/{count}									Acts.latestDocuments
@@ -37,13 +36,9 @@ GET		/users/odbornici								Utils.usersByRole(roleId:'2')
 #GET		/users/list										Utils.usersList
 GET		/users/usersAll									Utils.usersByRole(roleId:'-1')
 
-GET		/get/panelIds/{uname}							Utils.getPanelIds
-POST	/set/deoId/{uname}								Utils.setDeoId
-POST	/set/clanId/{uname}								Utils.setClanId
-
 GET     /		                                		staticDir:public
 # Import Secure routes
-#*      /                								module:secure
+*      /                								module:secure
 
 # Catch all
 *       /{controller}/{action}                  		{controller}.{action}

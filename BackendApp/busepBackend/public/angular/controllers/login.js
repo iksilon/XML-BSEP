@@ -10,6 +10,15 @@
 				.then(
 						function(response) {
 							$rootScope.user = response.data;
+//							$http.get('/msgnum')
+//							.then(
+//									function(response) {
+//										$rootScope.user.msgNum = response.data;
+//									},
+//									function(reason) {
+//										$window.location.href = "#/";
+//									}
+//							);
 							
 							var now = new Date(),
 						    exp = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);

@@ -2,6 +2,7 @@
 
 require:
     - play
+    - play -> secure
     - play -> db 1.1.1
     - com.fasterxml.jackson.core -> jackson-core 2.7.4
     - com.fasterxml.jackson.core -> jackson-annotations 2.7.4

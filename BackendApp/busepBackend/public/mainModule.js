@@ -9,6 +9,7 @@
     				request.headers.timestampHash = sha256(time.toString());
     				if($rootScope.user != undefined && $rootScope.user != null) {
     					request.headers.username = $rootScope.user.username;
+    					request.headers.msgNum = ++$rootScope.user.msgNum;
     				}
     				
 	    			return request;
@@ -17,7 +18,7 @@
 
 	    return timestampInterceptor;
 	})
-	.config(function($routeProvider, $httpProvider){ //, $locationProvider
+	.config(function($routeProvider, $httpProvider, $locationProvider){ //, $locationProvider
 		$httpProvider.interceptors.push('timestampInterceptor');
 		$routeProvider
 		.when("/", {
@@ -79,11 +80,10 @@
 		.otherwise({
 			redirectTo:"/"
 		});
-	})
-	.run(function($rootScope, $cookies, $http, $window) {
-		$rootScope.lastMsgNum = 0;
-		$rootScope.lastTimestamp = null;
 		
+//		$locationProvider.html5Mode(true);
+	})
+	.run(function($rootScope, $cookies, $http, $window) {		
 		$rootScope.userMenuChecks = {
 				isPredsednik: function(userRole) {
 					if(userRole != 1) {
@@ -142,15 +142,30 @@
 		};
 		
 		var user = $cookies.getObject('user'); //za sad se cuva u cookie
-		$http.post('/loginCheck', user)
-			.then(
-					function(response) {
-						$rootScope.user = user;
-					},
-					function(reason) {
-						$rootScope.user = undefined;
-					}
-			);
+		if(user != undefined || user != null) {
+			$http.post('/loginCheck', user)
+				.then(
+						function(response) {
+							$rootScope.user = response.data;
+							var now = new Date(),
+						    exp = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);
+							$cookies.putObject("user", $rootScope.user, {"expires":exp, "path":"/"}); //za sad se cuva u cookie
+//							$http.get('/msgnum')
+//								.then(
+//										function(response) {
+//											$rootScope.user.msgNum = response.data;
+//										},
+//										function(reason) {
+//											$window.location.href = "#/";
+//										}
+//								);
+						},
+						function(reason) {
+							$rootScope.user = undefined;
+							$cookies.remove("user");
+						}
+				);
+		}
 		
 		$rootScope.logout = function() {
 			$http.get('/logout/' + $rootScope.user.username)

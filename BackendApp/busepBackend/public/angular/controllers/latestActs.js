@@ -19,7 +19,7 @@
 						template: '<md-toast>Greška pri preuzimanju dokumenata</md-toast>',
 						hideDelay: 3000,
 						position: 'top right',
-						parent: '#toastParent'
+						parent: '#toastParentActs'
 					});
 				}
 		);
