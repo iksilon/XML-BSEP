@@ -237,4 +237,5 @@ public class MainWindow extends JFrame {
 	public JLabel getLblCurrentKeystore() {	return lblCurrentKeystore; }
 	
 	public Action getActSaveAs() { return actSaveAs; }
+	public Action getActKeypair() { return actKeypair; }
 }

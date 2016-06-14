@@ -94,6 +94,7 @@ public class KeyStoreUtils {
 		try {
 			keystore.store(new FileOutputStream(filepath), password);
 			Arrays.fill(password, '0');
+			JOptionPane.showMessageDialog(MainWindow.getInstance(), "Keystore saved to " + filepath);
 		} catch (KeyStoreException e) {
 			e.printStackTrace();
 			Arrays.fill(password, '0');

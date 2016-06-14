@@ -33,7 +33,7 @@ public class ActionOpen extends AbstractAction {
 		
 		// Set default file chooser directory. Create the dialog.
 		String workingDir = System.getProperty("user.dir");
-		workingDir = Paths.get(workingDir, "certificates").toString();
+		workingDir = Paths.get(workingDir, "keystores").toString();
 		JFileChooser chooser = new JFileChooser(workingDir);
 	    FileNameExtensionFilter filter = new FileNameExtensionFilter("Java keystore files", "jks");
 	    chooser.setFileFilter(filter);
