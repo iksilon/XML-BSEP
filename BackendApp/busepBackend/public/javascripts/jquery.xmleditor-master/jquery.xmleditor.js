@@ -891,14 +891,21 @@ $.widget( "xml.xmlEditor", {
 		var self = this;
 		var time = new Date().getTime(); // UTC
 		var shaTime = sha256(time.toString());
+		var headers = {
+				timestamp: time,
+				timestamphash: shaTime
+		};
+		var rootScope = angular.element($('#latestActs')).scope().$root;
+		if(rootScope.user != undefined && rootScope.user != null) {
+			headers.username = rootScope.user.username;
+			headers.msgNum = ++rootScope.user.msgNum;
+		}
 		$.ajax({
 			url : config.url,
 			contentType : "application/xml",
 			type : "POST",
 			data : xmlString,
-			headers: { 
-				'timestamp': time,
-				'timestamphash': shaTime },
+			headers: headers,
 			success : function(response) {
 				// Process the response from the server using the provided response handler
 				// If the result of the handler evaluates true, then it is assumed to be an error
