@@ -1,29 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Propis xmlns="http://www.ftn.uns.ac.rs/propisi"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://www.ftn.uns.ac.rs/propisi file:/E:/Faks/BUSEP/Projekat/xml/Propis.xsd" Naziv="Propis">
-    <Clan Naziv="Chlanko" Redni_broj="303929012">
+<Propis xmlns="http://www.ftn.uns.ac.rs/propisi"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.ftn.uns.ac.rs/propisi file:/R:/CETVRTA%20GODINA/XML-BSEP-Projekat/XML-BSEP/xml/Propis.xsd">
+    <Clan>
         <Stav>
-            <Tekst>Stavko Stavić</Tekst>
+            <Tekst>Ba2yltYuOSBum-NAHY5FJ</Tekst>
+        </Stav>
+        <Stav>
+            <Tacka>
+                <Tekst>GLYO_dPvo7hYFIIav</Tekst>
+            </Tacka>
+            <Tacka>
+                <Podtacka>
+                    <Tekst>urnI-PX1N-WN9pdXMOj1Sp1FfID</Tekst>
+                </Podtacka>
+                <Podtacka>
+                    <Tekst>QjLq</Tekst>
+                </Podtacka>
+            </Tacka>
         </Stav>
     </Clan>
-    <Clan Naziv="Chlanko1" Redni_broj="303929212">
+    <Clan>
         <Stav>
-            <Tekst>Stavko Stavić</Tekst>
+            <Tekst>QKykYDGgMV561FXJx</Tekst>
         </Stav>
-    </Clan>
-    <Clan Naziv="Chlanko2" Redni_broj="303929312">
         <Stav>
-            <Tekst>Stavko Stavić</Tekst>
-        </Stav>
-    </Clan>
-    <Clan Naziv="Chlanko3" Redni_broj="303929032">
-        <Stav>
-            <Tekst>Stavko Stavić</Tekst>
-        </Stav>
-    </Clan>
-    <Clan Naziv="Chlanko4" Redni_broj="303929022">
-        <Stav>
-            <Tekst>Stavko Stavić</Tekst>
+            <Tacka>
+                <Tekst>SgJ</Tekst>
+            </Tacka>
+            <Tacka>
+                <Podtacka>
+                    <Alineja>c</Alineja>
+                    <Alineja>nomjK0cxN</Alineja>
+                </Podtacka>
+                <Podtacka>
+                    <Tekst>_G</Tekst>
+                </Podtacka>
+            </Tacka>
         </Stav>
     </Clan>
 </Propis>
