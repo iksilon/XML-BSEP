@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<am:Dokument xmlns:pro="http://www.ftn.uns.ac.rs/propisi"
+ xmlns:am="http://www.ftn.uns.ac.rs/amandman"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.ftn.uns.ac.rs/amandman file:/E:/Faks/BUSEP/Projekat/xml/Amandman.xsd">
+    <am:Pravni_osnov>Pf3</am:Pravni_osnov>
+    <am:Predlog_propisa>MtY9gK7qlB5AomAzDqRoDaOU</am:Predlog_propisa>
+    <am:Amandman>
+        <am:Odredba>v_o0.c1o209vWqYS5trExpo03Su</am:Odredba>
+        <am:Predlog_resenja>
+            <am:Tacka>
+                <pro:Podtacka>
+                    <pro:Tekst>eWI_Zc</pro:Tekst>
+                </pro:Podtacka>
+                <pro:Podtacka>
+                    <pro:Tekst>yvAS24GDAs8fQzKj4</pro:Tekst>
+                </pro:Podtacka>
+            </am:Tacka>
+        </am:Predlog_resenja>
+        <am:Obrazlozenje>ysNNYzsS8sU_bl_hgV8y</am:Obrazlozenje>
+    </am:Amandman>
+    <am:Amandman>
+        <am:Odredba>r0eovdPqdLkp-p1_GyDaFL5rN</am:Odredba>
+        <am:Predlog_resenja>
+            <am:Alineja>HL2XA</am:Alineja>
+        </am:Predlog_resenja>
+        <am:Obrazlozenje>o7PUkrIhMiTkI6SiTBO</am:Obrazlozenje>
+    </am:Amandman>
+</am:Dokument>

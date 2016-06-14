@@ -19,8 +19,17 @@ public class AppController extends Controller {
 //	protected static int timestampCheckResult = -1;
 //	protected static boolean msgNumOk;
 	
-	@Before(priority=1)
-	static Result csrfCheck() {
+//	@Before(priority=1)
+//	static Result csrfOriginCheck() {
+//		Header hOrig = request.headers.get("origin");
+//		
+//		
+//		// nastavi normalno
+//		return new BadRequest("Invalid referer");
+//	}
+//	
+	@Before(priority=2)
+	static Result csrfRefererCheck() {
 		Header hRef = request.headers.get("referer");
 		if(hRef != null) {
 			List<String> refVals = hRef.values;
@@ -38,7 +47,7 @@ public class AppController extends Controller {
 		return new BadRequest("Invalid referer");
 	}
 	
-	@Before(unless={"Login.logIn", "Login.loginCheck", "Utils.getUserMessageNumber", "Utils.usersByRole"}, priority=2)
+	@Before(unless={"Login.logIn", "Login.loginCheck", "Utils.getUserMessageNumber", "Utils.usersByRole"}, priority=3)
 	static Result checkMsgNum() {
 		Header hMsgNum = request.headers.get("msgnum");
 		Header hUname = request.headers.get("username");
@@ -80,7 +89,7 @@ public class AppController extends Controller {
 		return null;
 	}
 	
-	@Before(priority=3)
+	@Before(priority=4)
 	static Result checkTimestamp() {		
 		String tsString = request.headers.get("timestamp").value();
 		String tsHashString = request.headers.get("timestamphash").value();
