@@ -98,6 +98,7 @@ public class MarkLogicUtils {
 			
 			// Document section
 			String documentID = doc.getDocumentElement().getAttribute("Naziv");
+			//TODO: Proveri da li ima naziv.
 			documentID = documentID.concat(".xml");
 			System.out.println("Inserting: " + documentID);
 			InputStreamHandle ish = new InputStreamHandle(createInputStream(doc, false));

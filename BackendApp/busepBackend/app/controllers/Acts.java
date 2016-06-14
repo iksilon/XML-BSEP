@@ -16,6 +16,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import models.User;
+import play.cache.Cache;
 import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
@@ -42,30 +44,18 @@ public class Acts extends AppController {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			doc = db.parse(is);
 			System.out.println(">> Document parsed.");
-			/*
-			// TODO: XML will be sent from the editor.
-			org.apache.xml.security.Init.init();
 			
-			System.out.println("Beginning signature demo:");
-			String workingDir = System.getProperty("user.dir");
-			workingDir = Paths.get(workingDir, "public").toString();
+			// Get user data.
+			//TODO:? Check if it's really them
+			String username = request.headers.get("username").value();
+			User loggedUser = User.find("byUsername", username).first();
+			String pass = loggedUser.password;
 			
-			System.out.println("> Files located at: " + workingDir);
+			KeyStore ks = KeystoreUtils.getKeyStore(username+".jks", pass.toCharArray());
+			System.out.println(">> Loaded user: " + username);
 			
-			String sorcPath = Paths.get(workingDir, "placeholder1.xml").toString();
-			
-			Document xmlDoc = XMLUtils.loadDocument(sorcPath);
-			
-			System.out.println("> Loaded placehoder1.xml");
-			*/
-			
-			// TODO: User will be extracted.
-			String kp = "odbornik1";
-			KeyStore ks = KeystoreUtils.getKeyStore("odbornik1.jks", kp.toCharArray());
-			System.out.println(">> Loaded default user odbornik1");
-			
-			PrivateKey pk = (PrivateKey) ks.getKey(kp, kp.toCharArray());
-			Certificate cert = ks.getCertificate(kp);
+			PrivateKey pk = (PrivateKey) ks.getKey(username, pass.toCharArray());
+			Certificate cert = ks.getCertificate(username);
 			
 			Document signedDoc = SecurityUtils.signDocument(doc, pk, cert);
 			
