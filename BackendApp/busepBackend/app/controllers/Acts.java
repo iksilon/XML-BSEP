@@ -34,6 +34,15 @@ public class Acts extends AppController {
 		return new Ok();
 	}
 	
+	/**
+	 * Takes over the specific document type submission and handles it.
+	 * This includes checking is the user has a valid certificate, 
+	 * signing the created document and pushing the document to XML database.
+	 * 
+	 * @param type - What kind of document is to be submitted.
+	 * Takes one of the static values from {@link MarkLogicUtils}.
+	 * @return {@link Result} back to the frontend.
+	 */
 	private static Result handleSubmission(int type) {
 		
 		System.out.println("\n------------- Starting PROPOSITION submission ----------------");
@@ -97,23 +106,25 @@ public class Acts extends AppController {
 		return new Ok();
 		
 	}
+
+	/**
+	 * Route used to submit propositions. Sends the request off for handling.
+	 */
+	public static void submitProposition() { handleSubmission(MarkLogicUtils.ACT_PROPOSAL);	}
+	/**
+	 * Route used to submit amendments. Sends the request off for handling.
+	 */
+	public static void submitAmendment() { handleSubmission(MarkLogicUtils.AMENDMENT); }
+	/**
+	 * Route used to submit final document versions. Sends the request off for handling.
+	 */
+	public static void submitFinal() { handleSubmission(MarkLogicUtils.ACT_FINAL); }
 	
-	public static void submitProposition() {
-		handleSubmission(MarkLogicUtils.ACT_PROPOSAL);
-	}
-	
-	public static void submitAmendment() {
-		handleSubmission(MarkLogicUtils.AMENDMENT);
-	}
-	
-	public static void submitFinal() {
-		handleSubmission(MarkLogicUtils.ACT_FINAL);
-	}
-	
+	@Deprecated
 	public static Result submitArchive() {
 		return new BadRequest("Do not use this any more.");
 	}
-	
+	@Deprecated
 	public static void submitXML() {
 		org.apache.xml.security.Init.init();
 		handleSubmission(MarkLogicUtils.ACT_PROPOSAL);
@@ -125,9 +136,10 @@ public class Acts extends AppController {
 		return new RenderJson(""); //ili sta vec bude trebalo
 	}
 
+	@Deprecated
 	public static Result latestDocuments(int count) {
 		//TODO: Uzeti COUNT akata iz baze koji su usvojeni i vratiti listu u JSON formatu
-		//JSON je moguce dobiti ObjectMapper-om (zahteva try-catch) i Gson-om (ne zahteva try-catch)
+		//Ovo zajebi.
 
 		return new RenderJson(""); //ili sta vec bude trebalo
 	}

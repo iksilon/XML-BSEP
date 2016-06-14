@@ -99,7 +99,6 @@ public class MarkLogicUtils {
 			
 			// Document section
 			String documentID = doc.getDocumentElement().getAttribute("Naziv");
-			//TODO: Proveri da li ima naziv.
 			if(documentID.equals("") || documentID == null) {
 				documentID = documentID.concat(user).concat(String.valueOf(Calendar.getInstance().getTimeInMillis()));
 			}
