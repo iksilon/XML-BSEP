@@ -20,6 +20,7 @@ import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
+import utils.KeystoreUtils;
 import utils.MarkLogicUtils;
 import utils.SecurityUtils;
 
@@ -41,10 +42,26 @@ public class Acts extends AppController {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			doc = db.parse(is);
 			System.out.println(">> Document parsed.");
+			/*
+			// TODO: XML will be sent from the editor.
+			org.apache.xml.security.Init.init();
+			
+			System.out.println("Beginning signature demo:");
+			String workingDir = System.getProperty("user.dir");
+			workingDir = Paths.get(workingDir, "public").toString();
+			
+			System.out.println("> Files located at: " + workingDir);
+			
+			String sorcPath = Paths.get(workingDir, "placeholder1.xml").toString();
+			
+			Document xmlDoc = XMLUtils.loadDocument(sorcPath);
+			
+			System.out.println("> Loaded placehoder1.xml");
+			*/
 			
 			// TODO: User will be extracted.
 			String kp = "odbornik1";
-			KeyStore ks = SecurityUtils.getKeyStore("odbornik1.jks", kp.toCharArray());
+			KeyStore ks = KeystoreUtils.getKeyStore("odbornik1.jks", kp.toCharArray());
 			System.out.println(">> Loaded default user odbornik1");
 			
 			PrivateKey pk = (PrivateKey) ks.getKey(kp, kp.toCharArray());
@@ -103,48 +120,6 @@ public class Acts extends AppController {
 	public static void submitXML() {
 		org.apache.xml.security.Init.init();
 		handleSubmission(MarkLogicUtils.ACT_PROPOSAL);
-		
-		/*
-		// TODO: XML will be sent from the editor.
-		org.apache.xml.security.Init.init();
-		
-		System.out.println("Beginning signature demo:");
-		String workingDir = System.getProperty("user.dir");
-		workingDir = Paths.get(workingDir, "public").toString();
-		
-		System.out.println("> Files located at: " + workingDir);
-		
-		String sorcPath = Paths.get(workingDir, "placeholder1.xml").toString();
-		
-		Document xmlDoc = XMLUtils.loadDocument(sorcPath);
-		
-		System.out.println("> Loaded placehoder1.xml");
-		
-		// TODO: User will be extracted.
-		String kp = "odbornik1";
-		KeyStore ks = SecurityUtils.getKeyStore("odbornik1.jks", kp.toCharArray());
-		
-		System.out.println("> Loaded default user odbornik1");
-		
-		try {
-			PrivateKey pk = (PrivateKey) ks.getKey(kp, kp.toCharArray());
-			Certificate cert = ks.getCertificate(kp);
-			
-			Document signedDoc = SecurityUtils.signDocument(xmlDoc, pk, cert);
-			
-			System.out.println("> Document signed.");
-			
-			// Inserting into database:
-			MarkLogicUtils.insertDocument(signedDoc, MarkLogicUtils.ACT_PROPOSAL);
-			
-		} catch (UnrecoverableKeyException e) {
-			e.printStackTrace();
-		} catch (KeyStoreException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		*/
 	}
 	
 	public static Result inProcedure() {

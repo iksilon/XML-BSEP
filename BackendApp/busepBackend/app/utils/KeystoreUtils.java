@@ -6,9 +6,11 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.util.Arrays;
 
 /**
  * <p>Util za rad sa keystore-om.</p>
@@ -117,5 +119,44 @@ public class KeystoreUtils {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	/**
+	 * Retrieves a {@link KeyStore} from the keystore folder of the application.
+	 * Since this is a private folder, all keystores needed for this app should be there.
+	 * 
+	 * @param ksName - Name of keystore, including extension (e.g. "keystore.jks")
+	 * @param ksPass - Password to access the keystore
+	 * @return {@link KeyStore}
+	 */
+	public static KeyStore getKeyStore(String ksName, char[] ksPass) {
+		String workingDir = System.getProperty("user.dir");
+		workingDir = Paths.get(workingDir, "keystores").toString();
+		
+		String filepath = Paths.get(workingDir, ksName).toString();
+		
+		BufferedInputStream in;
+		KeyStore keystore = null;
+		try {
+			in = new BufferedInputStream(new FileInputStream(filepath));
+			keystore = KeyStore.getInstance("JKS", "SUN");
+			keystore.load(in, ksPass);
+			// Clean up.
+			Arrays.fill(ksPass, '0');
+		} catch (KeyStoreException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (CertificateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	
+		return keystore;
 	}
 }

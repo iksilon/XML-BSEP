@@ -1,24 +1,20 @@
 package utils;
 
-import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.SignedObject;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.CRLException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 
 import org.apache.xml.security.exceptions.XMLSecurityException;
 import org.apache.xml.security.keys.KeyInfo;
@@ -145,45 +141,45 @@ public class SecurityUtils {
 		}
 	}
 	
-
 	/**
-	 * Retrieves a {@link KeyStore} from the keystore folder of the application.
-	 * Since this is a private folder, all keystores needed for this app should be there.
+	 * Opens the specified CRL file.
 	 * 
-	 * @param ksName - Name of keystore, including extension (e.g. "keystore.jks")
-	 * @param ksPass - Password to access the keystore
-	 * @return {@link KeyStore}
+	 * @param path - {@link String} representing the file path
+	 * @return {@link X509Certificate}
 	 */
-	public static KeyStore getKeyStore(String ksName, char[] ksPass) {
-		String workingDir = System.getProperty("user.dir");
-		workingDir = Paths.get(workingDir, "app", "keystores").toString();
-		
-		// TODO: Signing: Hardcoded keystore for now.
-		String filepath = Paths.get(workingDir, ksName).toString();
-		
-		BufferedInputStream in;
-		KeyStore keystore = null;
+	public static X509CRL openCRLFromFile(String path) {
 		try {
-			in = new BufferedInputStream(new FileInputStream(filepath));
-			keystore = KeyStore.getInstance("JKS", "SUN");
-			keystore.load(in, ksPass);
-			// Clean up.
-			Arrays.fill(ksPass, '0');
-		} catch (KeyStoreException e) {
-			e.printStackTrace();
+			FileInputStream fis = new FileInputStream(path);			
+			CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			X509CRL crl = (X509CRL) cf.generateCRL(fis);
+			System.out.println(crl);
+			
+			return crl;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} catch (NoSuchProviderException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			return null;
 		} catch (CertificateException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (CRLException e) {
 			e.printStackTrace();
 		}
+		
+		return null;
+	}
 	
-		return keystore;
+	/**
+	 * Checks against the default CRL whether the given {@link Certificate} is revoked.
+	 * 
+	 * @param cert - {@link Certificate} to be checked.
+	 * @return boolean - true if the certificate is revoked, false otherwise
+	 */
+	public static boolean isCertificateRevoked(Certificate cert) {
+		String workingDir = System.getProperty("user.dir");
+		workingDir = Paths.get(workingDir, "keystores", "rootca.crl").toString();
+		
+		X509CRL crl = openCRLFromFile(workingDir);
+		
+		return crl.isRevoked(cert);
 	}
 
 }

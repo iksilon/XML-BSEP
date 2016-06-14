@@ -37,6 +37,7 @@ import actions.certificate.ActionImportCertificate;
 import actions.certificate.ActionKeypair;
 import actions.certificate.ActionRevokeCertificate;
 import actions.keystore.ActionKeystore;
+import actions.keystore.ActionKeystoreFromUser;
 import actions.keystore.ActionOpen;
 import actions.keystore.ActionSave;
 import actions.keystore.ActionSaveAs;
@@ -78,6 +79,7 @@ public class MainWindow extends JFrame {
 	private final Action actImportCertificate = new ActionImportCertificate();
 	private final Action actCRL = new ActionCreateCRL();
 	private final Action actRevoke = new ActionRevokeCertificate();
+	private final Action actKeystoreFromUser = new ActionKeystoreFromUser();
 	
 	
 	// Singleton ----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -134,6 +136,9 @@ public class MainWindow extends JFrame {
 			JMenu mnFile = new JMenu("File");										menuBar.add(mnFile);
 			JMenu mntmNew = new JMenu("New");										mnFile.add(mntmNew);
 			JMenuItem mntmKeystore = mntmNew.add(actKeystore);						mntmKeystore.setText("Keystore");
+			
+			JMenuItem mntmFromUser = mntmNew.add(actKeystoreFromUser);
+			mntmFromUser.setText("Keystore from User");
 			JMenuItem mntmKeypair = mntmNew.add(actKeypair);						mntmKeypair.setText("Keypair");
 						
 						JMenuItem mntmCRL = mntmNew.add(actCRL);
@@ -232,6 +237,4 @@ public class MainWindow extends JFrame {
 	public JLabel getLblCurrentKeystore() {	return lblCurrentKeystore; }
 	
 	public Action getActSaveAs() { return actSaveAs; }
-	
-	
 }
