@@ -3,18 +3,15 @@ package utils;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
-import java.security.InvalidKeyException;
 import java.security.PrivateKey;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.security.SignedObject;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.CRLException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509CRL;
+import java.security.cert.X509CRLEntry;
 import java.security.cert.X509Certificate;
+import java.util.Calendar;
 
 import org.apache.xml.security.exceptions.XMLSecurityException;
 import org.apache.xml.security.keys.KeyInfo;
@@ -70,7 +67,8 @@ public class SecurityUtils {
 			
 			// Enveloped signature.
 			rootEl.appendChild(sig.getElement());
-			    
+			rootEl.setAttribute("timestamp", String.valueOf(Calendar.getInstance().getTimeInMillis()));
+			
 			// Sign the document.
 			sig.sign(privateKey);
 			
@@ -107,7 +105,8 @@ public class SecurityUtils {
 			XMLSignature signature = new XMLSignature(signatureEl, null);
 			
 			KeyInfo keyInfo = signature.getKeyInfo();
-			// Is there a key?
+			
+			// Is there key info?
 			if(keyInfo != null) {
 				// Register public key and certificate resolvers.
 				keyInfo.registerInternalKeyResolver(new RSAKeyValueResolver());
@@ -116,9 +115,29 @@ public class SecurityUtils {
 			    //Is certificate contained?
 			    if(keyInfo.containsX509Data() && keyInfo.itemX509Data(0).containsCertificate()) {
 			        Certificate cert = keyInfo.itemX509Data(0).itemCertificate(0).getX509Certificate();
+			        
 			        // Is certificate existing?
 			        if(cert != null) {
-			        	return signature.checkSignatureValue((X509Certificate) cert);
+			        	
+			        	// Is certificate still valid?
+			        	if(!SecurityUtils.isCertificateRevoked(cert)) {
+			        		
+			        		// Check signature validity.
+			        		return signature.checkSignatureValue((X509Certificate) cert);
+			        	}
+			        	else {
+			        		String time = doc.getDocumentElement().getAttribute("timestamp");
+			        		Long millis = Long.getLong(time);
+			        		
+			        		// Was certificate valid when this was signed?
+			        		if(wasSignedBeforeRevocation(millis, (X509Certificate)cert)) {
+			        			// Check signature validity.
+			        			return signature.checkSignatureValue((X509Certificate) cert);
+			        		}
+			        		else {
+			        			return false;
+			        		}
+			        	}
 			        }
 			        else {
 			        	return false;
@@ -175,11 +194,26 @@ public class SecurityUtils {
 	 */
 	public static boolean isCertificateRevoked(Certificate cert) {
 		String workingDir = System.getProperty("user.dir");
-		workingDir = Paths.get(workingDir, "keystores", "rootca.crl").toString();
+		workingDir = Paths.get(workingDir, "crls", "rootca.crl").toString();
 		
 		X509CRL crl = openCRLFromFile(workingDir);
 		
 		return crl.isRevoked(cert);
+	}
+	
+	public static boolean wasSignedBeforeRevocation(Long time, X509Certificate cert) {
+		String workingDir = System.getProperty("user.dir");
+		workingDir = Paths.get(workingDir, "crls", "rootca.crl").toString();
+		
+		X509CRL crl = openCRLFromFile(workingDir);
+		
+		X509CRLEntry entry = crl.getRevokedCertificate(cert);
+		Calendar revocationDate = Calendar.getInstance();
+		revocationDate.setTime(entry.getRevocationDate());
+		Calendar signatureDate = Calendar.getInstance();
+		signatureDate.setTimeInMillis(time);
+		
+		return revocationDate.after(signatureDate);
 	}
 
 }
