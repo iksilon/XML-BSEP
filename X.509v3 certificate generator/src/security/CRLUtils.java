@@ -13,6 +13,7 @@ import java.security.cert.X509CRL;
 public class CRLUtils {
 	
 	public static void saveCRLfile(String path, X509CRL crl) {
+		System.out.println(crl);
 		
 		File crlFile = new File(path);
 		FileOutputStream fos;

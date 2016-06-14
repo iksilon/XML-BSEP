@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.CRLException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
@@ -31,10 +29,9 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
-import gui.EnterPasswordDialog;
+import gui.CAChooseDialog;
 import gui.MainWindow;
 import security.CRLUtils;
-import security.KeyStoreUtils;
 
 /**
  * Revokes the certificate selected in the table.
@@ -85,14 +82,11 @@ public class ActionRevokeCertificate extends AbstractAction {
 		    	X509CRL chosenCRL = CRLUtils.openFromFile(path);
 		    	
 		    	// Select CA which will sign.
-				String CAalias = KeyStoreUtils.selectCA(currentKeystore);
-				
-				// Extract the certificate and CA data from the keystore.
-				EnterPasswordDialog epd = new EnterPasswordDialog();
-				epd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-				epd.setVisible(true);
-				PrivateKey pk = (PrivateKey) currentKeystore.getKey(CAalias, epd.getPassword());
-				X509Certificate CAcert = (X509Certificate) currentKeystore.getCertificate(CAalias);
+		    	CAChooseDialog cacd = new CAChooseDialog();
+		    	cacd.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+		    	cacd.setVisible(true);
+				PrivateKey pk = cacd.getIssuerPK();
+				X509Certificate CAcert = (X509Certificate) cacd.getIssuerCertificate();
 				
 				// Is it the right CA?
 				if(!CAcert.getSubjectX500Principal().equals(chosenCRL.getIssuerX500Principal())) {
@@ -125,10 +119,6 @@ public class ActionRevokeCertificate extends AbstractAction {
 		    }
 			 
 		} catch (KeyStoreException e1) {
-			e1.printStackTrace();
-		} catch (UnrecoverableKeyException e1) {
-			e1.printStackTrace();
-		} catch (NoSuchAlgorithmException e1) {
 			e1.printStackTrace();
 		} catch (OperatorCreationException e1) {
 			e1.printStackTrace();

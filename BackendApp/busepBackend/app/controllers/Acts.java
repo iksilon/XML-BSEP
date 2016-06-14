@@ -18,6 +18,8 @@ import org.xml.sax.SAXException;
 
 import models.User;
 import play.cache.Cache;
+import play.mvc.Http.Request;
+import play.mvc.Http.Response;
 import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
@@ -51,11 +53,16 @@ public class Acts extends AppController {
 			User loggedUser = User.find("byUsername", username).first();
 			String pass = loggedUser.password;
 			
+			// Load user data.
 			KeyStore ks = KeystoreUtils.getKeyStore(username+".jks", pass.toCharArray());
 			System.out.println(">> Loaded user: " + username);
-			
 			PrivateKey pk = (PrivateKey) ks.getKey(username, pass.toCharArray());
 			Certificate cert = ks.getCertificate(username);
+			
+			// Check if certificate still valid.
+			if(SecurityUtils.isCertificateRevoked(cert)) {
+				return new BadRequest("Your certificate is revoked.");
+			}
 			
 			Document signedDoc = SecurityUtils.signDocument(doc, pk, cert);
 			
