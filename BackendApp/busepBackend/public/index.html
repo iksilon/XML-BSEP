@@ -61,9 +61,9 @@
 					<md-button go-click="/akti/vazeci">Važeći akti</md-button>
 					<md-button go-click="/akti/proc">Akti u proceduri</md-button>
 					<md-button go-click="/search">Pretraga akata</md-button>
-					<md-button go-click="/odbornik" ng-show="userMenuChecks.isOdbornik(user.role.id) || userMenuChecks.isPredsednik(user.role.id)">Odbornik meni</md-button>
-					<md-button go-click="/highlord" ng-show="userMenuChecks.isPredsednik(user.role.id)">Predsednik meni</md-button>
-					<md-button go-click="/wa" ng-show="userMenuChecks.isAdmin(user.role.id)">Web admin meni</md-button>
+					<md-button go-click="/odbornik" ng-show="userMenuChecks.isOdbornik(user.role) || userMenuChecks.isPredsednik(user.role)">Odbornik meni</md-button>
+					<md-button go-click="/highlord" ng-show="userMenuChecks.isPredsednik(user.role)">Predsednik meni</md-button>
+					<md-button go-click="/wa" ng-show="userMenuChecks.isAdmin(user.role)">Web admin meni</md-button>
 					<md-button class="md-warn md-raised" ng-click="sekund.click()">DUGME, NAPRAVLJENO OD SEKUNDE LAKIJEVOG VREMENA</md-button>
 <!-- 					<md-button class="md-warn md-raised" ng-click="demoFs.submitXML()">Potpis (demo)</md-button> -->
 <!-- 					<md-button class="md-warn md-raised" ng-click="demoFs.encrXML()">XML enkriptovani transfer (trial)</md-button> -->

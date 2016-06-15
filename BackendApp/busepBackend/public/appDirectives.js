@@ -43,11 +43,15 @@
 //				rootElement: '=root'
 //			},
 			link: function(scope, elem, attrs) {
-				if(attrs.doc == undefined || attrs.doc == null) {
+				if(!attrs.doc) {
 					attrs.doc = attrs.schema;
 				}
-				if(attrs.root == undefined || attrs.root == null) {
+				if(!attrs.root) {
 					attrs.root = attrs.schema;
+				}
+				if(!attrs.link) {
+					alert("Editor not properly configured. Missing atribute: link");
+					return;
 				}
 				
 				var extractor = new Xsd2Json(attrs.schema + '.xsd', {'schemaURI':'/xml-schema/', 'rootElement': attrs.root});
@@ -56,7 +60,7 @@
 					confirmExitWhenUnsubmitted: true,
 					documentTitle : attrs.doc,
 					ajaxOptions: {
-						xmlUploadPath: '/xml/submit',
+						xmlUploadPath: attrs.link,
 						xmlRetrievalPath: '/xml/' + attrs.doc + '.xml'
 					},
 					libPath: "/javascripts/jquery.xmleditor-master/lib/",

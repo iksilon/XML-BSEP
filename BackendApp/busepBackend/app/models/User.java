@@ -39,7 +39,6 @@ public class User extends Model {
 	@Expose
 	public Role role;
 
-//	@Column
 	@Expose
 	public Long msgNum = 0L;
 	

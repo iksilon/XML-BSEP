@@ -9,7 +9,7 @@
 		var user = $rootScope.user; // cuvacemo u Java Web Token (JWT),
 		// POST-om saljemo na server, server skonta koji je user,
 		// i vrati username i sta god vec treba
-		if (user.role.name != "Odbornik" && user.role.name != "Predsednik") {
+		if (!user || user.role !== "Odbornik" && user.role !== "Predsednik") {
 			$window.location.href = "#/";
 		}
 	});

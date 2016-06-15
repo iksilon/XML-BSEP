@@ -24,20 +24,20 @@ import com.marklogic.client.eval.EvalResultIterator;
 import models.User;
 import play.libs.WS;
 import play.libs.WS.WSRequest;
+import play.cache.Cache;
+import play.mvc.Http.Header;
 import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
+import play.mvc.results.RenderText;
 import play.mvc.results.Result;
+import utils.JWTUtils;
 import utils.KeystoreUtils;
 import utils.MarkLogicUtils;
 import utils.SecurityUtils;
 
 public class Acts extends AppController {
-	
-	public static Result newAct() {
-		return new Ok();
-	}
-	
+
 	/**
 	 * Takes over the specific document type submission and handles it.
 	 * This includes checking is the user has a valid certificate, 
@@ -47,8 +47,7 @@ public class Acts extends AppController {
 	 * Takes one of the static values from {@link MarkLogicUtils}.
 	 * @return {@link Result} back to the frontend.
 	 */
-	private static Result handleSubmission(int type) {
-		
+	private static Result handleSubmission(int type) {		
 		System.out.println("\n------------- Starting PROPOSITION submission ----------------");
 		
 		// Extract the document.
@@ -62,8 +61,13 @@ public class Acts extends AppController {
 			
 			// Get user data.
 			//TODO:? Check if it's really them
-			String username = request.headers.get("username").value();
+			Header hUsername = request.headers.get("username");
+			if(hUsername == null) {
+				return new BadRequest("Invalid issuer user data");
+			}
+			String username = hUsername.value();
 			User loggedUser = User.find("byUsername", username).first();
+			Cache.set(loggedUser.username, loggedUser);			
 			String pass = loggedUser.password;
 			
 			// Load user data.
@@ -85,7 +89,14 @@ public class Acts extends AppController {
 			MarkLogicUtils.insertDocument(signedDoc, type, username);
 			
 			System.out.println(">> Document inserted into database.");
+
+			System.out.println("\n------------- PROPOSITION submission FINISHED ----------------");		
 			
+			String jwt = JWTUtils.generateJWT(loggedUser);
+			String json = "{\"token\": \"" + jwt + "\"}";
+			return new RenderText(json);
+
+//			return new Ok();
 		} catch (ParserConfigurationException e1) {
 			e1.printStackTrace();
 			return new BadRequest("XML parser setup failure");
@@ -104,11 +115,7 @@ public class Acts extends AppController {
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 			return new BadRequest("");
-		}		
-		
-		System.out.println("\n------------- PROPOSITION submission FINISHED ----------------");
-		return new Ok();
-		
+		}
 	}
 
 	/**

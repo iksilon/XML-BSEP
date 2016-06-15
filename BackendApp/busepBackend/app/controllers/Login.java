@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import models.User;
 import play.cache.Cache;
@@ -16,76 +17,13 @@ import play.mvc.results.Error;
 import play.mvc.results.NotFound;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
+import play.mvc.results.RenderText;
 import play.mvc.results.Result;
+import utils.JWTUtils;
 import utils.hashAndSaltUtils.HashAndSaltUtil;
 
 public class Login extends AppController {
-	/*
-	public static Result logIn2(String uname, String pwd) {
-		User loggedUser = User.find("byUsername", uname).first();
-		if (loggedUser == null) {
-			return new BadRequest("Invalid login"); //TODO: TIMESTAMP pogledati komentar za timestamp
-		}
 
-		HashAndSaltUtil hasu = new HashAndSaltUtil();
-		try {
-			if (!hasu.authenticate(pwd, loggedUser)) {
-				return new BadRequest("Invalid login");
-			}
-		} catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
-			e.printStackTrace();
-			return new Error("Request processing failed");
-		}
-
-		Object msgNum = null;
-		if((msgNum = Cache.get(loggedUser.username + "msgNum")) == null) {
-			loggedUser.msgNum = 0L;
-			Cache.set(loggedUser.username + "msgNum", loggedUser.msgNum);
-		}
-		else {
-			loggedUser.msgNum = Long.parseLong(msgNum.toString());
-		}
-		
-		ObjectMapper om = new ObjectMapper();		
-		try {
-			Cache.set(loggedUser.username, loggedUser);
-			return new RenderJson(om.writeValueAsString(loggedUser));
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			Cache.delete(loggedUser.username);
-			return new Error("Unable to log in");
-		}
-	}
-
-	public static boolean logIn3(String uname, String pwd) {
-		User loggedUser = User.find("byUsername", uname).first();
-		if (loggedUser == null) {
-			return false;
-		}
-
-		HashAndSaltUtil hasu = new HashAndSaltUtil();
-		try {
-			if (!hasu.authenticate(pwd, loggedUser)) {
-				return false;
-			}
-		} catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
-			e.printStackTrace();
-			return false;
-		}
-
-		Object msgNum = null;
-		if((msgNum = Cache.get(loggedUser.username + "msgNum")) == null) {
-			loggedUser.msgNum = 0L;
-			Cache.set(loggedUser.username + "msgNum", loggedUser.msgNum);
-		}
-		else {
-			loggedUser.msgNum = Long.parseLong(msgNum.toString());
-		}
-		
-		Cache.set(loggedUser.username, loggedUser);
-		return true;
-	}
-	*/
 	/**
 	 * Metoda za logovanje korisnika
 	 * @param body - JSON podaci u "telu" request objekta
@@ -93,12 +31,23 @@ public class Login extends AppController {
 	 */
 	public static Result logIn(String body) {
 		ArrayList<String> data = new Gson().fromJson(body, ArrayList.class);
+		if(data == null) {
+			return new BadRequest("No payload data");
+		}
+		
 		String uname = data.get(0);
+		if(uname == null || uname.trim().equals("")) {
+			return new BadRequest("Invalid payload data");
+		}
+		
 		String pwd = data.get(1);
+		if(pwd == null || pwd.trim().equals("")) {
+			return new BadRequest("Invalid payload data");
+		}
 		
 		User loggedUser = User.find("byUsername", uname).first();
 		if (loggedUser == null) {
-			return new BadRequest("Invalid login"); //TODO: TIMESTAMP pogledati komentar za timestamp
+			return new BadRequest("Invalid login");
 		}
 
 		HashAndSaltUtil hasu = new HashAndSaltUtil();
@@ -110,24 +59,66 @@ public class Login extends AppController {
 			return new Error("Request processing failed");
 		}
 
-		Object msgNum = null;
-		if((msgNum = Cache.get(loggedUser.username + "msgNum")) == null) {
+		Long msgNum = userMsgNum.get(loggedUser.username);
+		if(msgNum == null) {
 			loggedUser.msgNum = 0L;
-			Cache.set(loggedUser.username + "msgNum", loggedUser.msgNum);
+			userMsgNum.put(loggedUser.username, loggedUser.msgNum);
 		}
 		else {
 			loggedUser.msgNum = Long.parseLong(msgNum.toString());
 		}
 		
-		ObjectMapper om = new ObjectMapper();		
-		try {
-			Cache.set(loggedUser.username, loggedUser);
-			return new RenderJson(om.writeValueAsString(loggedUser));
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			Cache.delete(loggedUser.username);
-			return new Error("Unable to log in");
+		String jwt = JWTUtils.generateJWT(loggedUser);
+		Cache.set(loggedUser.username, loggedUser);
+		String json = "{\"role\": \"" + loggedUser.role.name
+						+ "\", \"username\": \"" + loggedUser.username
+						+ "\", \"msgNum\": " + loggedUser.msgNum
+						+ ", \"token\": \"" + jwt + "\"}";
+		return new RenderText(json);
+		
+//		ObjectMapper om = new ObjectMapper();		
+//		try {
+//			Cache.set(loggedUser.username, loggedUser);
+//			return new RenderJson(om.writeValueAsString(loggedUser));
+//		} catch (JsonProcessingException e) {
+//			e.printStackTrace();
+//			Cache.delete(loggedUser.username);
+//			return new Error("Unable to log in");
+//		}
+	}
+	
+	public static Result token(String body) {
+		ArrayList<String> data = new Gson().fromJson(body, ArrayList.class);
+		if(data == null) {
+			return new BadRequest("No payload data");
 		}
+		
+		String jwt = data.get(0);
+		if(jwt == null || jwt.trim().equals("")) {
+			return new BadRequest("Invalid payload data");
+		}
+
+		String uname = data.get(1);
+		if(uname == null || uname.trim().equals("")) {
+			return new BadRequest("Invalid payload data");
+		}
+		
+		User loggedUser = User.find("byUsername", uname).first();
+		if (loggedUser == null) {
+			return new BadRequest("Invalid token");
+		}
+		
+		String username = JWTUtils.getAudience(jwt, loggedUser);
+		if(username != null && !username.equals(uname)) {
+			return new BadRequest("Invalid token");
+		}
+		
+		jwt = JWTUtils.generateJWT(loggedUser);
+		String json = "{\"role\": \"" + loggedUser.role.name
+						+ "\", \"username\": \"" + loggedUser.username
+						+ "\", \"msgNum\": " + loggedUser.msgNum
+						+ ", \"token\": \"" + jwt + "\"}";
+		return new RenderText(json);
 	}
 	
 	public static Result logOut(String uname) {
