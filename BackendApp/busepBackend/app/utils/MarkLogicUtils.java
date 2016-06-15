@@ -56,6 +56,11 @@ public class MarkLogicUtils {
 	public static final int ACT_FINAL = 2;
 	public static final int ARCHIVE = 3;
 	
+	private static final String COLL_PROPOSAL = "tim27/proposals";
+	private static final String COLL_AMENDMENT = "tim27/amendments";
+	private static final String COLL_FINAL = "tim27/finals";
+	private static final String COLL_ARCHIVE = "tim27/archive";
+	
 	//---------------------------------------------------------------------------------------------------
 	// XQuery handling
 	//---------------------------------------------------------------------------------------------------
@@ -108,7 +113,7 @@ public class MarkLogicUtils {
 	/**
 	 * Convenience method for reading file contents into a string.
 	 */
-	public static String readFile(String path, Charset encoding) throws IOException {
+	private static String readFile(String path, Charset encoding) throws IOException {
 		byte[] encoded = Files.readAllBytes(Paths.get(path));
 		return new String(encoded, encoding);
 	}
@@ -135,16 +140,16 @@ public class MarkLogicUtils {
 			
 			switch (collection) {
 			case ACT_PROPOSAL:
-				collectionID = "team27/proposals";
+				collectionID = COLL_PROPOSAL;
 				break;
 			case AMENDMENT:
-				collectionID = "team27/amendments";
+				collectionID = COLL_AMENDMENT;
 				break;
 			case ACT_FINAL:
-				collectionID = "team27/finals";
+				collectionID = COLL_FINAL;
 				break;
 			case ARCHIVE:
-				collectionID = "team27/archive";
+				collectionID = COLL_ARCHIVE;
 				break;
 			default:
 				System.out.println(">> ERROR: Bad collection ID <<\n giving up\n");
@@ -213,6 +218,14 @@ public class MarkLogicUtils {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	/**
+	 * Returns all documents from the specified collection.
+	 * @param coll - static int fields
+	 */
+	public static void getDocumentsFromCollection(int coll) {
+		
 	}
 	
 	public static void updateDocument(String documentID, Document amendment) {
