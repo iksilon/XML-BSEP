@@ -9,12 +9,10 @@ INSERT INTO [dbo].[Users]
            ,[username]
            ,[role_id])
      VALUES
-           (<NULL, varchar(150),>
-           ,<NULL, varchar(150),>
-           ,<bxi+3EEzP0wgWh6G93+by8sFVyU=, varchar(255),>
-           ,<1r7D9Liamag=, varchar(255),>
-           ,<user1@email.com, varchar(30),>
-           ,<2, numeric(19,0),>)
+           (NULL
+           ,NULL
+           ,'bxi+3EEzP0wgWh6G93+by8sFVyU='
+           ,'1r7D9Liamag='
+           ,'user1@email.com'
+           ,2) --stavi broj koji ti je za ROLE odbornik
 GO
-
-
