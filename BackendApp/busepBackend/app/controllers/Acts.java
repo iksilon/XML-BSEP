@@ -17,9 +17,8 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import models.User;
-import play.cache.Cache;
-import play.mvc.Http.Request;
-import play.mvc.Http.Response;
+import play.libs.WS;
+import play.libs.WS.WSRequest;
 import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
@@ -120,9 +119,15 @@ public class Acts extends AppController {
 	 */
 	public static void submitFinal() { handleSubmission(MarkLogicUtils.ACT_FINAL); }
 	
-	@Deprecated
+	
 	public static Result submitArchive() {
-		return new BadRequest("Do not use this any more.");
+		System.out.println("Archive submission requested, commencing");
+		
+		WSRequest req = WS.url("https://localhost:9090/xml/submit");
+		req.get();
+		
+		//http://localhost:9090/xml/submit
+		return new Ok();
 	}
 	@Deprecated
 	public static void submitXML() {

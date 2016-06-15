@@ -169,7 +169,7 @@
 		
 		$rootScope.sekund = {
 				click: function() {
-					$http.post('http://localhost:9090/xml/submit')
+					$http.post('/xml/submit/archive')
 						.then(
 								function(response) {
 									alert("ASD");
