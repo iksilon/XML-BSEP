@@ -895,10 +895,14 @@ $.widget( "xml.xmlEditor", {
 				timestamp: time,
 				timestamphash: shaTime
 		};
-		var rootScope = angular.element($('#latestActs')).scope().$root;
-		if(rootScope.user != undefined && rootScope.user != null) {
+		var element = angular.element($('#latestActs'));
+		var rootScope = element.scope().$root;
+		if(rootScope.user) {
 			headers.username = rootScope.user.username;
 			headers.msgNum = ++rootScope.user.msgNum;
+		}
+		if(window.sessionStorage.token) {
+			headers.Authorization = 'Bearer ' + window.sessionStorage.token;
 		}
 		$.ajax({
 			url : config.url,

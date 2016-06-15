@@ -27,11 +27,11 @@ public class User extends Model {
 //	@Expose(serialize=false, deserialize=false)
 	public String salt;
 
-	@Column(length = 150)
+	@Column(length = 150, nullable = false)
 	@Expose
 	public String name;
 	
-	@Column(name = "LAST_NAME", length = 150)
+	@Column(name = "LAST_NAME", length = 150, nullable = false)
 	@Expose
 	public String lastName;
 

@@ -113,6 +113,19 @@ public class Login extends AppController {
 			return new BadRequest("Invalid token");
 		}
 		
+		if(!JWTUtils.checkJWT(jwt, loggedUser)) {
+			return new BadRequest("Expired token");
+		}
+
+		Long msgNum = userMsgNum.get(loggedUser.username);
+		if(msgNum == null) {
+			loggedUser.msgNum = 0L;
+			userMsgNum.put(loggedUser.username, loggedUser.msgNum);
+		}
+		else {
+			loggedUser.msgNum = Long.parseLong(msgNum.toString());
+		}
+		
 		jwt = JWTUtils.generateJWT(loggedUser);
 		String json = "{\"role\": \"" + loggedUser.role.name
 						+ "\", \"username\": \"" + loggedUser.username

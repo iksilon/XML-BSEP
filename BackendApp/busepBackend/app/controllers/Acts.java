@@ -2,8 +2,6 @@ package controllers;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -18,14 +16,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.marklogic.client.eval.EvalResult;
-import com.marklogic.client.eval.EvalResultIterator;
-
 import models.User;
-import play.libs.WS;
-import play.libs.WS.HttpResponse;
-import play.libs.WS.WSRequest;
 import play.cache.Cache;
+import play.libs.WS;
+import play.libs.WS.WSRequest;
 import play.mvc.Http.Header;
 import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
@@ -36,8 +30,6 @@ import utils.JWTUtils;
 import utils.KeystoreUtils;
 import utils.MarkLogicUtils;
 import utils.SecurityUtils;
-
-import static org.joox.JOOX.*;
 
 public class Acts extends AppController {
 
@@ -117,6 +109,9 @@ public class Acts extends AppController {
 			e.printStackTrace();
 			return new BadRequest("");
 		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return new BadRequest("");
+		} catch (Exception e) {
 			e.printStackTrace();
 			return new BadRequest("");
 		}
