@@ -2,6 +2,8 @@ package controllers;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -15,6 +17,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import com.marklogic.client.eval.EvalResult;
+import com.marklogic.client.eval.EvalResultIterator;
 
 import models.User;
 import play.libs.WS;
@@ -123,12 +128,28 @@ public class Acts extends AppController {
 	public static Result submitArchive() {
 		System.out.println("Archive submission requested, commencing");
 		
-		WSRequest req = WS.url("https://localhost:9090/xml/submit");
-		req.get();
+		String docURI = "timestamp-test.xml";
+		Document doc = MarkLogicUtils.readDocument(docURI);		
+		//TODO: Encrypt here
+		Document encrypted = doc;
 		
-		//http://localhost:9090/xml/submit
-		return new Ok();
+		try {
+			InputStream is = MarkLogicUtils.createInputStream(encrypted, true);
+			
+			WSRequest req = WS.url("https://localhost:9090/xml/submit");
+			req = req.setHeader("Content-Type", "application/xml");
+			req = req.body(is);
+			req.post();
+			
+			//http://localhost:9090/xml/submit
+			return new Ok();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new BadRequest("Submission failed.");
+		}
 	}
+	
+	
 	@Deprecated
 	public static void submitXML() {
 		org.apache.xml.security.Init.init();
@@ -141,10 +162,35 @@ public class Acts extends AppController {
 		return new RenderJson(""); //ili sta vec bude trebalo
 	}
 
-	@Deprecated
 	public static Result latestDocuments(int count) {
-		//TODO: Uzeti COUNT akata iz baze koji su usvojeni i vratiti listu u JSON formatu
-		//Ovo zajebi.
+		/*
+		String workingDir = System.getProperty("user.dir");
+		workingDir = Paths.get(workingDir, "query", "latest.xqy").toString();
+		MarkLogicUtils.exequteXQuery(workingDir);
+		// Do the thing.
+		/*
+		EvalResultIterator it = MarkLogicUtils.exequteXQuery(workingDir);
+		if (it.hasNext()) {
+			for (EvalResult result : it) {
+				System.out.println("\n" + result.getString());
+			}
+		} else { 		
+			System.out.println("your query returned an empty sequence.");
+		}*/
+		
+		
+		//TODO: Izlistati poslednje izmene.
+		/*
+		Ovo vraca URI-je od poslednja tri uneta u zadatu kolekciju.
+		Videti XQueryInvokerExample9 klasu iz vezbe 4. XQuery sa XML vezbi
+		
+		for $doc in fn:collection("team27/proposals")[1 to 3]
+		let $uri := xdmp:node-uri($doc)
+		let $updated-date := xdmp:document-get-properties($uri, fn:QName("http://marklogic.com/cpf", "last-updated"))
+		order by $updated-date/text()
+		return $uri
+		
+		 */
 
 		return new RenderJson(""); //ili sta vec bude trebalo
 	}

@@ -6,6 +6,36 @@
 	
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="R:\PLAY\play-1.4.1\play-1.4.1\framework\play-1.4.1.jar" sourcepath="R:/play/play-1.4.1/play-1.4.1/framework/src" />
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\ant-1.8.4.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\ant-launcher-1.8.4.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\geonames-1.0.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\htmlcleaner-2.4.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\httpclient-4.1.1.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\httpcore-4.1.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\jackson-annotations-2.4.1.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\jackson-core-2.4.1.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\jackson-databind-2.4.1.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\java-client-api-3.0.5.jar" sourcepath="C:\Users\Isidora\.ivy2\cache\com.marklogic\java-client-api\sources\java-client-api-3.0.5-sources.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\jdom-1.0.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\jdom2-2.0.5.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\jersey-apache-client4-1.17.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\jersey-client-1.17.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\jersey-core-1.17.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\jersey-multipart-1.17.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\logback-classic-1.1.2.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\logback-core-1.1.2.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\mimepull-1.6.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\mimepull-1.9.4.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\opencsv-2.3.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\serializer-2.7.2.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\stax-api-1.0-2.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\stax2-api-3.1.4.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\woodstox-core-asl-4.4.1.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\xalan-2.7.2.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\xercesImpl-2.11.0.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\xml-apis-1.4.01.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\xmlsec-2.0.6.jar" sourcepath="C:\Users\Isidora\.ivy2\cache\org.apache.santuario\xmlsec\sources\xmlsec-2.0.6-sources.jar"/>
+	<classpathentry kind="lib" path="R:\CETVRTA GODINA\XML-BSEP-Projekat\XML-BSEP\BackendApp\arhiv\lib\xom-1.2.5.jar"/>
 	<classpathentry kind="lib" path="R:\PLAY\play-1.4.1\play-1.4.1\modules\docviewer\lib\play-docviewer.jar"/>
 	<classpathentry kind="lib" path="R:\PLAY\play-1.4.1\play-1.4.1\framework\lib\activation-1.1.1.jar"/>
 	<classpathentry kind="lib" path="R:\PLAY\play-1.4.1\play-1.4.1\framework\lib\antlr-2.7.7.jar"/>

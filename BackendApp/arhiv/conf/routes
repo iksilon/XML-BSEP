@@ -4,7 +4,7 @@
 
 # Home page
 GET     /                                       Application.index
-GET	/xml/submit								Application.submitToArchive
+POST	/xml/submit								Application.submitToArchive
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
