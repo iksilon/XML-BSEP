@@ -7,13 +7,13 @@
 <!-- 	</md-toolbar> -->
 	<md-list flex="95">
 		<md-subheader class="md-no-sticky" id="toastParent1" flex="95">Predsednici</md-subheader>
-		<md-list-item ng-repeat="user in predList" class="noright">
-			<h2>{{user.name}} {{user.lastName}}</h2>
+		<md-list-item ng-repeat="u in predList" class="noright" ng-if="userMenuChecks.isPredsednik(u.role.name)">
+			<h3>{{u.name}} {{u.lastName}}</h3>
 		</md-list-item>
 		
 		<md-subheader class="md-no-sticky" id="toastParent2" flex="95">Odbornici</md-subheader>
-		<md-list-item ng-repeat="user in odbList" class="noright">
-			<h2>{{user.name}} {{user.lastName}}</h2>
+		<md-list-item ng-repeat="u in odbList" class="noright" ng-if="userMenuChecks.isOdbornik(u.role.name)">
+			<h3>{{u.name}} {{u.lastName}}</h3>
 		</md-list-item>
 	</md-list>
 </md-content>
