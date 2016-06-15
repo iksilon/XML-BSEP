@@ -23,6 +23,7 @@ import com.marklogic.client.eval.EvalResultIterator;
 
 import models.User;
 import play.libs.WS;
+import play.libs.WS.HttpResponse;
 import play.libs.WS.WSRequest;
 import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
@@ -31,6 +32,8 @@ import play.mvc.results.Result;
 import utils.KeystoreUtils;
 import utils.MarkLogicUtils;
 import utils.SecurityUtils;
+
+import static org.joox.JOOX.*;
 
 public class Acts extends AppController {
 	
@@ -55,6 +58,7 @@ public class Acts extends AppController {
 		InputStream is = request.body;
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		Document doc = null;
+		
 		try {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			doc = db.parse(is);
