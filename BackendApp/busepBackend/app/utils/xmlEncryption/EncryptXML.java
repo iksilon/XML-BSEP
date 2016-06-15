@@ -1,5 +1,12 @@
 package utils.xmlEncryption;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.Security;
+import java.security.cert.Certificate;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+
 import org.apache.xml.security.encryption.EncryptedData;
 import org.apache.xml.security.encryption.EncryptedKey;
 import org.apache.xml.security.encryption.XMLCipher;
@@ -9,13 +16,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import java.io.*;
-import java.security.*;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 
 /**
  * Created by Nemanja on 7/6/2016.

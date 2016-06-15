@@ -10,4 +10,7 @@ require:
     - jtds -> jtds 1.2
     - org.apache.santuario -> xmlsec latest.integration
     - com.marklogic -> java-client-api latest.integration
+    - com.marklogic -> java-client-api latest.integration
+    - org.bitbucket.b_c -> jose4j 0.5.1
+    - io.jsonwebtoken -> jjwt 0.6.0
     - org.jooq -> joox 1.4.0

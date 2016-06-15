@@ -7,9 +7,13 @@ import com.google.gson.GsonBuilder;
 import models.Role;
 import models.User;
 import play.cache.Cache;
+import play.mvc.Http.Header;
+import play.mvc.results.BadRequest;
 import play.mvc.results.NotFound;
 import play.mvc.results.RenderJson;
+import play.mvc.results.RenderText;
 import play.mvc.results.Result;
+import utils.JWTUtils;
 
 public class Utils extends AppController {
 	
@@ -32,26 +36,23 @@ public class Utils extends AppController {
 		if(users.isEmpty()) {
 			users = User.findAll();
 		}
+
+//		Header hUname = request.headers.get("username");
+//		if(hUname == null) {
+//			return new BadRequest("Invalid user data");
+//		}
+
 		final GsonBuilder builder = new GsonBuilder();
 	    builder.excludeFieldsWithoutExposeAnnotation();
-//	    final Gson gson = builder.create();
+		
+//		String uname = hUname.value();
+//		User loggedUser = User.find("byUsername", uname).first();
+//		String jwt = JWTUtils.generateJWT(loggedUser);
+//		String json = "{\"users\": " + builder.create().toJson(users, List.class) 
+//						+ ", \"token\": \"" + jwt + "\"}";
+//		return new RenderText(json);
+		
+
 		return new RenderJson(builder.create().toJson(users, List.class));
 	}
-	
-	public static Result getUserMessageNumber() {
-		Object msgNum = Cache.get(request.headers.get("username").value() + "msgNum");
-		if(msgNum == null) {
-			return new NotFound("");
-		}
-		
-		return new RenderJson(Long.parseLong(msgNum.toString()));
-	}
-	
-//	public static Result usersList() {
-//		List<User> predsednici = User.find("byRoleId", 1).fetch();
-//		List<User> odbornici = User.find("byRoleId", 2).fetch();
-//		
-//		predsednici.addAll(odbornici);
-//		return new RenderJson(new Gson().toJson(predsednici));
-//	}
 }

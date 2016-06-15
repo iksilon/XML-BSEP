@@ -1,18 +1,14 @@
 package utils.xmlEncryption;
 
+import java.security.PrivateKey;
+import java.security.Security;
+
 import org.apache.xml.security.encryption.XMLCipher;
 import org.apache.xml.security.encryption.XMLEncryptionException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.security.*;
-import java.security.cert.CertificateException;
 
 /**
  * Created by Nemanja on 8/6/2016.

@@ -3,16 +3,17 @@
 # ~~~~
 
 POST	/login											Login.logIn
-GET		/msgnum											Utils.getUserMessageNumber
-GET		/search											Search.show
-
+POST	/login/token									Login.token
 GET		/logout/{uname}									Login.logOut
 POST	/loginCheck										Login.loginCheck
 
+GET		/search/{q}										Search.doSearch
+
+
 GET		/acts											Acts.latestDocuments(count:'0')
 GET		/acts/{count}									Acts.latestDocuments
+GET		/acts/current									Acts.current
 GET		/acts/proc										Acts.inProcedure
-#POST	/act/new										Acts.newAct
 
 # Slanje XML-a iz editora:
 POST	/xml/submit/proposition							Acts.submitProposition

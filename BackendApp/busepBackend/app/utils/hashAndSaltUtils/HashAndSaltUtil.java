@@ -1,20 +1,18 @@
 package utils.hashAndSaltUtils;
 
-import models.User;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-
-import com.sun.org.apache.xml.internal.security.utils.Base64;
-
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+
+import models.User;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 /**
  * Util koji služi kako bismo implementirali helper metode.

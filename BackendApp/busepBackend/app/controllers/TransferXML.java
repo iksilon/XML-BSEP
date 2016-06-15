@@ -1,16 +1,18 @@
 package controllers;
 
-import utils.KeystoreUtils;
-import utils.xmlEncryption.DecryptXML;
-import utils.xmlEncryption.EncryptXML;
-import org.w3c.dom.Document;
-import play.mvc.results.Ok;
-import play.mvc.results.Result;
-import utils.XMLUtils;
-
-import javax.crypto.SecretKey;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
+
+import javax.crypto.SecretKey;
+
+import org.w3c.dom.Document;
+
+import play.mvc.results.Ok;
+import play.mvc.results.Result;
+import utils.KeystoreUtils;
+import utils.XMLUtils;
+import utils.xmlEncryption.DecryptXML;
+import utils.xmlEncryption.EncryptXML;
 
 /**
  * Created by Nemanja on 9/6/2016.

@@ -10,7 +10,7 @@
 		// POST-om saljemo na server, server skonta koji je user,
 		// i vrati username i sta god vec treba
 
-		if (user.role.name != "Predsednik") {
+		if (!user || user.role !== "Predsednik") {
 			$window.location.href = "#/";
 		}
 		

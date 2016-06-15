@@ -1,15 +1,18 @@
 package controllers;
 
-import utils.hashAndSaltUtils.HashAndSaltUtil;
-import models.Role;
-import models.User;
-import play.mvc.results.BadRequest;
-import play.mvc.results.Ok;
-import play.mvc.results.Result;
-
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+
+import models.Role;
+import models.User;
+import play.mvc.Http.Header;
+import play.mvc.results.BadRequest;
+import play.mvc.results.Ok;
+import play.mvc.results.RenderText;
+import play.mvc.results.Result;
+import utils.JWTUtils;
+import utils.hashAndSaltUtils.HashAndSaltUtil;
 
 /**
  * Created by Nemanja on 5/29/2016.
@@ -17,6 +20,12 @@ import java.security.spec.InvalidKeySpecException;
 public class AddUser extends AppController {
 
 	public static Result addUser(String uname, String role, String passwd){
+		Header hUsername = request.headers.get("username");
+		if(hUsername == null) {
+			return new BadRequest("Invalid issuing user data");
+		}
+		String username = hUsername.value();
+		User loggedUser = User.find("byUsername", username).first();
 
 		User newUser = User.find("byUsername", uname).first();
 
@@ -49,7 +58,11 @@ public class AddUser extends AppController {
 			e.printStackTrace();
 			return new BadRequest("Unable to create new user due to serverError 3");
 		}
+		
+		String jwt = JWTUtils.generateJWT(loggedUser);
+		String json = "{\"token\": \"" + jwt + "\"}";
+		return new RenderText(json);
 
-		return new Ok();
+//		return new Ok();
 	}
 }
