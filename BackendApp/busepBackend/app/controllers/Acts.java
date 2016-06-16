@@ -9,6 +9,7 @@ import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 
+import javax.crypto.SecretKey;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -26,10 +27,10 @@ import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
 import play.mvc.results.RenderText;
 import play.mvc.results.Result;
-import utils.JWTUtils;
-import utils.KeystoreUtils;
-import utils.MarkLogicUtils;
-import utils.SecurityUtils;
+import utils.*;
+import utils.xmlEncryption.EncryptXML;
+
+import static org.bouncycastle.asn1.iana.IANAObjectIdentifiers.security;
 
 public class Acts extends AppController {
 
@@ -137,6 +138,16 @@ public class Acts extends AppController {
 		String docURI = "timestamp-test.xml";
 		Document doc = MarkLogicUtils.readDocument(docURI);		
 		//TODO: Encrypt here
+		EncryptXML encryptXMLutil = new EncryptXML();
+		CertificateUtils certificateUtils = new CertificateUtils();
+
+
+		SecretKey secretKey = encryptXMLutil.generateDataEncryptionKey();
+		Certificate cert = certificateUtils.openDERfile("./app/keystores/arhiv.der");
+
+		doc = encryptXMLutil.encrypt(doc, secretKey, cert, "Akt");   //TODO Akt (naziv taga koji enkriptujemo)
+		//---------------------------------------------------------
+
 		Document encrypted = doc;
 		
 		try {
