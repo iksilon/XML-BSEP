@@ -1,6 +1,7 @@
 package controllers;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -210,6 +211,23 @@ public class Acts extends AppController {
 		String docURI = "Testiraje-transformacije.xml";
 		Document doc = MarkLogicUtils.readDocument(docURI);
 		
+		
+		FileOutputStream os;
+		try {
+			// Transformation testing
+			File f = new File("./test.html");
+			os = new FileOutputStream(f);
+			XMLUtils.transformHTML(doc, os);
+			os.flush();
+			os.close();
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		//TODO: Encrypt here
 		EncryptXML encryptXMLutil = new EncryptXML();
 		CertificateUtils certificateUtils = new CertificateUtils();
@@ -223,14 +241,7 @@ public class Acts extends AppController {
 
 		Document encrypted = doc;
 		
-		try {
-			// Transformation testing
-			File f = new File("./test.html");
-			FileOutputStream os = new FileOutputStream(f);
-			XMLUtils.transformHTML(doc, os);
-			os.flush();
-			os.close();
-			
+		try {			
 			InputStream is = MarkLogicUtils.createInputStream(encrypted, true);
 			
 			WSRequest req = WS.url("https://localhost:9090/xml/submit");

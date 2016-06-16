@@ -35,7 +35,7 @@ public class CertificateUtils {
 			BufferedInputStream bis = new BufferedInputStream(fis);			
 			CertificateFactory cf = CertificateFactory.getInstance("X.509"); 
 			Certificate cert = cf.generateCertificate(bis);
-			System.out.println(cert.toString());
+			//System.out.println(cert.toString());
 			bis.close();
 			return cert;
 		} catch (FileNotFoundException e) {
@@ -62,7 +62,7 @@ public class CertificateUtils {
 			FileInputStream fis = new FileInputStream(path);			
 			CertificateFactory cf = CertificateFactory.getInstance("X.509");
 			Certificate cert = cf.generateCertificate(fis);
-			System.out.println(cert);
+			//System.out.println(cert);
 			
 			return cert;
 		} catch (FileNotFoundException e) {
