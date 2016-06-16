@@ -10,11 +10,36 @@
 			<md-list-item ng-repeat="doc in docList" class="noright">
 				<h4>{{ doc.title }}</h4>
 				<md-content class="md-secondary">
-					<md-button class="sm-btn material-icons" aria-label="Usvoji" ng-click="docAccept(doc)">done</md-button>
-					<md-button class="sm-btn material-icons" aria-label="Odbij" ng-click="docReject(doc)">clear</md-button>
+					<md-button class="sm-btn material-icons" aria-label="Unos rezultata glasanja" ng-click="docRez(doc)" ng-show="!doc.voted && !voting">trending_up</md-button>
+					<md-button class="sm-btn material-icons" aria-label="Usvoji" ng-click="docAccept(doc)" ng-show="doc.voted && doc.acceptable && voting || doc.equalVotes">done</md-button>
+					<md-button class="sm-btn material-icons" aria-label="Odbij" ng-click="docReject(doc)" ng-show="doc.voted && !doc.acceptable && voting || doc.equalVotes">clear</md-button>
 				</md-content>
 			</md-list-item>
 		</md-list>
+	</md-card>
+	<md-card flex="25" ng-show="showVoteInput" id="voteToastParent">
+		<md-content layout="row" layout-align="center">
+		<md-content layout="column">
+		<form ng-submit="voteFormSubmit()">
+			<md-content layout="row">
+			<md-content layout="column">
+				<md-input-container>
+					<label>Za</label>
+					<input autofocus type="number" ng-model="votes.for"/>
+				</md-input-container>
+				<md-input-container>
+					<label>Protiv</label>
+					<input type="number" ng-model="votes.against"/>
+				</md-input-container>
+				<md-content layout="row">
+					<md-button type="submit">Sačuvaj</md-button>
+					<md-button type="button" ng-click="cancelVote()">Odustani</md-button>
+				</md-content>
+			</md-content>
+			</md-content>
+		</form>
+		</md-content>
+		</md-content>
 	</md-card>
 	<md-card flex>
 		asd

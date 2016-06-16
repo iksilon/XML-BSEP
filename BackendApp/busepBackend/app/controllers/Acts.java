@@ -4,19 +4,25 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
+import java.util.ArrayList;
 
+import javax.crypto.SecretKey;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import com.google.gson.Gson;
 
 import models.User;
 import play.cache.Cache;
@@ -29,11 +35,14 @@ import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
 import play.mvc.results.RenderText;
 import play.mvc.results.Result;
+import utils.CertificateUtils;
+import utils.GeneralUtils;
 import utils.JWTUtils;
 import utils.KeystoreUtils;
 import utils.MarkLogicUtils;
 import utils.SecurityUtils;
 import utils.XMLUtils;
+import utils.xmlEncryption.EncryptXML;
 
 public class Acts extends AppController {
 
@@ -124,16 +133,76 @@ public class Acts extends AppController {
 	/**
 	 * Route used to submit propositions. Sends the request off for handling.
 	 */
-	public static void submitProposition() { handleSubmission(MarkLogicUtils.ACT_PROPOSAL);	}
+	public static void submitProposition() {
+		handleSubmission(MarkLogicUtils.ACT_PROPOSAL);
+	}
 	/**
 	 * Route used to submit amendments. Sends the request off for handling.
 	 */
-	public static void submitAmendment() { handleSubmission(MarkLogicUtils.AMENDMENT); }
+	public static void submitAmendment() {
+		handleSubmission(MarkLogicUtils.AMENDMENT);
+	}
 	/**
 	 * Route used to submit final document versions. Sends the request off for handling.
 	 */
-	public static void submitFinal() { handleSubmission(MarkLogicUtils.ACT_FINAL); }
+	public static Result submitFinal(String body) {
+		ArrayList<String> data = new Gson().fromJson(body, ArrayList.class);
+		if(data == null || data.size() != 10) {
+			return new BadRequest("Invalid payload data");
+		}
+		/*[$scope.votes['for'], $scope.votes.against, percentFor, percentAgainst,
+			                           shaFor, shaAgainst, shaPercentFor, shaPercentAgainst,
+			                           doc.uri, doc.uriHash]*/
+		String votesFor = data.get(0);
+		String votesAgainst = data.get(1);
+		String percentFor = data.get(2);
+		String percentAgainst = data.get(3);
+		String shaFor = data.get(4);
+		String shaAgainst = data.get(5);
+		String shaPercentFor = data.get(6);
+		String shaPercentAgainst = data.get(7);
+		String uri = data.get(8);
+		String uriHash = data.get(9);
+		if(votesFor == null || votesFor.trim().equals("")
+				|| votesAgainst == null || votesAgainst.trim().equals("")
+				|| percentFor == null || percentFor.trim().equals("")
+				|| percentAgainst == null || percentAgainst.trim().equals("")
+				|| shaFor == null || shaFor.trim().equals("")
+				|| shaAgainst == null || shaAgainst.trim().equals("")
+				|| shaPercentFor == null || shaPercentFor.trim().equals("")
+				|| shaPercentAgainst == null || shaPercentAgainst.trim().equals("")
+				|| uri == null || uri.trim().equals("")
+				|| uriHash == null || uriHash.trim().equals(""))
+		{
+			return new BadRequest("Invalid payload data");
+		}
+
+//		try {
+//			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+//			byte[] uriHashBytes = digest.digest(uri.getBytes(StandardCharsets.UTF_8));
+			String hexCharsUriHash = GeneralUtils.getHexHash(uri);
+			
+			if(hexCharsUriHash == null) {
+				return new play.mvc.results.Error("Unable to validate uri");
+			}
+			
+			if(!hexCharsUriHash.equals(uriHash)) {
+				return new BadRequest("Invalid uri");
+			}
+//		} catch (NoSuchAlgorithmException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		handleSubmission(MarkLogicUtils.ACT_FINAL);
+		return new Ok();
+	}
 	
+	public static Result refuseDoc() {
+		//refuse stuff
+		
+		return new Ok();
+	}
 	
 	public static Result submitArchive() {
 		System.out.println("Archive submission requested, commencing");
@@ -142,6 +211,16 @@ public class Acts extends AppController {
 		Document doc = MarkLogicUtils.readDocument(docURI);
 		
 		//TODO: Encrypt here
+		EncryptXML encryptXMLutil = new EncryptXML();
+		CertificateUtils certificateUtils = new CertificateUtils();
+
+
+		SecretKey secretKey = encryptXMLutil.generateDataEncryptionKey();
+		Certificate cert = certificateUtils.openDERfile("./app/keystores/arhiv.der");
+
+		doc = encryptXMLutil.encrypt(doc, secretKey, cert, "Akt");   //TODO Akt (naziv taga koji enkriptujemo)
+		//---------------------------------------------------------
+
 		Document encrypted = doc;
 		
 		try {

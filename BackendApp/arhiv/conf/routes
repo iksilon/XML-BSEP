@@ -5,6 +5,7 @@
 # Home page
 GET     /                                       Application.index
 POST	/xml/submit								Application.submitToArchive
+GET     /certificate/request                    Application.getCertificat
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

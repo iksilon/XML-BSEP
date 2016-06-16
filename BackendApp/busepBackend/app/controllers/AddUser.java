@@ -3,6 +3,9 @@ package controllers;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
+
+import com.google.gson.Gson;
 
 import models.Role;
 import models.User;
@@ -19,7 +22,26 @@ import utils.hashAndSaltUtils.HashAndSaltUtil;
  */
 public class AddUser extends AppController {
 
-	public static Result addUser(String uname, String role, String passwd){
+	public static Result addUser(String body){
+		ArrayList<String> data = new Gson().fromJson(body, ArrayList.class);
+		if(data == null) {
+			return new BadRequest("No payload data");
+		}
+		
+		String name = data.get(0);
+		String lastname = data.get(1);
+		String uname = data.get(2);
+		String role = data.get(3);
+		String password = data.get(4);
+		if(name == null || name.trim().equals("")
+				|| lastname == null || lastname.trim().equals("")
+				|| uname == null || uname.trim().equals("")
+				|| role == null || role.trim().equals("")
+				|| password == null || password.trim().equals("")) {
+			return new BadRequest("Invalid payload data");
+		}
+		
+		//String uname, String role, String passwd
 		Header hUsername = request.headers.get("username");
 		if(hUsername == null) {
 			return new BadRequest("Invalid issuing user data");
@@ -45,8 +67,10 @@ public class AddUser extends AppController {
 		HashAndSaltUtil hasu = new HashAndSaltUtil();
 		try {
 			newUser.salt = hasu.base64Encode(hasu.generateSalt());
-			newUser.password = hasu.base64Encode(hasu.hashPassword(passwd, hasu.base64Decode(newUser.salt)));
-
+			newUser.password = hasu.base64Encode(hasu.hashPassword(password, hasu.base64Decode(newUser.salt)));
+			newUser.name = name;
+			newUser.lastName = lastname;
+			
 			newUser.save();
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();

@@ -2,8 +2,22 @@
 <md-content layout="row">
 <md-content layout="column">
 	<md-input-container>
+		<label>Ime</label>
+		<input required type="text" name="name" ng-model="newUser.name">
+		<div ng-messages="addUserForm.name.$error">
+			<div ng-message="required">Obavezno polje</div>
+		</div>
+	</md-input-container>
+	<md-input-container>
+		<label>Prezime</label>
+		<input required type="text" name="prezime" ng-model="newUser.lastName">
+		<div ng-messages="addUserForm.prezime.$error">
+			<div ng-message="required">Obavezno polje</div>
+		</div>
+	</md-input-container>
+	<md-input-container>
 		<label>Email</label>
-		<input required type="email" name="email" ng-model="newUser.email" ng-pattern="/^.+@.+\..+$/"/>
+		<input required type="email" name="email" ng-model="newUser.username" ng-pattern="/^.+@.+\..+$/"/>
 		<div ng-messages="addUserForm.email.$error">
 			<div ng-message="required">Obavezno polje</div>
 			<div ng-message="pattern">Unestite validan email</div>
@@ -20,14 +34,14 @@
 	</md-input-container>
 	<md-input-container>
 		<label>Lozinka</label>
-		<input required type="password" name="pass" ng-model="newUser.pass"/>
+		<input required type="password" name="pass" ng-model="newUser.password"/>
 		<div ng-messages="addUserForm.pass.$error">
 			<div ng-message="required">Obavezno polje</div>
 		</div>
 	</md-input-container>
 	<md-input-container>
 		<label>Potvrda lozinke</label>
-		<input required type="password" name="passConfirm" ng-model="newUser.passConfirm" compare-to="newUser.pass"/>
+		<input required type="password" name="passConfirm" ng-model="newUser.passConfirm" compare-to="newUser.password"/>
 		<div ng-messages="addUserForm.passConfirm.$error">
 			<div ng-message="required">Obavezno polje</div>
 			<div ng-message="compareTo">Lozinke se ne poklapaju</div>

@@ -19,6 +19,7 @@ GET		/acts/proc										Acts.inProcedure
 POST	/xml/submit/proposition							Acts.submitProposition
 POST	/xml/submit/amendment							Acts.submitAmendment
 POST	/xml/submit/final								Acts.submitFinal
+POST	/xml/refuse										Acts.refuseDoc
 # Slanje XML-a arhivu
 POST	/xml/submit/archive								Acts.submitArchive
 
@@ -26,7 +27,7 @@ POST	/xml/submit										Acts.submitXML
 GET		/encry                                      	TransferXML.transfer
 GET		/encry/{doc}/{privateKey}						DecryptXML.decrypt
 # unosenje novog korisnika
-GET     /user/create/{uname}/{role}/{passwd}    		AddUser.addUser
+POST     /user/create						    		AddUser.addUser
 
 GET		/xml-schema/									staticDir:xml-schema
 GET		/xml/											staticDir:xml
