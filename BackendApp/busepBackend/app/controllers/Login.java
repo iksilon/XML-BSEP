@@ -68,6 +68,7 @@ public class Login extends AppController {
 			loggedUser.msgNum = Long.parseLong(msgNum.toString());
 		}
 		
+		session.put("user", loggedUser.username);
 		String jwt = JWTUtils.generateJWT(loggedUser);
 		Cache.set(loggedUser.username, loggedUser);
 		String json = "{\"role\": \"" + loggedUser.role.name
@@ -88,6 +89,10 @@ public class Login extends AppController {
 	}
 	
 	public static Result token(String body) {
+		String a = session.get("user");
+		if(a != null)
+			System.out.println("USER--------" + a);
+		
 		ArrayList<String> data = new Gson().fromJson(body, ArrayList.class);
 		if(data == null) {
 			return new BadRequest("No payload data");
@@ -125,7 +130,8 @@ public class Login extends AppController {
 		else {
 			loggedUser.msgNum = Long.parseLong(msgNum.toString());
 		}
-		
+
+		session.put("user", loggedUser.username);
 		jwt = JWTUtils.generateJWT(loggedUser);
 		String json = "{\"role\": \"" + loggedUser.role.name
 						+ "\", \"username\": \"" + loggedUser.username

@@ -15,6 +15,7 @@ import play.mvc.results.BadRequest;
 import play.mvc.results.Error;
 import play.mvc.results.Forbidden;
 import play.mvc.results.Result;
+import utils.GeneralUtils;
 import utils.JWTUtils;
 
 //@With(Secure.class)
@@ -73,7 +74,8 @@ public class AppController extends Controller {
 		}
 		String uname = hUname.value();
 		String msgNumStr = hMsgNum.value();
-		if(msgNumStr == null) {
+		if(msgNumStr == null || msgNumStr.trim().equals("")
+				|| uname == null || uname.trim().equals("")) {
 			return new BadRequest("Invalid request");
 		}
 		
@@ -103,24 +105,28 @@ public class AppController extends Controller {
 		String tsString = request.headers.get("timestamp").value();
 		String tsHashString = request.headers.get("timestamphash").value();
 		
-		try { // check timestamp hash
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			byte[] hashBytes = digest.digest(tsString.getBytes(StandardCharsets.UTF_8));
-		    String hexCharsHash = Utils.byteToHex(hashBytes);
+//		try { // check timestamp hash
+//			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+//			byte[] hashBytes = digest.digest(tsString.getBytes(StandardCharsets.UTF_8));
+//		    String hexCharsHash = GeneralUtils.byteToHex(hashBytes);
+			String hexCharsHash = GeneralUtils.getHexHash(tsString);
 
+			if(hexCharsHash == null) {
+				return new Error("Could not validate request");
+			}
 			byte[] asd = tsHashString.getBytes(StandardCharsets.UTF_8);
 			
 			String hexHash = new String(hexCharsHash).toUpperCase();
 			String hexTsHash = new String(asd).toUpperCase();
 			if(!hexHash.equals(hexTsHash)) {
 //				timestampCheckResult = 1;
-				return new BadRequest("Invalid data");
+				return new BadRequest("Invalid request data");
 			}
-		} catch (NoSuchAlgorithmException e1) {
-			e1.printStackTrace();
-//			timestampCheckResult = 2;
-			return new Error("Request processing failed");
-		}
+//		} catch (NoSuchAlgorithmException e1) {
+//			e1.printStackTrace();
+////			timestampCheckResult = 2;
+//			return new Error("Request processing failed");
+//		}
 		
 		Long timestamp = Long.parseLong(tsString);
 		Long serverTimestamp = System.currentTimeMillis();

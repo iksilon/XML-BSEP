@@ -40,7 +40,7 @@ public class User extends Model {
 	public Role role;
 
 	@Expose
-	public Long msgNum = 0L;
+	public long msgNum = 0L;
 	
 	public User() {
 		super();
