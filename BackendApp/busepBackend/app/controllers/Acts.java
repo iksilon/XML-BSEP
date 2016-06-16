@@ -228,14 +228,14 @@ public class Acts extends AppController {
 		
 		
 		//TODO: Encrypt here
-		EncryptXML encryptXMLutil = new EncryptXML();
+		/*EncryptXML encryptXMLutil = new EncryptXML();
 		CertificateUtils certificateUtils = new CertificateUtils();
 
 
 		SecretKey secretKey = encryptXMLutil.generateDataEncryptionKey();
 		Certificate cert = certificateUtils.openDERfile("./keystores/arhiv.der");
 
-		doc = encryptXMLutil.encrypt(doc, secretKey, cert, "Propis");   //TODO Akt (naziv taga koji enkriptujemo)
+		doc = encryptXMLutil.encrypt(doc, secretKey, cert, "Propis");   //TODO Akt (naziv taga koji enkriptujemo)*/
 		//---------------------------------------------------------
 		Document encrypted = doc;
 		

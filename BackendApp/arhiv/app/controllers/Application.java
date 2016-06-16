@@ -40,11 +40,11 @@ public class Application extends Controller {
 				doc = db.parse(is);
 				System.out.println(">> Document parsed.");
 				//TODO ovde dekripcija
-				KeystoreUtils keystoreUtils = new KeystoreUtils();
+				/*KeystoreUtils keystoreUtils = new KeystoreUtils();
 				DecryptXML decryptXMLutil = new DecryptXML();
 
 				PrivateKey pk = keystoreUtils.readPrivateKey("./conf/certificate.jks", "localhost", "Ook!Ook!");
-				doc = decryptXMLutil.decrypt(doc, pk);
+				doc = decryptXMLutil.decrypt(doc, pk);*/
 				//------------------------
 				MarkLogicUtils.insertDocument(doc, MarkLogicUtils.ARCHIVE, "arhiv-robo");
 				
