@@ -22,7 +22,11 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import static org.joox.JOOX.*;
 
 public class XMLUtils {
 	
@@ -103,6 +107,18 @@ public class XMLUtils {
 		String xslFilepath = System.getProperty("user.dir");
 		xslFilepath = Paths.get(xslFilepath, "xslt", "propisHTML.xsl").toString();
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		
+		// Add xpath to every element.
+		NodeList nodeList = doc.getElementsByTagName("*");
+	    for (int i = 0; i < nodeList.getLength(); i++) {
+	        Node node = nodeList.item(i);
+	        if (node.getNodeType() == Node.ELEMENT_NODE) {
+	            Element element = (Element)node;
+	            String xpath = $(element).xpath();
+	            element.setAttribute("element_path", xpath);
+	        }
+	    }
+		
 		
 		DOMSource source = new DOMSource(doc);
 		

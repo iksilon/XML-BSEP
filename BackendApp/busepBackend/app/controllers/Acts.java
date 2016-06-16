@@ -210,7 +210,7 @@ public class Acts extends AppController {
 		
 		String docURI = "Testiraje-transformacije.xml";
 		Document doc = MarkLogicUtils.readDocument(docURI);
-		/*
+		
 		
 		FileOutputStream os;
 		try {
@@ -225,7 +225,7 @@ public class Acts extends AppController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		*/
+		
 		
 		//TODO: Encrypt here
 		EncryptXML encryptXMLutil = new EncryptXML();
