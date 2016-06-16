@@ -1,14 +1,21 @@
 (function() {
 	var app = angular.module('mainApp');
 	
-	app.controller('WebAdminCtrl', function($scope, $rootScope, $http) {
+	app.controller('WebAdminCtrl', function($scope, $rootScope, $http, $window) {
 		$rootScope.mainPage = false;
 		
-		$scope.newUser = {email:'', role:'', pass:'', passConfirm:''};
+		if(!$rootScope.user || $rootScope.user.role !== 'Web Admin') {
+			$window.location.href = '#/';
+		}
+		
+		$scope.newUser = {name:'', lastName:'', username:'', role:'', password:'', passConfirm:''};
 		$scope.userRoles = ['Predsednik', 'Odbornik', 'Web admin'];
 		
-		$scope.addUser = function() {			
-			$http.get('/user/create/' + $scope.newUser.email + "/" +$scope.newUser.role + "/" + sha256($scope.newUser.pass))
+		$scope.addUser = function() {
+			var data = [$scope.newUser.name, $scope.newUser.lastName, 
+			            $scope.newUser.username, $scope.newUser.role, sha256($scope.newUser.password)];
+			
+			$http.post('/user/create', data)
 				.then(
 						function(response) {
 							//dodat korisnik

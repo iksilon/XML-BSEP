@@ -79,7 +79,7 @@ public class AppController extends Controller {
 		
 		Long oPrevMsgNum = userMsgNum.get(uname);
 		if(oPrevMsgNum == null) {
-			return new Error("Can't check request validity. Please relog");
+			return new BadRequest("Can't check request validity. Please refresh/relog");
 		}
 		Long prevMsgNum = Long.parseLong(oPrevMsgNum.toString());
 		
