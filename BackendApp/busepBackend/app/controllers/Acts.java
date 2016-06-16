@@ -210,7 +210,7 @@ public class Acts extends AppController {
 		
 		String docURI = "Testiraje-transformacije.xml";
 		Document doc = MarkLogicUtils.readDocument(docURI);
-		
+		/*
 		
 		FileOutputStream os;
 		try {
@@ -221,12 +221,11 @@ public class Acts extends AppController {
 			os.flush();
 			os.close();
 		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 		
 		//TODO: Encrypt here
 		EncryptXML encryptXMLutil = new EncryptXML();
@@ -238,7 +237,6 @@ public class Acts extends AppController {
 
 		doc = encryptXMLutil.encrypt(doc, secretKey, cert, "Propis");   //TODO Akt (naziv taga koji enkriptujemo)
 		//---------------------------------------------------------
-
 		Document encrypted = doc;
 		
 		try {			
@@ -247,6 +245,7 @@ public class Acts extends AppController {
 			WSRequest req = WS.url("https://localhost:9090/xml/submit");
 			req = req.setHeader("Content-Type", "application/xml");
 			req = req.body(is);
+			req.post();
 			
 			//http://localhost:9090/xml/submit
 			return new Ok();
@@ -257,11 +256,6 @@ public class Acts extends AppController {
 	}
 	
 	
-	@Deprecated
-	public static void submitXML() {
-		org.apache.xml.security.Init.init();
-		handleSubmission(MarkLogicUtils.ACT_PROPOSAL);
-	}
 	
 	public static Result inProcedure() {
 		//TODO: Uzeti akte iz baze koji jos nisu usvojeni i vratiti u JSON/XML-tekst formatu
