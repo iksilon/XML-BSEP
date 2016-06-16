@@ -1,53 +1,72 @@
-<form name="addUserForm" ng-submit="addUser()" ng-cloak>
+<form name="addUserForm" ng-submit="addUser()" id="toastParent">
 <md-content layout="row">
 <md-content layout="column">
+	<md-content layout="row">
 	<md-input-container>
 		<label>Ime</label>
-		<input required type="text" name="name" ng-model="newUser.name">
-		<div ng-messages="addUserForm.name.$error">
+		<input required autofocus type="text" name="name" ng-model="newUser.name" ng-minlength="1" ng-maxlength="150">
+		<div ng-messages="addUserForm.name.$error" role="alert">
 			<div ng-message="required">Obavezno polje</div>
+			<div ng-message="md-minlength">Minimalan broj karaktera je 1</div>
+			<div ng-message="md-maxlength">Maksimalan broj karaktera je 150</div>
 		</div>
 	</md-input-container>
 	<md-input-container>
 		<label>Prezime</label>
-		<input required type="text" name="prezime" ng-model="newUser.lastName">
-		<div ng-messages="addUserForm.prezime.$error">
+		<input required type="text" name="lastName" ng-model="newUser.lastName" ng-minlength="1" ng-maxlength="150">
+		<div ng-messages="addUserForm.lastName.$error">
 			<div ng-message="required">Obavezno polje</div>
+			<div ng-message="md-minlength">Minimalan broj karaktera je 1</div>
+			<div ng-message="md-maxlength">Maksimalan broj karaktera je 150</div>
 		</div>
 	</md-input-container>
+	</md-content>
+	<md-content layout="row">
 	<md-input-container>
 		<label>Email</label>
-		<input required type="email" name="email" ng-model="newUser.username" ng-pattern="/^.+@.+\..+$/"/>
-		<div ng-messages="addUserForm.email.$error">
+		<input required type="email" name="username" ng-model="newUser.username" ng-pattern="/^.+@.+\..+$/" ng-minlength="5" ng-maxlength="254"/>
+		<div ng-messages="addUserForm.username.$error" role="alert">
 			<div ng-message="required">Obavezno polje</div>
 			<div ng-message="pattern">Unestite validan email</div>
+			<div ng-message="md-minlength">Minimalan broj karaktera je 5</div>
+			<div ng-message="md-maxlength">Maksimalan broj karaktera je 254</div>
 		</div>
 	</md-input-container>
 	<md-input-container>
 		<label>Uloga</label>
-		<md-select ng-model="newUser.role">
+		<md-select required name="role" ng-model="newUser.role">
 			<md-option ng-repeat="role in userRoles" value="{{role}}">{{role}}</md-option>
 		</md-select>
 		<div ng-messages="addUserForm.role.$error">
 			<div ng-message="required">Obavezno polje</div>
 		</div>
 	</md-input-container>
+	</md-content>
+	<md-content layout="row">
 	<md-input-container>
 		<label>Lozinka</label>
-		<input required type="password" name="pass" ng-model="newUser.password"/>
+		<input required type="password" name="pass" ng-model="newUser.password" ng-minlength="8" ng-maxlength="150"/>
 		<div ng-messages="addUserForm.pass.$error">
 			<div ng-message="required">Obavezno polje</div>
+			<div ng-message="md-minlength">Minimalan broj karaktera je 8</div>
+			<div ng-message="md-maxlength">Maksimalan broj karaktera je 150</div>
 		</div>
 	</md-input-container>
 	<md-input-container>
 		<label>Potvrda lozinke</label>
-		<input required type="password" name="passConfirm" ng-model="newUser.passConfirm" compare-to="newUser.password"/>
+		<input required type="password" name="passConfirm" ng-model="newUser.passConfirm" compare-to="newUser.password" ng-minlength="8" ng-maxlength="150"/>
 		<div ng-messages="addUserForm.passConfirm.$error">
 			<div ng-message="required">Obavezno polje</div>
+			<div ng-message="md-minlength">Minimalan broj karaktera je 8</div>
+			<div ng-message="md-maxlength">Maksimalan broj karaktera je 150</div>
 			<div ng-message="compareTo">Lozinke se ne poklapaju</div>
 		</div>
 	</md-input-container>
-	<md-button type="submit" class="md-raised md-primary" ng-disabled="!addUserForm.$valid">Dodaj</md-button>
+	</md-content>
+	<md-content layout="row" layout-align="center">
+		<md-button type="submit" class="md-raised md-primary" ng-disabled="!addUserForm.$valid">Dodaj</md-button>
+		<md-button type="button" class="md-raised md-primary" ng-click="cancelAdd()">Obriši</md-button>
+	</md-content>
 </md-content>
 </md-content>
 </form>

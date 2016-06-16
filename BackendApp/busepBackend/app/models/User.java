@@ -13,11 +13,11 @@ import play.db.jpa.Model;
 @Entity(name="Users")
 public class User extends Model {
 
-	@Column(length = 30, unique = true, nullable = false)
+	@Column(length = 254, unique = true, nullable = false)
 	@Expose
 	public String username;
 
-	@Column(nullable = false)
+	@Column(length = 150, nullable = false)
 	@JsonIgnore
 //	@Expose(serialize=false, deserialize=false)
 	public String password;

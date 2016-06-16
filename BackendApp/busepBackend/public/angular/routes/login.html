@@ -4,17 +4,22 @@
 	<md-content layout="row">
 	<md-content layout="column">
 		<md-input-container>
-			<label>Korisničko ime</label>
-			<input autofocus required type="text" name="username" ng-model="formData.username">
+			<label>Email</label>
+			<input autofocus required type="email" name="username" ng-model="formData.username" ng-pattern="/^.+@.+\..+$/" ng-minlength="5" ng-maxlength="254">
 			<div ng-messages="loginForm.username.$error">
 				<div ng-message="required">Obavezno polje</div>
+				<div ng-message="pattern">Unestite validan email</div>
+				<div ng-message="md-minlength">Minimalan broj karaktera je 5</div>
+				<div ng-message="md-maxlength">Maksimalan broj karaktera je 254</div>
 			</div>
 		</md-input-container>
 		<md-input-container>
 			<label>Lozinka</label>
-			<input required type="password" name="password" ng-model="formData.funnyString">
+			<input required type="password" name="password" ng-model="formData.funnyString" ng-minlength="8" ng-maxlength="150">
 			<div ng-messages="loginForm.password.$error">
 				<div ng-message="required">Obavezno polje</div>
+				<div ng-message="md-minlength">Minimalan broj karaktera je 8</div>
+				<div ng-message="md-maxlength">Maksimalan broj karaktera je 150</div>
 			</div>
 		</md-input-container>
 		<md-button type="submit" class="md-primary md-raised">Login</md-button>

@@ -25,11 +25,19 @@
 			<md-content layout="column">
 				<md-input-container>
 					<label>Za</label>
-					<input autofocus type="number" ng-model="votes.for"/>
+					<input required autofocus type="number" ng-model="votes.for" ng-minlength="1"/>
+					<div ng-messages="loginForm.password.$error">
+						<div ng-message="required">Obavezno polje</div>
+						<div ng-message="md-minlength">Minimalan broj karaktera je 1</div>
+					</div>
 				</md-input-container>
 				<md-input-container>
 					<label>Protiv</label>
-					<input type="number" ng-model="votes.against"/>
+					<input required type="number" ng-model="votes.against" ng-minlength="1"/>
+					<div ng-messages="loginForm.password.$error">
+						<div ng-message="required">Obavezno polje</div>
+						<div ng-message="md-minlength">Minimalan broj karaktera je 1</div>
+					</div>
 				</md-input-container>
 				<md-content layout="row">
 					<md-button type="submit">Sačuvaj</md-button>

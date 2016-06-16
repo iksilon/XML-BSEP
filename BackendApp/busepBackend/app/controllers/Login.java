@@ -89,9 +89,9 @@ public class Login extends AppController {
 	}
 	
 	public static Result token(String body) {
-		String a = session.get("user");
-		if(a != null)
-			System.out.println("USER--------" + a);
+//		String a = session.get("user");
+//		if(a != null)
+//			System.out.println("USER--------" + a);
 		
 		ArrayList<String> data = new Gson().fromJson(body, ArrayList.class);
 		if(data == null) {
