@@ -1,5 +1,7 @@
 package controllers;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -18,6 +20,7 @@ import org.xml.sax.SAXException;
 
 import models.User;
 import play.cache.Cache;
+import play.libs.F;
 import play.libs.WS;
 import play.libs.WS.WSRequest;
 import play.mvc.Http.Header;
@@ -30,6 +33,7 @@ import utils.JWTUtils;
 import utils.KeystoreUtils;
 import utils.MarkLogicUtils;
 import utils.SecurityUtils;
+import utils.XMLUtils;
 
 public class Acts extends AppController {
 
@@ -134,18 +138,25 @@ public class Acts extends AppController {
 	public static Result submitArchive() {
 		System.out.println("Archive submission requested, commencing");
 		
-		String docURI = "timestamp-test.xml";
-		Document doc = MarkLogicUtils.readDocument(docURI);		
+		String docURI = "Testiraje-transformacije.xml";
+		Document doc = MarkLogicUtils.readDocument(docURI);
+		
 		//TODO: Encrypt here
 		Document encrypted = doc;
 		
 		try {
+			// Transformation testing
+			File f = new File("./test.html");
+			FileOutputStream os = new FileOutputStream(f);
+			XMLUtils.transformHTML(doc, os);
+			os.flush();
+			os.close();
+			
 			InputStream is = MarkLogicUtils.createInputStream(encrypted, true);
 			
 			WSRequest req = WS.url("https://localhost:9090/xml/submit");
 			req = req.setHeader("Content-Type", "application/xml");
 			req = req.body(is);
-			req.post();
 			
 			//http://localhost:9090/xml/submit
 			return new Ok();

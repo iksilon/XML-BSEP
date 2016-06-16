@@ -73,8 +73,7 @@
         <xs:choice>
             <xs:element name="Tekst" type="pro:Tekst"/>
             <xs:sequence>
-                <xs:element maxOccurs="unbounded" minOccurs="2" name="Podtacka" type="pro:Podtacka"
-                />
+                <xs:element maxOccurs="unbounded" minOccurs="2" name="Podtacka" type="pro:Podtacka"/>
             </xs:sequence>
         </xs:choice>
         <xs:attribute name="Redni_broj" type="xs:positiveInteger"/>

@@ -172,6 +172,9 @@ public class MarkLogicUtils {
 			if(documentID.equals("") || documentID == null) {
 				documentID = documentID.concat(user).concat(String.valueOf(Calendar.getInstance().getTimeInMillis()));
 			}
+			
+			documentID = documentID.replace(" ", "-");
+			
 			doc.getDocumentElement().setAttribute("Naziv", documentID);
 			documentID = documentID.concat(".xml");
 			System.out.println("Inserting: " + documentID);
