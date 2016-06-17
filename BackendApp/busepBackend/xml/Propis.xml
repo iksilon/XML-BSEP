@@ -4,39 +4,7 @@
  xsi:schemaLocation="http://www.ftn.uns.ac.rs/propisi file:/R:/CETVRTA%20GODINA/XML-BSEP-Projekat/XML-BSEP/xml/Propis.xsd">
     <Clan>
         <Stav>
-            <Tekst>Ba2yltYuOSBum-NAHY5FJ</Tekst>
-        </Stav>
-        <Stav>
-            <Tacka>
-                <Tekst>GLYO_dPvo7hYFIIav</Tekst>
-            </Tacka>
-            <Tacka>
-                <Podtacka>
-                    <Tekst>urnI-PX1N-WN9pdXMOj1Sp1FfID</Tekst>
-                </Podtacka>
-                <Podtacka>
-                    <Tekst>QjLq</Tekst>
-                </Podtacka>
-            </Tacka>
-        </Stav>
-    </Clan>
-    <Clan>
-        <Stav>
-            <Tekst>QKykYDGgMV561FXJx</Tekst>
-        </Stav>
-        <Stav>
-            <Tacka>
-                <Tekst>SgJ</Tekst>
-            </Tacka>
-            <Tacka>
-                <Podtacka>
-                    <Alineja>c</Alineja>
-                    <Alineja>nomjK0cxN</Alineja>
-                </Podtacka>
-                <Podtacka>
-                    <Tekst>_G</Tekst>
-                </Podtacka>
-            </Tacka>
+            <Tekst></Tekst>
         </Stav>
     </Clan>
 </Propis>

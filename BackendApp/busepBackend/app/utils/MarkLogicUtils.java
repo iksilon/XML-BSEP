@@ -28,6 +28,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.joox.JOOX.*;
 
 import com.google.gson.JsonObject;
 import com.marklogic.client.DatabaseClient;
@@ -185,6 +186,7 @@ public class MarkLogicUtils {
 			jo.addProperty("uriHash", uriHash);
 			
 			jo.addProperty("username", d.getDocumentElement().getAttribute("Autor"));
+			jo.addProperty("propis", d.getDocumentElement().getFirstChild().getNextSibling().getNextSibling().getNextSibling().getFirstChild().getTextContent());
 			
 			uris.add(jo);
 		}
@@ -445,7 +447,6 @@ public class MarkLogicUtils {
 			XMLDocumentManager xmlManager = client.newXMLDocumentManager();
 			
 			// Document section
-//			if(isAct) {
 			// Read doc and check if it has a tag called 'Propis'
 			Document doc = readDocument(uri);
 			DocumentPatchBuilder xmlPatchBldr = xmlManager.newPatchBuilder();
@@ -456,10 +457,14 @@ public class MarkLogicUtils {
 				ArrayList<String> nodeToDelete = new ArrayList<String>();
 				Document amendments = readDocument(DOC_AMENDMENT);
 				NodeList nlAm = amendments.getElementsByTagName(TAG_URI);
-				for(int idx = 0; idx < nlAm.getLength() - 1; idx++) {
+				for(int idx = 0; idx < nlAm.getLength(); idx++) {
 					Node n = nlAm.item(idx);
-					nodeToDelete.add(n.getBaseURI());
-					String uriAm = n.getNodeValue();
+					nodeToDelete.add(org.joox.JOOX.$(n).xpath());
+					String uriAm = n.getTextContent();
+					if(uriAm == null || uriAm.trim().equals("")) {
+						continue;
+					}
+					
 					Document amnd = readDocument(uriAm);
 					NodeList amndNl = amnd.getElementsByTagName(TAG_PREDLOG_PROPISA);
 					if(amndNl.getLength() > 0) {
@@ -476,26 +481,34 @@ public class MarkLogicUtils {
 				// Delete nodes for removed amendments
 				for(String delNode: nodeToDelete) {
 					System.out.println("Deleting " + delNode + " from " + DOC_AMENDMENT);
-					xmlPatchBldr.delete(delNode);
+					if(delNode != null && !delNode.trim().equals("")) {
+						xmlPatchBldr.delete(delNode);
+					}
 				}
 			}
-//			}
-			Document proposals = readDocument(DOC_AMENDMENT);
+
+			DocumentPatchHandle handle = xmlPatchBldr.build();
+			xmlManager.patch(DOC_AMENDMENT, handle);
+			
+			Document proposals = readDocument(DOC_PROPOSAL);
 			NodeList nlPr = proposals.getElementsByTagName(TAG_URI);
 			String propNodeToDel = "";
-			for(int idx = 0; idx < nlPr.getLength() - 1; idx++) {
+			for(int idx = 0; idx < nlPr.getLength(); idx++) {
 				Node n = nlPr.item(idx);
 				String textCnt = n.getTextContent();
 				if(textCnt.equals(uri)) {
-					propNodeToDel = textCnt;
+					propNodeToDel = org.joox.JOOX.$(n).xpath();
+					continue;
 				}
 			}
 			System.out.println("Deleting " + uri);
 			xmlManager.delete(uri);
-			xmlPatchBldr.delete(propNodeToDel);
-			DocumentPatchHandle handle = xmlPatchBldr.build();
-			xmlManager.patch(DOC_AMENDMENT, handle);
+			if(!propNodeToDel.trim().equals("")) {
+				xmlPatchBldr.delete(propNodeToDel);
+			}
+			
 			xmlManager.patch(DOC_PROPOSAL, handle);
+			
 			client.release();
 			
 			return true;
