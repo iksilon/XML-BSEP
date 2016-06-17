@@ -39,12 +39,7 @@ import com.marklogic.client.document.XMLDocumentManager;
 import com.marklogic.client.io.DOMHandle;
 import com.marklogic.client.io.DocumentMetadataHandle;
 import com.marklogic.client.io.InputStreamHandle;
-import com.marklogic.client.io.SearchHandle;
 import com.marklogic.client.io.marker.DocumentPatchHandle;
-import com.marklogic.client.query.MatchDocumentSummary;
-import com.marklogic.client.query.QueryManager;
-import com.marklogic.client.query.StructuredQueryBuilder;
-import com.marklogic.client.query.StructuredQueryDefinition;
 import com.marklogic.client.util.EditableNamespaceContext;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
@@ -63,15 +58,38 @@ public class MarkLogicUtils {
 	public static final int ARCHIVE = 3;
 	private static final int DEV = 10;
 	
+	/**
+	 * Collection ID of proposals.
+	 */
 	private static final String COLL_PROPOSAL = "proposals";
+	/**
+	 * Collection ID of amendments.
+	 */
 	private static final String COLL_AMENDMENT = "amendments";
+	/**
+	 * Collection ID of final docs.
+	 */
 	private static final String COLL_FINAL = "finals";
+	/**
+	 * Collection ID of archive.
+	 */
 	private static final String COLL_ARCHIVE = "archive";
+	/**
+	 * Collection ID of dev docs (our lists of uri-s).
+	 */
 	private static final String COLL_DEV = "dev";
+	/**
+	 * URI of proposals list.
+	 */
 	private static final String DOC_PROPOSAL = "proposals.xml";
+	/**
+	 * URI of amendments list.
+	 */
 	private static final String DOC_AMENDMENT = "amendments.xml";
+	/**
+	 * URI of finals list.
+	 */
 	private static final String DOC_FINAL = "finals.xml";
-	private static final String DOC_ARCHIVE = "archive.xml";
 	
 	//---------------------------------------------------------------------------------------------------
 	// XQuery handling
