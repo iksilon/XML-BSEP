@@ -179,14 +179,18 @@ public class AppController extends Controller {
 			return new BadRequest("Invalid payload data");
 		}
 
+		String action = request.action;
+		List<Permission> perms = Permission.find("byName", action).fetch();
+		if(perms == null) {
+			return new Forbidden("Not enough priviledge");
+		}
+		
 		User caller = User.find("byUsername", uname).first();
 		if(caller == null) {
 			return new BadRequest("No such user");
 		}
 		
-		String action = request.action;
-		List<Permission> callerPerms = Permission.find("byName", action).fetch();
-		for(Permission p: callerPerms) {
+		for(Permission p: perms) {
 			if(p.name.equals(action) && p.roles.contains(caller.role)) {
 				return null; //ok, imas pristup
 			}
