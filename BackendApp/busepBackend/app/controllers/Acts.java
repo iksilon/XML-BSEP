@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -20,6 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -37,6 +39,7 @@ import play.mvc.results.BadRequest;
 import play.mvc.results.NotFound;
 import play.mvc.results.NotModified;
 import play.mvc.results.Ok;
+import play.mvc.results.RenderHtml;
 import play.mvc.results.RenderJson;
 import play.mvc.results.RenderText;
 import play.mvc.results.Result;
@@ -254,25 +257,7 @@ public class Acts extends AppController {
 	public static Result submitArchive() {
 		System.out.println("Archive submission requested, commencing");
 		
-		//MarkLogicUtils.initDB();
-		
-		String docURI = "Testiraje-transformacije.xml";
-		Document doc = MarkLogicUtils.readDocument(docURI);
-		
-		FileOutputStream os;
-		try {
-			// Transformation testing
-			File f = new File("./test.html");
-			os = new FileOutputStream(f);
-			XMLUtils.transformHTML(doc, os);
-			os.flush();
-			os.close();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+		Document doc = MarkLogicUtils.readDocument("Zakon-o-radu.xml");
 		
 		//TODO: Encrypt here
 		/*EncryptXML encryptXMLutil = new EncryptXML();
@@ -357,8 +342,31 @@ public class Acts extends AppController {
 		return new RenderText("Not implemented");
 	}
 	
-	public static Result getAct() {
-		return new NotFound("Not implemented");
+	public static Result getAct(String body) {
+		ArrayList<String> data = new Gson().fromJson(body, ArrayList.class);
+		if(data == null || data.size() == 0) {
+			return new BadRequest("No payload data");
+		}
+		
+		String uri = data.get(0);
+		String uriHash = data.get(1);
+		if(uri == null || uri.trim().equals("")
+				|| uriHash == null || uriHash.trim().equals(""))
+		{
+			return new BadRequest("Invalid payload data");
+		}
+		
+		String uriHashCheck = GeneralUtils.getHexHash(uri);
+		if(!uriHash.equals(uriHashCheck)) {
+			return new BadRequest("Invalid uri");
+		}
+		
+		Document d = MarkLogicUtils.readDocument(uri);
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		XMLUtils.transformHTML(d, baos);
+		
+		return new RenderHtml(baos.toString());
 	}
 	
 	public static Result cancelProcedure(String body) {
