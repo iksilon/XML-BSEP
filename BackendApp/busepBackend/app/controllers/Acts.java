@@ -290,6 +290,13 @@ public class Acts extends AppController {
 		
 		return new RenderJson(uris);
 	}
+	
+	public static Result inAmendments() {
+		
+		ArrayList<JsonObject> uris = MarkLogicUtils.getAllAmendmentsFromDB();
+		
+		return new RenderJson(uris);
+	}
 
 	public static Result latestDocuments(int count) {
 		/*

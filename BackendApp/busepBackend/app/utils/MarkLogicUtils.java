@@ -140,63 +140,40 @@ public class MarkLogicUtils {
 	}
 	
 	/**
+	 * Returns all proposal data from DB.
+	 * 
+	 * @return
+	 */
+	public static ArrayList<JsonObject> getAllAmendmentsFromDB() {
+		ArrayList<JsonObject> uris = new ArrayList<>();
+		
+		Document l = readDocument(DOC_AMENDMENT);
+		NodeList nl = l.getElementsByTagName("uri");
+		
+		for(int i = 0; i < nl.getLength(); i++ ) {
+			String uri = nl.item(i).getTextContent();
+			
+			Document d = readDocument(uri);
+			JsonObject jo = new JsonObject();
+			
+			jo.addProperty("uri", uri);
+			String uriHash = GeneralUtils.getHexHash(uri);
+			jo.addProperty("uriHash", uriHash);
+			
+			jo.addProperty("username", d.getDocumentElement().getAttribute("Autor"));
+			
+			uris.add(jo);
+		}
+		
+		return uris;
+	}
+	
+	/**
 	 * Convenience method for reading file contents into a string.
 	 */
 	private static String readFile(String path, Charset encoding) throws IOException {
 		byte[] encoded = Files.readAllBytes(Paths.get(path));
 		return new String(encoded, encoding);
-	}
-	
-	
-	public static void getAllProposals() {
-		//StructuredQueryBuilder sqb = new StructuredQueryBuilder();
-		//StructuredQueryDefinition querydef = sqb.collection(COLL_PROPOSAL);
-		
-		System.out.println("----------Loading proposals-----------");
-		
-		ConnectionProperties props;
-		try {
-			props = loadProperties();
-			DatabaseClient client = DatabaseClientFactory.newClient(props.host, props.port, props.user, props.password, props.authType);
-			QueryManager queryMgr = client.newQueryManager();
-			/*
-			<collection-query>
-			  <uri>collection-uri</uri>
-			</collection-query>
-			*/
-			/*
-			String rawXMLQuery =
-				    "<search:query "+
-				          "xmlns:search='http://marklogic.com/appservices/search'>"+
-				      "<search:collection-query>"+
-				          "<search:uri>team27</search:uri>"+
-				          "<search:uri>proposals</search:uri>"+
-				      "</search:collection-query>"+
-				    "</search:query>";
-			*/
-			//String rawXMLquery = "<search:query xmlns:search=\"http://marklogic.com/appservices/search\"><search:collection-query> <search:uri>"+COLL_PROPOSAL+"</uri> </collection-query></query>";
-			//StringHandle rawHandle = new StringHandle(rawXMLQuery);
-			/*
-			RawStructuredQueryDefinition querydef = queryMgr.newRawStructuredQueryDefinition(rawHandle);
-			SearchHandle results = queryMgr.search(querydef, new SearchHandle());
-			*/
-			StructuredQueryBuilder sqb = new StructuredQueryBuilder();
-			StructuredQueryDefinition query = sqb.and(sqb.collection("tim27/proposals"));
-			
-			//StringQueryDefinition query = queryMgr.newStringDefinition();
-			query.setCollections(COLL_PROPOSAL);
-			SearchHandle results = queryMgr.search(query, new SearchHandle());
-			
-			System.out.println(results.getTotalResults());
-			
-			MatchDocumentSummary[] summaries = results.getMatchResults();
-			for (MatchDocumentSummary summary : summaries ) {
-				System.out.println(summary.getUri());
-			}
-			System.out.println("----------Proposals loaded-----------");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	
@@ -326,14 +303,6 @@ public class MarkLogicUtils {
 			e.printStackTrace();
 			return null;
 		}
-	}
-	
-	/**
-	 * Returns all documents from the specified collection.
-	 * @param coll - static int fields
-	 */
-	public static void getDocumentsFromCollection(int coll) {
-		
 	}
 	
 	public static void updateDocument(String documentID, Document amendment) {
