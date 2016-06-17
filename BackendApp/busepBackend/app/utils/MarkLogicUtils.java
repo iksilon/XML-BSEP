@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Properties;
 
@@ -27,7 +27,9 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import com.google.gson.JsonObject;
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.DatabaseClientFactory;
 import com.marklogic.client.DatabaseClientFactory.Authentication;
@@ -41,7 +43,6 @@ import com.marklogic.client.io.SearchHandle;
 import com.marklogic.client.io.marker.DocumentPatchHandle;
 import com.marklogic.client.query.MatchDocumentSummary;
 import com.marklogic.client.query.QueryManager;
-import com.marklogic.client.query.StringQueryDefinition;
 import com.marklogic.client.query.StructuredQueryBuilder;
 import com.marklogic.client.query.StructuredQueryDefinition;
 import com.marklogic.client.util.EditableNamespaceContext;
@@ -88,70 +89,54 @@ public class MarkLogicUtils {
 			elemProps.setAttribute("Naziv", DOC_PROPOSAL);
 			docProps.appendChild(elemProps);
 			
-			insertDocument(docProps, DEV, "app");
+			insertDocument(docProps, DEV, "app", true);
 			
 			Document docAmends = builder.newDocument();
 			Element elemAmends = docAmends.createElement("Amendments");
 			elemAmends.setAttribute("Naziv", DOC_AMENDMENT);
 			docAmends.appendChild(elemAmends);
 			
-			insertDocument(docAmends, DEV, "app");
+			insertDocument(docAmends, DEV, "app", true);
 			
 			Document docFinals = builder.newDocument();
 			Element elemFinals = docFinals.createElement("Finals");
 			elemFinals.setAttribute("Naziv", DOC_FINAL);
 			docFinals.appendChild(elemFinals);
 			
-			insertDocument(docFinals, DEV, "app");
+			insertDocument(docFinals, DEV, "app", true);
 			
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public static void exequteXQuery(String path) {
+	/**
+	 * Returns all proposal data from DB.
+	 * 
+	 * @return
+	 */
+	public static ArrayList<JsonObject> getAllProposalsFromDB() {
+		ArrayList<JsonObject> uris = new ArrayList<>();
 		
+		Document l = readDocument(DOC_PROPOSAL);
+		NodeList nl = l.getElementsByTagName("uri");
 		
-		ConnectionProperties props;
-		try {
-			// Read the file contents into a string object
-			String query = readFile(path, StandardCharsets.UTF_8);
+		for(int i = 0; i < nl.getLength(); i++ ) {
+			String uri = nl.item(i).getTextContent();
 			
-			props = loadProperties();
-			DatabaseClient client = DatabaseClientFactory.newClient(props.host, props.port, props.user, props.password, props.authType);
+			Document d = readDocument(uri);
+			JsonObject jo = new JsonObject();
 			
-			QueryManager queryMgr = client.newQueryManager();
-			StringQueryDefinition qd = queryMgr.newStringDefinition();
+			jo.addProperty("uri", uri);
+			String uriHash = GeneralUtils.getHexHash(uri);
+			jo.addProperty("uriHash", uriHash);
 			
-			qd.setCriteria(query);
-			SearchHandle results = queryMgr.search(qd, new SearchHandle());
-			MatchDocumentSummary[] summaries = results.getMatchResults();
-			for (MatchDocumentSummary summary : summaries ) {
-				System.out.println("-");
-			    System.out.println(summary.getUri());
-			}
+			jo.addProperty("username", d.getDocumentElement().getAttribute("Autor"));
 			
-			
-			/*
-			// Initialize XQuery invoker object
-			ServerEvaluationCall invoker = client.newServerEval();
-			
-			// Read the file contents into a string object
-			String query = readFile(path, StandardCharsets.UTF_8);
-			
-			// Invoke the query
-			invoker.xquery(query);
-			
-			// Interpret the results
-			EvalResultIterator response = invoker.eval();
-			
-			return response;
-			*/
-		} catch (IOException e) {
-			e.printStackTrace();
-			//return null;
+			uris.add(jo);
 		}
 		
+		return uris;
 	}
 	
 	/**
@@ -225,24 +210,30 @@ public class MarkLogicUtils {
 	 * 
 	 * @param doc - {@link Document} object representing the XML document
 	 * @param collection - one of four possible collections specified in the static fields
+	 * @param dev - set to false
+	 * @param user - who made it
 	 */
-	public static void insertDocument(Document doc, int collection, String user) {
+	public static void insertDocument(Document doc, int collection, String user, boolean dev) {
 		
 		try {
 			System.out.println("Beginning database insert:");
 			
 			// Collection
 			String collectionID = "";
+			String list = "";
 			
 			switch (collection) {
 			case ACT_PROPOSAL:
 				collectionID = COLL_PROPOSAL;
+				list = DOC_PROPOSAL;
 				break;
 			case AMENDMENT:
 				collectionID = COLL_AMENDMENT;
+				list = DOC_AMENDMENT;
 				break;
 			case ACT_FINAL:
 				collectionID = COLL_FINAL;
+				list = DOC_FINAL;
 				break;
 			case ARCHIVE:
 				collectionID = COLL_ARCHIVE;
@@ -275,12 +266,27 @@ public class MarkLogicUtils {
 			documentID = documentID.replace(" ", "-");
 			
 			doc.getDocumentElement().setAttribute("Naziv", documentID);
-			documentID = documentID.concat(".xml");
+			doc.getDocumentElement().setAttribute("Autor", user);
+			if(!documentID.endsWith(".xml")) {
+				documentID = documentID.concat(".xml");
+			}
 			System.out.println("Inserting: " + documentID);
 			InputStreamHandle ish = new InputStreamHandle(createInputStream(doc, false));
 			
 			xmlManager.write(documentID, metadata, ish);
 			client.release();
+			
+			// Preventing recursion.
+			if(!dev) {
+				// Insert URI into list.
+				System.out.println("Inserting uri " + documentID + " into " + list);
+				Document l = readDocument(list);
+				Element root = l.getDocumentElement();
+				Element newNode = l.createElement("uri");
+				newNode.setTextContent(documentID);
+				root.appendChild(newNode);
+				insertDocument(l, DEV, "app", true);
+			}
 			
 		} catch (IOException e) {
 			e.printStackTrace();

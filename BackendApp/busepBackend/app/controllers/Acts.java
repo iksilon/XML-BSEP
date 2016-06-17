@@ -1,6 +1,7 @@
 package controllers;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.marklogic.client.query.StructuredQueryBuilder;
 import com.marklogic.client.query.StructuredQueryDefinition;
 
@@ -121,7 +122,7 @@ public class Acts extends AppController {
 			System.out.println(">> Document signed.");
 			
 			// Inserting into database:
-			MarkLogicUtils.insertDocument(signedDoc, type, username);
+			MarkLogicUtils.insertDocument(signedDoc, type, username, false);
 			
 			System.out.println(">> Document inserted into database.");
 
@@ -233,6 +234,8 @@ public class Acts extends AppController {
 	public static Result submitArchive() {
 		System.out.println("Archive submission requested, commencing");
 		
+		//MarkLogicUtils.initDB();
+		
 		String docURI = "Testiraje-transformacije.xml";
 		Document doc = MarkLogicUtils.readDocument(docURI);
 		
@@ -282,11 +285,10 @@ public class Acts extends AppController {
 	
 	
 	public static Result inProcedure() {
-		//TODO: Uzeti akte iz baze koji jos nisu usvojeni i vratiti u JSON/XML-tekst formatu
-		System.out.println("----starting get all");
-		MarkLogicUtils.getAllProposals();
-		System.out.println("----ending get all");
-		return new BadRequest("lololo");
+		
+		ArrayList<JsonObject> uris = MarkLogicUtils.getAllProposalsFromDB();
+		
+		return new RenderJson(uris);
 	}
 
 	public static Result latestDocuments(int count) {

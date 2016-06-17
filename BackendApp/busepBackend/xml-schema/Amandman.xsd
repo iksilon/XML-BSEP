@@ -5,7 +5,6 @@
     <xs:import namespace="http://www.ftn.uns.ac.rs/propisi" schemaLocation="Propis.xsd"/>
     <xs:element name="Dokument">
         <xs:complexType>
-            <xs:sequence>
                 <xs:element name="Pravni_osnov" type="xs:string"/>
                 <xs:element name="Predlog_propisa" type="xs:string"/>
                 <xs:sequence>
@@ -51,8 +50,8 @@
                         </xs:complexType>
                     </xs:element>
                 </xs:sequence>
-            </xs:sequence>
-            <xs:attribute name="Naziv" type="xs:string"/>
+            <xs:attribute name="Naziv" type="xs:string" use="required"/>
+			<xs:attribute name="Autor" type="xs:string" use="required"/>
         </xs:complexType>
     </xs:element>
 </xs:schema>

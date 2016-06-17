@@ -12,6 +12,7 @@
                 </xs:sequence>
             </xs:choice>
             <xs:attribute name="Naziv" type="xs:string" use="required"/>
+			<xs:attribute name="Autor" type="xs:string" use="required"/>
         </xs:complexType>
     </xs:element>
     <xs:complexType name="Deo">
