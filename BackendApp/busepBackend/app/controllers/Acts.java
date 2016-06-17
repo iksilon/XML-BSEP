@@ -1,21 +1,17 @@
 package controllers;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.marklogic.client.query.StructuredQueryBuilder;
-import com.marklogic.client.query.StructuredQueryDefinition;
-
-import models.User;
-import org.w3c.dom.Document;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import play.cache.Cache;
-import play.libs.WS;
-import play.libs.WS.WSRequest;
-import play.mvc.Http.Header;
-import play.mvc.results.*;
-import utils.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
+import java.util.ArrayList;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -23,10 +19,33 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import java.io.*;
-import java.security.*;
-import java.security.cert.Certificate;
-import java.util.ArrayList;
+
+import org.w3c.dom.Document;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import models.User;
+import play.cache.Cache;
+import play.libs.WS;
+import play.libs.WS.WSRequest;
+import play.mvc.Http.Header;
+import play.mvc.results.BadRequest;
+import play.mvc.results.NotFound;
+import play.mvc.results.NotModified;
+import play.mvc.results.Ok;
+import play.mvc.results.RenderJson;
+import play.mvc.results.RenderText;
+import play.mvc.results.Result;
+import utils.CsrfTokenUtils;
+import utils.GeneralUtils;
+import utils.KeystoreUtils;
+import utils.MarkLogicUtils;
+import utils.SecurityUtils;
+import utils.XMLUtils;
 
 public class Acts extends AppController {
 
@@ -128,8 +147,9 @@ public class Acts extends AppController {
 
 			System.out.println("\n------------- PROPOSITION submission FINISHED ----------------");		
 			
-			String jwt = JWTUtils.generateJWT(loggedUser);
-			String json = "{\"token\": \"" + jwt + "\"}";
+			String user = session.get("user");
+			String token = CsrfTokenUtils.generateToken(user);
+			String json = "{\"token\": \"" + token + "\"}";
 			return new RenderText(json);
 
 //			return new Ok();
@@ -334,10 +354,38 @@ public class Acts extends AppController {
 		
 		 */
 
-		return new RenderJson(""); //ili sta vec bude trebalo
+		return new RenderText("Not implemented");
 	}
 	
 	public static Result getAct() {
-		return new Ok();
+		return new NotFound("Not implemented");
+	}
+	
+	public static Result cancelProcedure(String body) {
+		ArrayList<String> data = new Gson().fromJson(body, ArrayList.class);
+		if(data == null || data.size() == 0) {
+			return new BadRequest("No payload data");
+		}
+		
+		String uri = data.get(0);
+		String uriHash = data.get(1);
+		if(uri == null || uri.trim().equals("")
+				|| uriHash == null || uriHash.trim().equals(""))
+		{
+			return new BadRequest("Invalid payload data");
+		}
+		
+		String uriHashCheck = GeneralUtils.getHexHash(uri);
+		if(!uriHash.equals(uriHashCheck)) {
+			return new BadRequest("Invalid uri");
+		}
+		
+		if(MarkLogicUtils.removeDocument(uri)) {
+			String user = session.get("user");
+			String token = CsrfTokenUtils.generateToken(user);
+			return new RenderJson(token);
+		}
+		
+		return new NotModified("Could not find document with given URI");
 	}
 }

@@ -14,6 +14,7 @@ import play.mvc.results.BadRequest;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderText;
 import play.mvc.results.Result;
+import utils.CsrfTokenUtils;
 import utils.JWTUtils;
 import utils.hashAndSaltUtils.HashAndSaltUtil;
 
@@ -83,8 +84,9 @@ public class AddUser extends AppController {
 			return new BadRequest("Unable to create new user due to serverError 3");
 		}
 		
-		String jwt = JWTUtils.generateJWT(loggedUser);
-		String json = "{\"token\": \"" + jwt + "\"}";
+		String user = session.get("user");
+		String token = CsrfTokenUtils.generateToken(user);
+		String json = "{\"token\": \"" + token + "\"}";
 		return new RenderText(json);
 
 //		return new Ok();

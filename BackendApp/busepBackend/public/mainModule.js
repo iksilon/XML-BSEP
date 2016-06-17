@@ -21,7 +21,7 @@
 	    			if(response.data.token) {
 	    				$window.sessionStorage.token = response.data.token;
 	    			}
-	    			
+    			
 	    			return response;
 	    		}
 	    };

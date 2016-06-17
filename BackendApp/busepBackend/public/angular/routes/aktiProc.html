@@ -7,8 +7,10 @@
 	      </div>
 	    </md-toolbar>
 		<md-list>
-			<md-list-item ng-repeat="doc in acts" class="noright" ng-click="docSelected(doc)">
-				<h4>{{ doc.uri }}</h4>
+			<md-list-item ng-repeat="doc in acts" class="noright">
+				<div ng-click="docSelected(doc)">
+					<h4>{{ doc.uri }}</h4>
+				</div>
 				<md-content class="md-secondary">
 	<!-- 				<md-button class="sm-btn material-icons" aria-label="Unos rezultata glasanja" ng-click="docRez(doc)" ng-show="!doc.voted && !voting">trending_up</md-button> -->
 	<!-- 				<md-button class="sm-btn material-icons" aria-label="Usvoji" ng-click="docAccept(doc)" ng-show="doc.voted && doc.acceptable && voting || doc.equalVotes">done</md-button> -->
@@ -29,8 +31,10 @@
 	      </div>
 	    </md-toolbar>
 		<md-list>
-			<md-list-item ng-repeat="doc in amendments" class="noright" ng-click="docSelected(doc)">
-				<h4>{{ doc.uri }}</h4>
+			<md-list-item ng-repeat="doc in amendments" class="noright">
+				<div ng-click="docSelected(doc)">
+					<h4>{{ doc.uri }}</h4>
+				</div>
 				<md-content class="md-secondary">
 <!-- 				<md-button class="sm-btn material-icons" aria-label="Unos rezultata glasanja" ng-click="docRez(doc)" ng-show="!doc.voted && !voting">trending_up</md-button> -->
 <!-- 				<md-button class="sm-btn material-icons" aria-label="Usvoji" ng-click="docAccept(doc)" ng-show="doc.voted && doc.acceptable && voting || doc.equalVotes">done</md-button> -->

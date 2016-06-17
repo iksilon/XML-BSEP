@@ -14,8 +14,7 @@
 		$http.get('/acts/proc')
 			.then(
 					function(response) {
-						//TODO ODKOMENTARISI
-//						$scope.acts = response.data;
+						$scope.acts = response.data;
 					},
 					function(reason) {
 						$mdToast.show({
@@ -77,6 +76,23 @@
 				.then(
 						function(response) {
 							if(docType === 'act') {
+								var amdmToRemove = response.data; // lista amandmana [{amdm1attrs}, {amdm2attrs}...]
+								$scope.amendments.forEach(function(amdm) {
+									amdmsToRemove.forEach(function(rAmdm) {
+										if(amdm.uri === rAmdm.uri) {
+											amdm.remove = true;
+										}
+									});
+								});
+								
+								$scope.amendments.filter(function(amdm) {
+									if(amdm.remove) {
+										return false; //ukloni element
+									}
+									
+									return true;
+								});
+								
 								$scope.acts.splice($scope.acts.indexOf(doc), 1);
 								$mdToast.show({
 									template: '<md-toast>Akt uklonjen iz procedure</md-toast>',

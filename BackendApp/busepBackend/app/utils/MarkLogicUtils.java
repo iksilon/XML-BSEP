@@ -33,6 +33,9 @@ import com.google.gson.JsonObject;
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.DatabaseClientFactory;
 import com.marklogic.client.DatabaseClientFactory.Authentication;
+import com.marklogic.client.FailedRequestException;
+import com.marklogic.client.ForbiddenUserException;
+import com.marklogic.client.ResourceNotFoundException;
 import com.marklogic.client.document.DocumentPatchBuilder;
 import com.marklogic.client.document.DocumentPatchBuilder.Position;
 import com.marklogic.client.document.XMLDocumentManager;
@@ -90,6 +93,9 @@ public class MarkLogicUtils {
 	 * URI of finals list.
 	 */
 	private static final String DOC_FINAL = "finals.xml";
+	private static final String TAG_PROPIS = "Propis";
+	private static final String TAG_URI = "uri";
+	private static final String TAG_PREDLOG_PROPISA = "Predlog_propisa";
 	
 	//---------------------------------------------------------------------------------------------------
 	// XQuery handling
@@ -308,6 +314,7 @@ public class MarkLogicUtils {
 				Element root = l.getDocumentElement();
 				Element newNode = l.createElement("uri");
 				newNode.setTextContent(documentID);
+//				newNode.setAttribute("uri", documentID);
 				root.appendChild(newNode);
 				insertDocument(l, DEV, "app", true);
 			}
@@ -424,6 +431,77 @@ public class MarkLogicUtils {
 			
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public static boolean removeDocument(String uri) {
+		try {
+			// Connection parameters for the database.
+			System.out.println("> Loading connection properties.");
+			ConnectionProperties cn = loadProperties();
+			DatabaseClient client = DatabaseClientFactory.newClient(cn.host, cn.port, cn.database, cn.user, cn.password, cn.authType);
+			
+			// Create a document manager to work with XML files.
+			XMLDocumentManager xmlManager = client.newXMLDocumentManager();
+			
+			// Document section
+//			if(isAct) {
+			// Read doc and check if it has a tag called 'Propis'
+			Document doc = readDocument(uri);
+			DocumentPatchBuilder xmlPatchBldr = xmlManager.newPatchBuilder();
+			NodeList nl = doc.getElementsByTagName(TAG_PROPIS);
+			// If such tag exists, the doc is an Act, so search for its amendments
+			if(nl.getLength() > 0) {
+				ArrayList<String> amndToDelete = new ArrayList<String>();
+				ArrayList<String> nodeToDelete = new ArrayList<String>();
+				Document amendments = readDocument(DOC_AMENDMENT);
+				NodeList nlAm = amendments.getElementsByTagName(TAG_URI);
+				for(int idx = 0; idx < nlAm.getLength() - 1; idx++) {
+					Node n = nlAm.item(idx);
+					nodeToDelete.add(n.getBaseURI());
+					String uriAm = n.getNodeValue();
+					Document amnd = readDocument(uriAm);
+					NodeList amndNl = amnd.getElementsByTagName(TAG_PREDLOG_PROPISA);
+					if(amndNl.getLength() > 0) {
+						amndToDelete.add(uriAm);
+					}
+				}
+
+				// Delete its amendments
+				for(String delUri: amndToDelete) {
+					System.out.println("Deleting " + delUri + " attached to " + uri);
+					xmlManager.delete(delUri);
+				}
+				
+				// Delete nodes for removed amendments
+				for(String delNode: nodeToDelete) {
+					System.out.println("Deleting " + delNode + " from " + DOC_AMENDMENT);
+					xmlPatchBldr.delete(delNode);
+				}
+			}
+//			}
+			Document proposals = readDocument(DOC_AMENDMENT);
+			NodeList nlPr = proposals.getElementsByTagName(TAG_URI);
+			String propNodeToDel = "";
+			for(int idx = 0; idx < nlPr.getLength() - 1; idx++) {
+				Node n = nlPr.item(idx);
+				String textCnt = n.getTextContent();
+				if(textCnt.equals(uri)) {
+					propNodeToDel = textCnt;
+				}
+			}
+			System.out.println("Deleting " + uri);
+			xmlManager.delete(uri);
+			xmlPatchBldr.delete(propNodeToDel);
+			DocumentPatchHandle handle = xmlPatchBldr.build();
+			xmlManager.patch(DOC_AMENDMENT, handle);
+			xmlManager.patch(DOC_PROPOSAL, handle);
+			client.release();
+			
+			return true;
+		} catch (IOException | ResourceNotFoundException | ForbiddenUserException | FailedRequestException e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 	

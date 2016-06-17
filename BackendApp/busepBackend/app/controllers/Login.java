@@ -19,6 +19,7 @@ import play.mvc.results.Ok;
 import play.mvc.results.RenderJson;
 import play.mvc.results.RenderText;
 import play.mvc.results.Result;
+import utils.CsrfTokenUtils;
 import utils.JWTUtils;
 import utils.hashAndSaltUtils.HashAndSaltUtil;
 
@@ -69,12 +70,16 @@ public class Login extends AppController {
 		}
 		
 		session.put("user", loggedUser.username);
-		String jwt = JWTUtils.generateJWT(loggedUser);
+		session.put("userRole", loggedUser.role.name);
+		session.put("userMsgNum", loggedUser.msgNum);
+		
+//		String jwt = JWTUtils.generateJWT(loggedUser);
+		String token = CsrfTokenUtils.generateToken(loggedUser.username);
 		Cache.set(loggedUser.username, loggedUser);
 		String json = "{\"role\": \"" + loggedUser.role.name
 						+ "\", \"username\": \"" + loggedUser.username
 						+ "\", \"msgNum\": " + loggedUser.msgNum
-						+ ", \"token\": \"" + jwt + "\"}";
+						+ ", \"token\": \"" + token + "\"}";
 		return new RenderText(json);
 		
 //		ObjectMapper om = new ObjectMapper();		
@@ -98,8 +103,8 @@ public class Login extends AppController {
 			return new BadRequest("No payload data");
 		}
 		
-		String jwt = data.get(0);
-		if(jwt == null || jwt.trim().equals("")) {
+		String token = data.get(0);
+		if(token == null || token.trim().equals("")) {
 			return new BadRequest("Invalid payload data");
 		}
 
@@ -110,16 +115,11 @@ public class Login extends AppController {
 		
 		User loggedUser = User.find("byUsername", uname).first();
 		if (loggedUser == null) {
-			return new BadRequest("Invalid token");
+			return new BadRequest("Invalid payload data");
 		}
 		
-		String username = JWTUtils.getAudience(jwt, loggedUser);
-		if(username != null && !username.equals(uname)) {
+		if(!CsrfTokenUtils.checkToken(uname, token)) {
 			return new BadRequest("Invalid token");
-		}
-		
-		if(!JWTUtils.checkJWT(jwt, loggedUser)) {
-			return new BadRequest("Expired token");
 		}
 
 		Long msgNum = userMsgNum.get(loggedUser.username);
@@ -132,11 +132,14 @@ public class Login extends AppController {
 		}
 
 		session.put("user", loggedUser.username);
-		jwt = JWTUtils.generateJWT(loggedUser);
+		session.put("userRole", loggedUser.role.name);
+		session.put("userMsgNum", loggedUser.msgNum);
+		
+		token = CsrfTokenUtils.generateToken(loggedUser.username);
 		String json = "{\"role\": \"" + loggedUser.role.name
 						+ "\", \"username\": \"" + loggedUser.username
 						+ "\", \"msgNum\": " + loggedUser.msgNum
-						+ ", \"token\": \"" + jwt + "\"}";
+						+ ", \"token\": \"" + token + "\"}";
 		return new RenderText(json);
 	}
 	

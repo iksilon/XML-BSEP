@@ -4,18 +4,23 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import models.Permission;
 import models.User;
 import play.cache.Cache;
+import play.mvc.After;
 import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Http.Header;
 import play.mvc.results.BadRequest;
 import play.mvc.results.Error;
 import play.mvc.results.Forbidden;
+import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
+import utils.CsrfTokenUtils;
 import utils.GeneralUtils;
-import utils.JWTUtils;
 
 //@With(Secure.class)
 public class AppController extends Controller {
@@ -147,21 +152,21 @@ public class AppController extends Controller {
 	@Before(unless={"Login.logIn", "Login.token", "Login.logOut", "Login.loginCheck", 
 			"Search.doSearch", "Acts.current", "Acts.inProcedure", "Acts.getAct",
 			"Acts.getActAmendments", "Acts.latestDocuments", "Utils.usersByRole"}, priority=4)
-	static Result jwtCheck() {
+	static Result csrfTokenCheck() {
 		Header hAuth = request.headers.get("authorization");
 		if(hAuth != null) {
 			List<String> authVals = hAuth.values;
 			if(authVals != null) {
 				String authString = authVals.get(0);
 				if(authString != null && authString.length() > 0) {
-					String jwt =  authString.split(" ")[1];
+					String token =  authString.split(" ")[1];
 					
 					User user = User.find("byUsername", request.headers.get("username").value()).first();
 					Cache.set(user.username, user);
-					if(JWTUtils.checkJWT(jwt, user)) {
+					String username = session.get("user");
+					if(CsrfTokenUtils.checkToken(username, token)) {
 						return null;
 					}
-					//System.out.println(jwt);
 				}
 			}
 		}
