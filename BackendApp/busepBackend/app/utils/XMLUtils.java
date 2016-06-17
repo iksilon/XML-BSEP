@@ -1,5 +1,9 @@
 package utils;
 
+import static org.joox.JOOX.$;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,21 +16,26 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.fop.apps.FOUserAgent;
+import org.apache.fop.apps.Fop;
+import org.apache.fop.apps.FopFactory;
+import org.apache.fop.apps.MimeConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import static org.joox.JOOX.*;
 
 public class XMLUtils {
 	
@@ -131,6 +140,58 @@ public class XMLUtils {
 			StreamResult result = new StreamResult(out);
 			xslTransformer.transform(source, result);
 			
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public static void transformPDF(Document doc, ByteArrayOutputStream out) {
+		String xslFilepath = System.getProperty("user.dir");
+		xslFilepath = Paths.get(xslFilepath, "xslt", "propisPDF.xsl").toString();
+		
+		String xconfFilepath = System.getProperty("user.dir");
+		xconfFilepath = Paths.get(xconfFilepath, "conf", "fop.xconf").toString();
+		
+		// Point to the XSL-FO file
+		File xsltFile = new File(xslFilepath);
+		
+		// Create transformation source
+		StreamSource transformSource = new StreamSource(xsltFile);
+		
+		// Initialize the transformation subject
+		DOMSource source = new DOMSource(doc);
+		
+		// Initialize user agent needed for the transformation
+		FopFactory fopFactory;
+		try {
+			fopFactory = FopFactory.newInstance(new File(xconfFilepath));
+			FOUserAgent userAgent = fopFactory.newFOUserAgent();
+			
+			// Create the output stream to store the results
+			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+			
+			// Initialize the XSL-FO transformer object
+			TransformerFactory transformerFactory =  TransformerFactory.newInstance();
+			Transformer xslFoTransformer = transformerFactory.newTransformer(transformSource);
+			
+			// Construct FOP instance with desired output format
+			Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, userAgent, outStream);
+			
+			// Resulting SAX events 
+			Result res = new SAXResult(fop.getDefaultHandler());
+			
+			// Start XSLT transformation and FOP processing
+			xslFoTransformer.transform(source, res);
+			
+			out = outStream;
+			
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		} catch (TransformerConfigurationException e) {
 			e.printStackTrace();
 		} catch (TransformerException e) {

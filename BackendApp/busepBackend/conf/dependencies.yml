@@ -13,3 +13,4 @@ require:
     - com.marklogic -> java-client-api latest.integration
     - org.bitbucket.b_c -> jose4j 0.5.1
     - org.jooq -> joox 1.4.0
+    - org.apache.xmlgraphics -> fop 2.1

@@ -39,6 +39,7 @@ import play.mvc.results.BadRequest;
 import play.mvc.results.NotFound;
 import play.mvc.results.NotModified;
 import play.mvc.results.Ok;
+import play.mvc.results.RenderBinary;
 import play.mvc.results.RenderHtml;
 import play.mvc.results.RenderJson;
 import play.mvc.results.RenderText;
@@ -340,6 +341,34 @@ public class Acts extends AppController {
 		 */
 
 		return new RenderText("Not implemented");
+	}
+	
+	public static Result getActPdf(String body) {
+		ArrayList<String> data = new Gson().fromJson(body, ArrayList.class);
+		if(data == null || data.size() == 0) {
+			return new BadRequest("No payload data");
+		}
+		
+		String uri = data.get(0);
+		String uriHash = data.get(1);
+		if(uri == null || uri.trim().equals("")
+				|| uriHash == null || uriHash.trim().equals(""))
+		{
+			return new BadRequest("Invalid payload data");
+		}
+		
+		String uriHashCheck = GeneralUtils.getHexHash(uri);
+		if(!uriHash.equals(uriHashCheck)) {
+			return new BadRequest("Invalid uri");
+		}
+		
+		// Do the thing.
+		String name = uri.replace(".xml", ".pdf");
+		File file = new File(name);
+		
+		
+		
+		return new RenderBinary(file, name);
 	}
 	
 	public static Result getAct(String body) {
