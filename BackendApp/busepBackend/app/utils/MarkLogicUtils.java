@@ -12,6 +12,9 @@ import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Properties;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -35,14 +38,12 @@ import com.marklogic.client.io.DOMHandle;
 import com.marklogic.client.io.DocumentMetadataHandle;
 import com.marklogic.client.io.InputStreamHandle;
 import com.marklogic.client.io.SearchHandle;
-import com.marklogic.client.io.StringHandle;
 import com.marklogic.client.io.marker.DocumentPatchHandle;
 import com.marklogic.client.query.MatchDocumentSummary;
-import com.marklogic.client.query.MatchLocation;
-import com.marklogic.client.query.MatchSnippet;
 import com.marklogic.client.query.QueryManager;
-import com.marklogic.client.query.RawStructuredQueryDefinition;
 import com.marklogic.client.query.StringQueryDefinition;
+import com.marklogic.client.query.StructuredQueryBuilder;
+import com.marklogic.client.query.StructuredQueryDefinition;
 import com.marklogic.client.util.EditableNamespaceContext;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
@@ -59,15 +60,54 @@ public class MarkLogicUtils {
 	public static final int AMENDMENT = 1;
 	public static final int ACT_FINAL = 2;
 	public static final int ARCHIVE = 3;
+	private static final int DEV = 10;
 	
-	private static final String COLL_PROPOSAL = "tim27/proposals";
-	private static final String COLL_AMENDMENT = "tim27/amendments";
-	private static final String COLL_FINAL = "tim27/finals";
-	private static final String COLL_ARCHIVE = "tim27/archive";
+	private static final String COLL_PROPOSAL = "proposals";
+	private static final String COLL_AMENDMENT = "amendments";
+	private static final String COLL_FINAL = "finals";
+	private static final String COLL_ARCHIVE = "archive";
+	private static final String COLL_DEV = "dev";
+	private static final String DOC_PROPOSAL = "proposals.xml";
+	private static final String DOC_AMENDMENT = "amendments.xml";
+	private static final String DOC_FINAL = "finals.xml";
+	private static final String DOC_ARCHIVE = "archive.xml";
 	
 	//---------------------------------------------------------------------------------------------------
 	// XQuery handling
 	//---------------------------------------------------------------------------------------------------
+	
+	public static void initDB() {
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder;
+		try {
+			System.out.println("Initialising DB");
+			builder = dbf.newDocumentBuilder();
+			
+			Document docProps = builder.newDocument();
+			Element elemProps = docProps.createElement("Proposals");
+			elemProps.setAttribute("Naziv", DOC_PROPOSAL);
+			docProps.appendChild(elemProps);
+			
+			insertDocument(docProps, DEV, "app");
+			
+			Document docAmends = builder.newDocument();
+			Element elemAmends = docAmends.createElement("Amendments");
+			elemAmends.setAttribute("Naziv", DOC_AMENDMENT);
+			docAmends.appendChild(elemAmends);
+			
+			insertDocument(docAmends, DEV, "app");
+			
+			Document docFinals = builder.newDocument();
+			Element elemFinals = docFinals.createElement("Finals");
+			elemFinals.setAttribute("Naziv", DOC_FINAL);
+			docFinals.appendChild(elemFinals);
+			
+			insertDocument(docFinals, DEV, "app");
+			
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static void exequteXQuery(String path) {
 		
@@ -139,20 +179,30 @@ public class MarkLogicUtils {
 			  <uri>collection-uri</uri>
 			</collection-query>
 			*/
-			
+			/*
 			String rawXMLQuery =
 				    "<search:query "+
 				          "xmlns:search='http://marklogic.com/appservices/search'>"+
 				      "<search:collection-query>"+
 				          "<search:uri>team27</search:uri>"+
+				          "<search:uri>proposals</search:uri>"+
 				      "</search:collection-query>"+
 				    "</search:query>";
-			
+			*/
 			//String rawXMLquery = "<search:query xmlns:search=\"http://marklogic.com/appservices/search\"><search:collection-query> <search:uri>"+COLL_PROPOSAL+"</uri> </collection-query></query>";
-			StringHandle rawHandle = new StringHandle(rawXMLQuery);
-			
+			//StringHandle rawHandle = new StringHandle(rawXMLQuery);
+			/*
 			RawStructuredQueryDefinition querydef = queryMgr.newRawStructuredQueryDefinition(rawHandle);
 			SearchHandle results = queryMgr.search(querydef, new SearchHandle());
+			*/
+			StructuredQueryBuilder sqb = new StructuredQueryBuilder();
+			StructuredQueryDefinition query = sqb.and(sqb.collection("tim27/proposals"));
+			
+			//StringQueryDefinition query = queryMgr.newStringDefinition();
+			query.setCollections(COLL_PROPOSAL);
+			SearchHandle results = queryMgr.search(query, new SearchHandle());
+			
+			System.out.println(results.getTotalResults());
 			
 			MatchDocumentSummary[] summaries = results.getMatchResults();
 			for (MatchDocumentSummary summary : summaries ) {
@@ -196,6 +246,9 @@ public class MarkLogicUtils {
 				break;
 			case ARCHIVE:
 				collectionID = COLL_ARCHIVE;
+				break;
+			case DEV:
+				collectionID = COLL_DEV;
 				break;
 			default:
 				System.out.println(">> ERROR: Bad collection ID <<\n giving up\n");
