@@ -1,49 +1,28 @@
 package controllers;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
-import java.util.ArrayList;
-
-import javax.crypto.SecretKey;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
 import com.google.gson.Gson;
-
 import models.User;
+import org.w3c.dom.Document;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import play.cache.Cache;
-import play.libs.F;
 import play.libs.WS;
 import play.libs.WS.WSRequest;
 import play.mvc.Http.Header;
-import play.mvc.results.BadRequest;
-import play.mvc.results.Ok;
-import play.mvc.results.RenderJson;
-import play.mvc.results.RenderText;
-import play.mvc.results.Result;
-import utils.CertificateUtils;
-import utils.GeneralUtils;
-import utils.JWTUtils;
-import utils.KeystoreUtils;
-import utils.MarkLogicUtils;
-import utils.SecurityUtils;
-import utils.XMLUtils;
-import utils.xmlEncryption.EncryptXML;
+import play.mvc.results.*;
+import utils.*;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import java.io.*;
+import java.security.*;
+import java.security.cert.Certificate;
+import java.util.ArrayList;
 
 public class Acts extends AppController {
 
@@ -63,11 +42,54 @@ public class Acts extends AppController {
 		InputStream is = request.body;
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		Document doc = null;
-		
+
+		// Add schema for validation
+
+		if (type < 2) {
+			try {
+				SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+				Schema schema = null;
+				if (type == 1) {
+					schema = schemaFactory.newSchema(new File("./xml-schema/Amandman.xsd"));
+				}
+				if (type == 0) {
+					schema = schemaFactory.newSchema(new File("./xml-schema/Propis.xsd"));
+				}
+				dbf.setSchema(schema);
+				dbf.setNamespaceAware(true);
+				//dbf.setXIncludeAware(true);
+				//dbf.setValidating(true);
+			} catch (SAXException e) {
+				e.printStackTrace();
+			}
+		}
+
 		try {
 			DocumentBuilder db = dbf.newDocumentBuilder();
+			//System.out.println(">> Da li ce puci pre parsiranja?");
+			db.setErrorHandler(new ErrorHandler() {
+				@Override
+				public void warning(SAXParseException exception) throws SAXException {
+					System.out.println(">>warning");
+				}
+
+				@Override
+				public void error(SAXParseException exception) throws SAXException {
+					System.out.println(">>error");
+					System.out.println(">>Validation failed!");
+					exception.printStackTrace();
+				}
+
+				@Override
+				public void fatalError(SAXParseException exception) throws SAXException {
+					System.out.println(">>fatalError");
+				}
+			});
+
 			doc = db.parse(is);
 			System.out.println(">> Document parsed.");
+
+			//TODO Proveriti da li je validan po šemi
 			
 			// Get user data.
 			//TODO:? Check if it's really them
