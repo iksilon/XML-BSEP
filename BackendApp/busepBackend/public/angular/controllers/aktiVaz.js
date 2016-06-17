@@ -1,8 +1,9 @@
 (function() {
 	var app = angular.module('mainApp');
 	
-	app.controller('AktiCtrl', function($scope, $window, $http, $rootScope){
+	app.controller('AktiVazCtrl', function($scope, $window, $http, $rootScope, $mdToast){
 		$rootScope.mainPage = false;
+		
 		
    });
 }());

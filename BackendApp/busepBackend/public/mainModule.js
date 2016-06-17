@@ -1,5 +1,5 @@
 (function() {
-	var app = angular.module('mainApp', ['ngMaterial', 'ngMessages', 'ngRoute']); //, 'ngCookies'
+	var app = angular.module('mainApp', ['ngMaterial', 'ngMessages', 'ngRoute']);
 
 	app.factory('timestampInterceptor', function($rootScope, $window) {  
 	    var timestampInterceptor = {
@@ -61,11 +61,11 @@
 		})
 		.when("/akti/vazeci", {
 			templateUrl: "angular/routes/aktiVazeci.html",
-			controller: "AktiCtrl"
+			controller: "AktiVazCtrl"
 		})
 		.when("/akti/proc", {
 			templateUrl: "angular/routes/aktiProc.html",
-			controller: "AktiCtrl"
+			controller: "AktiProcCtrl"
 		})
 		.when("/login", {
 			templateUrl: "angular/routes/login.html",

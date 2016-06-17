@@ -1,3 +1,19 @@
-<md-content layout="row" layout-align="center">
-	PROCEDURA
+<md-card>
+<md-content layout="row" layout-align="center" id="toastParent">
+	<md-card flex="30" id="toastParent" class="docList">
+		<md-toolbar layout="row" class="md-hue-3">
+	      <div class="md-toolbar-tools">
+	        <span>Dokumenti u proceduri</span>
+	      </div>
+	    </md-toolbar>
+		<md-list id="toastParent">
+			<md-list-item ng-repeat="doc in acts" class="noright" ng-click="docSelected(doc)">
+				<h4>{{ doc.title }}</h4>
+			</md-list-item>
+		</md-list>
+	</md-card>
+	<md-card flex id="docView">
+		<div data-ng-include data-src="'documentView.html'" ng-show="showDocView"></div>
+	</md-card>
 </md-content>
+</md-card>

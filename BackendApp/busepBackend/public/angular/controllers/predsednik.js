@@ -1,8 +1,6 @@
 (function() {
 	var app = angular.module('mainApp');
 
-	//TODO mozda bolje kao servis, koji koriste (trenutno nepostojeci) kontroleri za odbornika i predsednika
-	//radi lakse provere da li je u pitanju korisnik koji ne treba da ima pristup ovom delu aplikacije
 	app.controller('PredsednikCtrl', function($scope, $http, $window, $rootScope, $mdToast) {
 		$rootScope.mainPage = false;
 		
@@ -23,12 +21,12 @@
 		$http.get('/acts/proc')
 			.then(
 					function(response) {
-//						$scope.docList = response.data;
-//						$scope.docList.forEach(function(doc) {
-//							doc.voted = false;
-//							doc.acceptable = false;
-//							doc.equalVotes = false;
-//						});
+						$scope.docList = response.data;
+						$scope.docList.forEach(function(doc) {
+							doc.voted = false;
+							doc.acceptable = false;
+							doc.equalVotes = false;
+						});
 					},
 					function(reason) {
 						$mdToast.show({

@@ -1,16 +1,34 @@
 (function() {
 	var app = angular.module('mainApp');
 
-	//TODO mozda bolje kao servis, koji koriste (trenutno nepostojeci) kontroleri za odbornika i predsednika
-	//radi lakse provere da li je u pitanju korisnik koji ne treba da ima pristup ovom delu aplikacije
-	app.controller('OdbornikCtrl', function($window, $rootScope) {
+	app.controller('OdbornikCtrl', function($scope, $window, $rootScope, $mdToast, amandmanSvc) {
 		$rootScope.mainPage = false;
 		
-		var user = $rootScope.user; // cuvacemo u Java Web Token (JWT),
-		// POST-om saljemo na server, server skonta koji je user,
-		// i vrati username i sta god vec treba
+		var user = $rootScope.user;
 		if (!user || user.role !== "Odbornik" && user.role !== "Predsednik") {
 			$window.location.href = "#/";
 		}
+
+		$scope.doc = amandmanSvc.selectedAct;
+		$scope.path = amandmanSvc.editingPath;
+		$scope.selectedTabIdx = 0;
+		$scope.checkAvailability = function() {
+			if((!$scope.doc || !$scope.path) && $scope.selectedTabIdx === 1) {
+				$scope.selectedTabIdx = 0;
+				$mdToast.show({
+					template: '<md-toast>Morate prvo odabrati akt iz menija \"AKTI U PROCEDURI\"</md-toast>',
+					hideDelay: 3000,
+					position: 'top left',
+					parent: '#toastTab'
+				});
+			}
+		};
+		
+		if(doc && path) {
+			$scope.selectedTabIdx = 1;
+		}
+		
+		
+		
 	});
 }());

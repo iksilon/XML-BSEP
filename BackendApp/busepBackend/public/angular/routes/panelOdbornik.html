@@ -1,11 +1,11 @@
 <md-card>
-<md-tabs md-dynamic-height md-border-bottom>
+<md-tabs md-dynamic-height md-border-bottom md-selected="selectedTabIdx" md-stretch-tabs="always" id="toastTab">
 	<md-tab label="Predlog akta">
 		<md-content flex>
 			<div data-ng-include data-src="'angular/includes/predlogAkt.html'"></div>
 		</md-content>
 	</md-tab>
-	<md-tab label="Predlog amandmana">
+	<md-tab label="Predlog amandmana" md-on-select="checkAvailability()">
 		<md-content>
 			<div data-ng-include data-src="'angular/includes/predlogAmandman.html'"></div>
 		</md-content>
