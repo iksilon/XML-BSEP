@@ -5,3 +5,7 @@ BackendApp/busepBackend/.classpath
 BackendApp/busepBackend/tmp
 eclipse
 /BackendApp/busepBackend/.settings
+/BackendApp/arhiv/*.classpath
+/BackendApp/arhiv/*.project
+/BackendApp/arhiv/.classpath
+/BackendApp/arhiv/.project

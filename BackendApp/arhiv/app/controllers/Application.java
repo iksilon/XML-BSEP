@@ -22,11 +22,7 @@ import utils.MarkLogicUtils;
 import utils.xmlEncryption.DecryptXML;
 
 public class Application extends Controller {
-
-    public static void index() {
-        render();
-    }
-    
+	
     public static void submitToArchive() {
     	System.out.println("-------------Submission received, commencing parse-----------");
     	
