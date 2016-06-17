@@ -6,13 +6,13 @@
 	        <span>Dokumenti u proceduri</span>
 	      </div>
 	    </md-toolbar>
-		<md-list id="toastParent">
+		<md-list>
 			<md-list-item ng-repeat="doc in docList" class="noright">
 				<h4>{{ doc.title }}</h4>
 				<md-content class="md-secondary">
-					<md-button class="sm-btn material-icons" aria-label="Unos rezultata glasanja" ng-click="docRez(doc)" ng-show="!doc.voted && !voting">trending_up</md-button>
-					<md-button class="sm-btn material-icons" aria-label="Usvoji" ng-click="docAccept(doc)" ng-show="doc.voted && doc.acceptable && voting || doc.equalVotes">done</md-button>
-					<md-button class="sm-btn material-icons" aria-label="Odbij" ng-click="docReject(doc)" ng-show="doc.voted && !doc.acceptable && voting || doc.equalVotes">clear</md-button>
+					<md-button class="sm-btn material-icons" aria-label="Unos rezultata glasanja" ng-click="docRez(doc)" ng-show="!doc.voted && !voting">trending_up<md-tooltip md-direction="left">Unesi rezultate glasanja</md-tooltip></md-button>
+					<md-button class="sm-btn material-icons" aria-label="Usvoji" ng-click="docAccept(doc)" ng-show="doc.voted && doc.acceptable && voting || doc.equalVotes">done<md-tooltip md-direction="left">Prihvati</md-tooltip></md-button>
+					<md-button class="sm-btn material-icons" aria-label="Odbij" ng-click="docReject(doc)" ng-show="doc.voted && !doc.acceptable && voting || doc.equalVotes">clear<md-tooltip md-direction="left">Odbij</md-tooltip></md-button>
 				</md-content>
 			</md-list-item>
 		</md-list>

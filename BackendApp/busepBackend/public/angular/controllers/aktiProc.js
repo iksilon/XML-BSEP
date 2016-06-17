@@ -4,12 +4,17 @@
 	app.controller('AktiProcCtrl', function($scope, $http, $window, $rootScope, $mdToast, $sce, amandmanSvc){
 		$rootScope.mainPage = false;
 		
-		$scope.acts = [{title: "Dresiranje pseta", uri:'', uriHash:''},
-		               {title: "Hranjenje mačeta", uri:'', uriHash:''},
-		               {title: "Odlazak u budizam", uri:'', uriHash:''}];
+		$scope.user = $rootScope.user;
+		
+		$scope.showDocAmendments = false;
+		$scope.acts = [{uri:'Dresiranje pseta', uriHash:'shshsh', username:'p@a.com'},
+		               {uri:'Hranjenje mačeta', uriHash:'shshsh', username:'o@a.com'},
+		               {uri:'Odlazak u budizam', uriHash:'shshsh', username:'p@a.com'}];
+		$scope.amendments = [];
 		$http.get('/acts/proc')
 			.then(
 					function(response) {
+						//TODO ODKOMENTARISI
 //						$scope.acts = response.data;
 					},
 					function(reason) {
@@ -28,6 +33,19 @@
 			$http.post('/acts/get', [doc.uri, doc.uriHash])
 				.then(
 						function(response) {
+							$http.post('/acts/amdmnt', [doc.uri, doc.uriHash])
+								.then(
+										function(response) {
+											$scope.amendments = response.data;
+											$scope.showDocAmendments = true;
+										},
+										function(reason) {
+											$scope.amendments = [];
+											$scope.showDocAmendments = false;
+											
+											
+										}
+								);
 //							docView = $sce.trustAsHtml(response.data);
 							$scope.showDocView = true;
 							amandmanSvc.selectedAct = doc;
@@ -37,11 +55,13 @@
 								template: '<md-toast>Greška pri preuzimanju odabranog akta</md-toast>',
 								hideDelay: 3000,
 								position: 'top right',
-								parent: '#toastParent'
+								parent: '#docView'
 							});
 							$scope.docView = $sce.trustAsHtml('');
 							amandmanSvc.selectedAct = undefined;
 							$scope.showDocView = false;
+							$scope.showDocAmendments = false;
+							$scope.amendments = [];
 						}
 				);
 		};
@@ -51,5 +71,49 @@
 			$scope.showDocView = false;
 			$window.location.href = '#/odbornik';
 		};
+		
+		$scope.docCancelProcedure = function(doc, docType) {
+			$http.post('/acts/proc/cancel', [doc.uri, doc.uriHash])
+				.then(
+						function(response) {
+							if(docType === 'act') {
+								$scope.acts.splice($scope.acts.indexOf(doc), 1);
+								$mdToast.show({
+									template: '<md-toast>Akt uklonjen iz procedure</md-toast>',
+									hideDelay: 3000,
+									position: 'top right',
+									parent: '#toastParent'
+								});
+							}
+							else if(docType === 'amdm') {
+								$scope.amendments.splice($scope.amendments.indexOf(doc), 1);
+								$mdToast.show({
+									template: '<md-toast>Amandman uklonjen iz procedure</md-toast>',
+									hideDelay: 3000,
+									position: 'top right',
+									parent: '#toastParentAmdm'
+								});
+							}
+						},
+						function(reason) {
+							if(docType === 'act') {
+								$mdToast.show({
+									template: '<md-toast>Uklanjanje akt iz procedure neuspešno</md-toast>',
+									hideDelay: 3000,
+									position: 'top right',
+									parent: '#toastParent'
+								});
+							}
+							else if(docType === 'amdm') {
+								$mdToast.show({
+									template: '<md-toast>Uklanjanje amandmana iz procedure neuspešno</md-toast>',
+									hideDelay: 3000,
+									position: 'top right',
+									parent: '#toastParentAmdm'
+								});
+							}
+						}
+				);
+		}
    });
 }());

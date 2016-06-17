@@ -13,7 +13,7 @@
 		$scope.path = amandmanSvc.editingPath;
 		$scope.selectedTabIdx = 0;
 		$scope.checkAvailability = function() {
-			if((!$scope.doc || !$scope.path) && $scope.selectedTabIdx === 1) {
+			if(!$scope.doc || !$scope.path) {
 				$scope.selectedTabIdx = 0;
 				$mdToast.show({
 					template: '<md-toast>Morate prvo odabrati akt iz menija \"AKTI U PROCEDURI\"</md-toast>',

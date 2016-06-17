@@ -14,6 +14,7 @@ public class Main {
 			public void run() {
 				try {
 					MainWindow frame = MainWindow.getInstance();
+					frame.setLocationRelativeTo(null);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
