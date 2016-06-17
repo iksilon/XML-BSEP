@@ -140,7 +140,7 @@ public class MarkLogicUtils {
 	}
 	
 	/**
-	 * Returns all proposal data from DB.
+	 * Returns all amendment data from DB.
 	 * 
 	 * @return
 	 */
@@ -148,6 +148,35 @@ public class MarkLogicUtils {
 		ArrayList<JsonObject> uris = new ArrayList<>();
 		
 		Document l = readDocument(DOC_AMENDMENT);
+		NodeList nl = l.getElementsByTagName("uri");
+		
+		for(int i = 0; i < nl.getLength(); i++ ) {
+			String uri = nl.item(i).getTextContent();
+			
+			Document d = readDocument(uri);
+			JsonObject jo = new JsonObject();
+			
+			jo.addProperty("uri", uri);
+			String uriHash = GeneralUtils.getHexHash(uri);
+			jo.addProperty("uriHash", uriHash);
+			
+			jo.addProperty("username", d.getDocumentElement().getAttribute("Autor"));
+			
+			uris.add(jo);
+		}
+		
+		return uris;
+	}
+	
+	/**
+	 * Returns all final data from DB.
+	 * 
+	 * @return
+	 */
+	public static ArrayList<JsonObject> getAllFinalsFromDB() {
+		ArrayList<JsonObject> uris = new ArrayList<>();
+		
+		Document l = readDocument(DOC_FINAL);
 		NodeList nl = l.getElementsByTagName("uri");
 		
 		for(int i = 0; i < nl.getLength(); i++ ) {
