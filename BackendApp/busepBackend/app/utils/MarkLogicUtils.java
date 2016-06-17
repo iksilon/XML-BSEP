@@ -35,9 +35,13 @@ import com.marklogic.client.io.DOMHandle;
 import com.marklogic.client.io.DocumentMetadataHandle;
 import com.marklogic.client.io.InputStreamHandle;
 import com.marklogic.client.io.SearchHandle;
+import com.marklogic.client.io.StringHandle;
 import com.marklogic.client.io.marker.DocumentPatchHandle;
 import com.marklogic.client.query.MatchDocumentSummary;
+import com.marklogic.client.query.MatchLocation;
+import com.marklogic.client.query.MatchSnippet;
 import com.marklogic.client.query.QueryManager;
+import com.marklogic.client.query.RawStructuredQueryDefinition;
 import com.marklogic.client.query.StringQueryDefinition;
 import com.marklogic.client.util.EditableNamespaceContext;
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
@@ -116,6 +120,48 @@ public class MarkLogicUtils {
 	private static String readFile(String path, Charset encoding) throws IOException {
 		byte[] encoded = Files.readAllBytes(Paths.get(path));
 		return new String(encoded, encoding);
+	}
+	
+	
+	public static void getAllProposals() {
+		//StructuredQueryBuilder sqb = new StructuredQueryBuilder();
+		//StructuredQueryDefinition querydef = sqb.collection(COLL_PROPOSAL);
+		
+		System.out.println("----------Loading proposals-----------");
+		
+		ConnectionProperties props;
+		try {
+			props = loadProperties();
+			DatabaseClient client = DatabaseClientFactory.newClient(props.host, props.port, props.user, props.password, props.authType);
+			QueryManager queryMgr = client.newQueryManager();
+			/*
+			<collection-query>
+			  <uri>collection-uri</uri>
+			</collection-query>
+			*/
+			
+			String rawXMLQuery =
+				    "<search:query "+
+				          "xmlns:search='http://marklogic.com/appservices/search'>"+
+				      "<search:collection-query>"+
+				          "<search:uri>team27</search:uri>"+
+				      "</search:collection-query>"+
+				    "</search:query>";
+			
+			//String rawXMLquery = "<search:query xmlns:search=\"http://marklogic.com/appservices/search\"><search:collection-query> <search:uri>"+COLL_PROPOSAL+"</uri> </collection-query></query>";
+			StringHandle rawHandle = new StringHandle(rawXMLQuery);
+			
+			RawStructuredQueryDefinition querydef = queryMgr.newRawStructuredQueryDefinition(rawHandle);
+			SearchHandle results = queryMgr.search(querydef, new SearchHandle());
+			
+			MatchDocumentSummary[] summaries = results.getMatchResults();
+			for (MatchDocumentSummary summary : summaries ) {
+				System.out.println(summary.getUri());
+			}
+			System.out.println("----------Proposals loaded-----------");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	

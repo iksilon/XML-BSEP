@@ -24,7 +24,7 @@
 			}
 		};
 		
-		if(doc && path) {
+		if($scope.doc && $scope.path) {
 			$scope.selectedTabIdx = 1;
 		}
 		

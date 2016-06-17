@@ -10,11 +10,11 @@ POST	/loginCheck										Login.loginCheck
 GET		/search/{q}										Search.doSearch
 
 
-GET		/acts											Acts.latestDocuments(count:'0')
-GET		/acts/{count}									Acts.latestDocuments
 GET		/acts/current									Acts.current
 GET		/acts/proc										Acts.inProcedure
 POST	/acts/get										Acts.getAct
+GET		/acts											Acts.latestDocuments(count:'0')
+GET		/acts/{count}									Acts.latestDocuments
 
 # Slanje XML-a iz editora:
 POST	/xml/submit/proposition							Acts.submitProposition

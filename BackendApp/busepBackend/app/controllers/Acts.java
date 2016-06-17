@@ -1,6 +1,9 @@
 package controllers;
 
 import com.google.gson.Gson;
+import com.marklogic.client.query.StructuredQueryBuilder;
+import com.marklogic.client.query.StructuredQueryDefinition;
+
 import models.User;
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
@@ -233,7 +236,6 @@ public class Acts extends AppController {
 		String docURI = "Testiraje-transformacije.xml";
 		Document doc = MarkLogicUtils.readDocument(docURI);
 		
-		
 		FileOutputStream os;
 		try {
 			// Transformation testing
@@ -281,8 +283,10 @@ public class Acts extends AppController {
 	
 	public static Result inProcedure() {
 		//TODO: Uzeti akte iz baze koji jos nisu usvojeni i vratiti u JSON/XML-tekst formatu
-		
-		return new RenderJson(""); //ili sta vec bude trebalo
+		System.out.println("----starting get all");
+		MarkLogicUtils.getAllProposals();
+		System.out.println("----ending get all");
+		return new BadRequest("lololo");
 	}
 
 	public static Result latestDocuments(int count) {
