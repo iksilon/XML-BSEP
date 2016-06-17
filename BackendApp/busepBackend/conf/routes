@@ -11,6 +11,7 @@ GET		/search/{q}										Search.doSearch
 
 GET		/acts/current									Acts.current
 GET		/acts/proc										Acts.inProcedure
+GET		/acts/amend										Acts.inAmendment
 POST	/acts/proc/cancel								Acts.cancelProcedure
 POST	/acts/get										Acts.getAct
 POST	/acts/amdmnt									Acts.getActAmendments
