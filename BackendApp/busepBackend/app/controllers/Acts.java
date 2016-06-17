@@ -265,17 +265,12 @@ public class Acts extends AppController {
 		java.io.ByteArrayOutputStream by = new java.io.ByteArrayOutputStream();
 		XMLUtils.transformPDF(doc, by);
 		
-		
-		
-		response.direct = by.toByteArray();
 		response.contentType = "application/pdf";
+		response.print(by);
 		
-		Result res = new Result() {
-			@Override
-			public void apply(Request request, Response response) {
-				
-			}
-		};
+		Ok res = new play.mvc.results.Ok();
+		res.apply(request, response);
+		return res;
 		
 		///return new RenderBinary(new ByteArrayInputStream(by.toByteArray()), "asdf.pdf");
 		
