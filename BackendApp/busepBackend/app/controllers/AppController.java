@@ -173,7 +173,7 @@ public class AppController extends Controller {
 		// nope
 		return new Forbidden("Invalid token");
 	}
-	
+	/*
 	@Before(unless={"Login.logIn", "Login.token", "Login.logOut", "Login.loginCheck", 
 			"Search.doSearch", "Acts.current", "Acts.inProcedure", "Acts.getAct",
 			"Acts.getActAmendments", "Acts.latestDocuments", "Utils.usersByRole"}, priority=5)
@@ -202,4 +202,5 @@ public class AppController extends Controller {
 		}
 		return new Forbidden("Not enough priviledge");
 	}
+	*/
 }

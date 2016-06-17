@@ -1,6 +1,8 @@
 package controllers;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,6 +28,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.yaml.snakeyaml.reader.StreamReader;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -35,6 +38,8 @@ import play.cache.Cache;
 import play.libs.WS;
 import play.libs.WS.WSRequest;
 import play.mvc.Http.Header;
+import play.mvc.Http.Request;
+import play.mvc.Http.Response;
 import play.mvc.results.BadRequest;
 import play.mvc.results.NotFound;
 import play.mvc.results.NotModified;
@@ -259,6 +264,22 @@ public class Acts extends AppController {
 		System.out.println("Archive submission requested, commencing");
 		
 		Document doc = MarkLogicUtils.readDocument("Zakon-o-radu.xml");
+		java.io.ByteArrayOutputStream by = new java.io.ByteArrayOutputStream();
+		XMLUtils.transformPDF(doc, by);
+		
+		
+		
+		response.direct = by.toByteArray();
+		response.contentType = "application/pdf";
+		
+		Result res = new Result() {
+			@Override
+			public void apply(Request request, Response response) {
+				
+			}
+		};
+		
+		///return new RenderBinary(new ByteArrayInputStream(by.toByteArray()), "asdf.pdf");
 		
 		//TODO: Encrypt here
 		/*EncryptXML encryptXMLutil = new EncryptXML();
@@ -270,6 +291,7 @@ public class Acts extends AppController {
 
 		doc = encryptXMLutil.encrypt(doc, secretKey, cert, "Propis");   //TODO Akt (naziv taga koji enkriptujemo)*/
 		//---------------------------------------------------------
+		/*
 		Document encrypted = doc;
 		
 		try {			
@@ -285,7 +307,7 @@ public class Acts extends AppController {
 		} catch (IOException e) {
 			e.printStackTrace();
 			return new BadRequest("Submission failed.");
-		}
+		}*/
 	}
 	
 	

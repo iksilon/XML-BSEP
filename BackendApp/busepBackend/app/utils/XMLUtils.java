@@ -187,6 +187,14 @@ public class XMLUtils {
 			xslFoTransformer.transform(source, res);
 			
 			out = outStream;
+			/*
+			// Generate PDF file
+			File pdfFile = new File("./result.pdf");
+			OutputStream out2 = new BufferedOutputStream(new FileOutputStream(pdfFile));
+			out2.write(outStream.toByteArray());
+			out.flush();
+			out.close();
+			*/
 			
 		} catch (SAXException e) {
 			e.printStackTrace();
