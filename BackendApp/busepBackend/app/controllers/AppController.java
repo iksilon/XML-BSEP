@@ -85,7 +85,8 @@ public class AppController extends Controller {
 	protected static ConcurrentHashMap<String, Long> userMsgNum = new ConcurrentHashMap<String, Long>();
 	@Before(unless={"Login.logIn", "Login.token", "Login.logOut", "Login.loginCheck", 
 			"Search.doSearch", "Acts.current", "Acts.inProcedure", "Acts.getAct",
-			"Acts.getActAmendments", "Acts.latestDocuments", "Utils.usersByRole"}, priority=2)
+			"Acts.getActAmendments", "Acts.latestDocuments", "Acts.inAmendments",
+			"Utils.usersByRole"}, priority=2)
 	static Result checkMsgNum() {
 		Header hMsgNum = request.headers.get("msgnum");
 		Header hUname = request.headers.get("username");
@@ -151,7 +152,8 @@ public class AppController extends Controller {
 	
 	@Before(unless={"Login.logIn", "Login.token", "Login.logOut", "Login.loginCheck", 
 			"Search.doSearch", "Acts.current", "Acts.inProcedure", "Acts.getAct",
-			"Acts.getActAmendments", "Acts.latestDocuments", "Utils.usersByRole"}, priority=4)
+			"Acts.getActAmendments", "Acts.latestDocuments", "Acts.inAmendments",
+			"Utils.usersByRole"}, priority=4)
 	static Result csrfTokenCheck() {
 		Header hAuth = request.headers.get("authorization");
 		if(hAuth != null) {
@@ -176,7 +178,8 @@ public class AppController extends Controller {
 	/*
 	@Before(unless={"Login.logIn", "Login.token", "Login.logOut", "Login.loginCheck", 
 			"Search.doSearch", "Acts.current", "Acts.inProcedure", "Acts.getAct",
-			"Acts.getActAmendments", "Acts.latestDocuments", "Utils.usersByRole"}, priority=5)
+			"Acts.getActAmendments", "Acts.latestDocuments", "Acts.inAmendments",
+			"Utils.usersByRole"}, priority=5)
 	static Result actionAuthorization() {
 		Header hUname = request.headers.get("username");
 		String uname = hUname != null ? hUname.value() : null;

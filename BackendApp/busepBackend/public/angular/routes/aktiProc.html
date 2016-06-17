@@ -1,6 +1,7 @@
 <md-card layout="column">
 <md-content layout="row" layout-align="center" id="toastParentContent">
-	<md-card flex="30" id="toastParent" class="docList">
+	<md-card layout="column" flex="30">
+	<md-card id="toastParent" class="docList">
 		<md-toolbar layout="row" class="md-hue-3">
 	      <div class="md-toolbar-tools">
 	        <span>Dokumenti u proceduri</span>
@@ -8,43 +9,34 @@
 	    </md-toolbar>
 		<md-list>
 			<md-list-item ng-repeat="doc in acts" class="noright">
-				<div ng-click="docSelected(doc)">
-					<h4>{{ doc.uri }}</h4>
-				</div>
+				<h4>{{ doc.uri }}</h4>
 				<md-content class="md-secondary">
-	<!-- 				<md-button class="sm-btn material-icons" aria-label="Unos rezultata glasanja" ng-click="docRez(doc)" ng-show="!doc.voted && !voting">trending_up</md-button> -->
-	<!-- 				<md-button class="sm-btn material-icons" aria-label="Usvoji" ng-click="docAccept(doc)" ng-show="doc.voted && doc.acceptable && voting || doc.equalVotes">done</md-button> -->
+					<md-button class="sm-btn material-icons" aria-label="Otvori dokument" ng-click="docSelected(doc)">find_in_page<md-tooltip md-direction="left">Otvori dokument</md-tooltip></md-button>
 					<md-button class="sm-btn material-icons" aria-label="Ukloni iz procedure" ng-click="docCancelProcedure(doc, 'act')" ng-show="doc.username === user.username">clear<md-tooltip md-direction="left">Ukloni iz procedure</md-tooltip></md-button>
 				</md-content>
 			</md-list-item>
 		</md-list>
 	</md-card>
-	<md-card flex id="docView">
-		<div data-ng-include data-src="'documentView.html'" ng-show="showDocView"></div>
-	</md-card>
-</md-content>
-<md-content layout="row" layout-align="center" ng-show="showDocAmendments">
-	<md-card flex="30" id="toastParentAmdm" class="docList">
+	
+	<md-card id="toastParentAmdm" class="docList" ng-show="showDocAmendments">
 		<md-toolbar layout="row" class="md-hue-3">
 	      <div class="md-toolbar-tools">
 	        <span>Amandmani na odabrani dokument</span>
 	      </div>
 	    </md-toolbar>
 		<md-list>
-			<md-list-item ng-repeat="doc in amendments" class="noright">
-				<div ng-click="docSelected(doc)">
-					<h4>{{ doc.uri }}</h4>
-				</div>
+			<md-list-item ng-repeat="amend in amendments" class="noright" ng-if="amend.propis === selectedDoc.uri">
+				<h4>{{ amend.uri }}</h4>
 				<md-content class="md-secondary">
-<!-- 				<md-button class="sm-btn material-icons" aria-label="Unos rezultata glasanja" ng-click="docRez(doc)" ng-show="!doc.voted && !voting">trending_up</md-button> -->
-<!-- 				<md-button class="sm-btn material-icons" aria-label="Usvoji" ng-click="docAccept(doc)" ng-show="doc.voted && doc.acceptable && voting || doc.equalVotes">done</md-button> -->
-					<md-button class="sm-btn material-icons" aria-label="Ukloni iz procedure" ng-click="docCancelProcedure(doc, 'amdm')" ng-show="doc.username === user.username">clear<md-tooltip md-direction="left">Ukloni iz procedure</md-tooltip></md-button>
+					<md-button class="sm-btn material-icons" aria-label="Otvori dokument" ng-click="docSelected(doc)">find_in_page<md-tooltip md-direction="left">Otvori dokument</md-tooltip></md-button>
+					<md-button class="sm-btn material-icons" aria-label="Ukloni iz procedure" ng-click="docCancelProcedure(doc, 'amdm')" ng-show="amend.username === user.username">clear<md-tooltip md-direction="left">Ukloni iz procedure</md-tooltip></md-button>
 				</md-content>
 			</md-list-item>
 		</md-list>
 	</md-card>
+	</md-card>
 	<md-card flex id="docView">
-		<div data-ng-include data-src="'documentView.html'" ng-show="showDocView"></div>
+		<div data-ng-include data-src="docViewPath" ng-show="showDocView"></div>
 	</md-card>
 </md-content>
 </md-card>

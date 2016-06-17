@@ -12,7 +12,7 @@
 		 			<xsl:value-of select="@Naziv"/>
 					<md-button type="button" class="md-raised md-primary">
 						<xsl:attribute name="ng-click">elementEdit('<xsl:value-of select="@element_path" />')</xsl:attribute>
-						<xsl:attribute name="ng-if">user.role &amp;&amp; user.role != 'Web Admin'</xsl:attribute>
+						<xsl:attribute name="ng-if">user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username</xsl:attribute>
 						Izmeni
 					</md-button>
 		 		</h1><br/><br/>
@@ -31,7 +31,7 @@
 					elementEdit('<xsl:value-of select="@element_path" />')
 				</xsl:attribute>
 				<xsl:attribute name="ng-if">
-					user.role &amp;&amp; user.role != 'Web Admin'
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
 				</xsl:attribute>
 				Izmeni
 			</md-button>
@@ -47,7 +47,7 @@
 					elementEdit('<xsl:value-of select="@element_path" />')
 				</xsl:attribute>
 				<xsl:attribute name="ng-if">
-					user.role &amp;&amp; user.role != 'Web Admin'
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
 				</xsl:attribute>
 				Izmeni
 			</md-button>
@@ -63,7 +63,7 @@
 					elementEdit('<xsl:value-of select="@element_path" />')
 				</xsl:attribute>
 				<xsl:attribute name="ng-if">
-					user.role &amp;&amp; user.role != 'Web Admin'
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
 				</xsl:attribute>
 				Izmeni
 			</md-button>
@@ -80,7 +80,7 @@
 					elementEdit('<xsl:value-of select="@element_path" />')
 				</xsl:attribute>
 				<xsl:attribute name="ng-if">
-					user.role &amp;&amp; user.role != 'Web Admin'
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
 				</xsl:attribute>
 				Izmeni
 			</md-button>
@@ -96,7 +96,7 @@
 					elementEdit('<xsl:value-of select="@element_path" />')
 				</xsl:attribute>
 				<xsl:attribute name="ng-if">
-					user.role &amp;&amp; user.role != 'Web Admin'
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
 				</xsl:attribute>
 				Izmeni
 			</md-button>
@@ -110,7 +110,7 @@
 				elementEdit('<xsl:value-of select="@element_path" />')
 			</xsl:attribute>
 			<xsl:attribute name="ng-if">
-				user.role &amp;&amp; user.role != 'Web Admin'
+				user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
 			</xsl:attribute>
 			Izmeni
 		</md-button><br/>
@@ -126,7 +126,7 @@
 					elementEdit('<xsl:value-of select="@element_path" />')
 				</xsl:attribute>
 				<xsl:attribute name="ng-if">
-					user.role &amp;&amp; user.role != 'Web Admin'
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
 				</xsl:attribute>
 				Izmeni
 			</md-button><br/>
@@ -143,7 +143,7 @@
 					elementEdit('<xsl:value-of select="@element_path" />')
 				</xsl:attribute>
 				<xsl:attribute name="ng-if">
-					user.role &amp;&amp; user.role != 'Web Admin'
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
 				</xsl:attribute>
 				Izmeni
 			</md-button><br/>
@@ -160,7 +160,7 @@
 					elementEdit('<xsl:value-of select="@element_path" />')
 				</xsl:attribute>
 				<xsl:attribute name="ng-if">
-					user.role &amp;&amp; user.role != 'Web Admin'
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
 				</xsl:attribute>
 				Izmeni
 			</md-button><br/>
@@ -175,7 +175,7 @@
 					elementEdit('<xsl:value-of select="@element_path" />')
 				</xsl:attribute>
 				<xsl:attribute name="ng-if">
-					user.role &amp;&amp; user.role != 'Web Admin'
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
 				</xsl:attribute>
 				Izmeni
 			</md-button><br/>

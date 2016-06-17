@@ -897,6 +897,13 @@ $.widget( "xml.xmlEditor", {
 		};
 		var element = angular.element($('#latestActs'));
 		var rootScope = element.scope().$root;
+		var injector = element.injector();
+		var amandmanSvc = injector.get('amandmanSvc');
+		amandmanSvc.selectedAct = undefined;
+		amandmanSvc.editingPath = '';
+//		var odbornikCtrl = injector.get('$controller')('OdbornikCtrl', { $scope: {} });
+//		odbornikCtrl.scope().doc = undefined;
+//		odbornikCtrl.scope().path = '';
 		if(rootScope.user) {
 			headers.username = rootScope.user.username;
 			headers.msgNum = ++rootScope.user.msgNum;

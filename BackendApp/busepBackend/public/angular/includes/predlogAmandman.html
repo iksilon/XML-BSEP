@@ -1,6 +1,7 @@
 <md-content layout="row">
 <md-content layout="column" flex="95"> <!-- class="editorc" -->
-	Napravite izmene na odabranom odeljku dokumenta: '{{path}}'
+	<h2>Odredba: {{path}}</h2>
+	<h2>Predlog propisa: {{doc.uri}}</h2>
 	<xml-editor schema="Amandman" doc="Amandman" root="Document" link="/xml/submit/amendment"></xml-editor>
 </md-content>
 </md-content>

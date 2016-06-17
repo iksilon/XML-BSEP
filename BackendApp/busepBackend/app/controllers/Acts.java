@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -23,7 +22,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -362,7 +360,7 @@ public class Acts extends AppController {
 		
 		 */
 
-		return new RenderText("Not implemented");
+		return new NotFound("Not implemented");
 	}
 	
 	public static Result getActPdf(String body) {
@@ -412,12 +410,40 @@ public class Acts extends AppController {
 			return new BadRequest("Invalid uri");
 		}
 		
-		Document d = MarkLogicUtils.readDocument(uri);
+		try {
+			String publicF = "./public";
+			String fileName = publicF + "/xsltHtmls/" + uri.substring(0, uri.length() - 4) + ".html";
+			File f = new File(fileName);
+			
+			if(!f.exists()) {
+				Document d = MarkLogicUtils.readDocument(uri);
 		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		XMLUtils.transformHTML(d, baos);
+				FileOutputStream os;
+				os = new FileOutputStream(f);
+				XMLUtils.transformHTML(d, os);
+				os.flush();
+				os.close();
+			}
+			
+			String user = session.get("user");
+			if(user != null) {
+				String token = CsrfTokenUtils.generateToken(user);
+				JsonObject jo = new JsonObject();
+				jo.addProperty("token", token);
+				jo.addProperty("path", fileName.substring(publicF.length()));
+				return new RenderJson(jo);
+			}
+
+			JsonObject jo = new JsonObject();
+			jo.addProperty("path", fileName.substring(publicF.length()));
+			return new RenderJson(jo); // ne treba nam ./public
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
-		return new RenderHtml(baos.toString());
+		return new play.mvc.results.Error("Unable to get document in html");
 	}
 	
 	public static Result cancelProcedure(String body) {
@@ -441,7 +467,7 @@ public class Acts extends AppController {
 		
 		if(MarkLogicUtils.removeDocument(uri)) {
 			String user = session.get("user");
-			String token = CsrfTokenUtils.generateToken(user);
+			String token = CsrfTokenUtils.generateJsonToken(user);
 			return new RenderJson(token);
 		}
 		
