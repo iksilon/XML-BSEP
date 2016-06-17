@@ -321,4 +321,8 @@ public class Acts extends AppController {
 
 		return new RenderJson(""); //ili sta vec bude trebalo
 	}
+	
+	public static Result getAct() {
+		return new Ok();
+	}
 }

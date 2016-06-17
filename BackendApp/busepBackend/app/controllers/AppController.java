@@ -1,11 +1,10 @@
 package controllers;
 
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import models.Permission;
 import models.User;
 import play.cache.Cache;
 import play.mvc.Before;
@@ -25,46 +24,63 @@ public class AppController extends Controller {
 //	protected static boolean msgNumOk;
 	
 	@Before(priority=1)
-	static Result csrfOriginCheck() {
+	static Result csrfOriginRefererCheck() {
+		boolean origOk = false;
+		boolean refOk = false;
 		Header hOrig = request.headers.get("origin");
-		if(hOrig != null) {
-			List<String> origVals = hOrig.values;
-			if(origVals != null) {
-				String origPageUrl = origVals.get(0);
-				if(origPageUrl != null && origPageUrl.length() > 0) {
-					if(origPageUrl.contains("https://localhost:9000")) {
-						return null; // sve je ok
-					}
-				}
-			}
-			return new BadRequest("Invalid origin");
-		}
-		// mozda nije sve Ok, ali nekada polje origin ne postoji
-		return null;
-	}
-	
-	@Before(priority=2)
-	static Result csrfRefererCheck() {
 		Header hRef = request.headers.get("referer");
-		if(hRef != null) {
-			List<String> refVals = hRef.values;
-			if(refVals != null) {
-				String refPageUrl = refVals.get(0);
-				if(refPageUrl != null && refPageUrl.length() > 0) {
-					if(refPageUrl.equals("https://localhost:9000/")) {
-						return null; // sve je ok
-					}
+//		if(hOrig != null || hRef != null) {
+			
+		List<String> origVals = hOrig != null ? hOrig.values : null;
+		List<String> refVals = hRef != null ? hRef.values : null;
+			
+//			if(origVals != null || refVals != null) {
+				
+		String origPageUrl = origVals != null ? origVals.get(0) : null;
+		String refPageUrl = refVals != null ? refVals.get(0) : null;				
+		
+//		if((origPageUrl != null && origPageUrl.length() > 0) 
+//			|| (refPageUrl != null && refPageUrl.length() > 0)) {
+			
+		if(origPageUrl != null && origPageUrl.length() > 0 && origPageUrl.contains("https://localhost:9000")) {
+			origOk = true;
+			System.out.print("Request from origin: ");
+			for(String ov: origVals) {
+				System.out.println("\t" + ov);
+				if(origVals.indexOf(ov) < origVals.size() - 1) {
+					System.out.println("\n\t\t\t");
 				}
 			}
-			return new BadRequest("Invalid referer");
 		}
-		// mozda nije sve Ok, ali nekada polje referer ne postoji
-		return null;
+		
+		if(refPageUrl != null && refPageUrl.length() > 0 && refPageUrl.equals("https://localhost:9000/")) {
+			refOk = true;
+			System.out.print("Request from referer: ");
+			for(String rv: refVals) {
+				System.out.println("\t" + rv);
+				if(refVals.indexOf(rv) < refVals.size() - 1) {
+					System.out.println("\n\t\t\t");
+				}
+			} 
+		}
+		
+		if(origOk || refOk) {
+			return null; //sve je ok, neki od headera je prisutan
+		}
+//		}
+//			}
+//		}
+
+		return new BadRequest("Invalid referer or origin");
+		
+		// mozda nije sve Ok, ali nekada polje origin ne postoji
+//		return null;
 	}
 	
 	protected static ConcurrentHashMap<String, Long> userMsgNum = new ConcurrentHashMap<String, Long>();
-	@Before(unless={"Login.logIn", "Login.token", "Login.logOut", "Search.doSearch", "Utils.usersByRole",
-			"Acts.latestDocuments", "Acts.inProcedure", "Acts.current"}, priority=3)
+	@Before(unless={"Login.logIn", "Login.token", "Login.logOut", "Login.loginCheck", 
+			"Search.doSearch", "Acts.current", "Acts.inProcedure", "Acts.getAct",
+			"Acts.getActAmendments", "Acts.latestDocuments", "Utils.usersByRole"}, priority=2)
 	static Result checkMsgNum() {
 		Header hMsgNum = request.headers.get("msgnum");
 		Header hUname = request.headers.get("username");
@@ -100,48 +116,37 @@ public class AppController extends Controller {
 		return null;
 	}
 	
-	@Before(priority=4)
+	@Before(priority=3)
 	static Result checkTimestamp() {		
 		String tsString = request.headers.get("timestamp").value();
 		String tsHashString = request.headers.get("timestamphash").value();
 		
-//		try { // check timestamp hash
-//			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-//			byte[] hashBytes = digest.digest(tsString.getBytes(StandardCharsets.UTF_8));
-//		    String hexCharsHash = GeneralUtils.byteToHex(hashBytes);
-			String hexCharsHash = GeneralUtils.getHexHash(tsString);
+		String hexCharsHash = GeneralUtils.getHexHash(tsString);
 
-			if(hexCharsHash == null) {
-				return new Error("Could not validate request");
-			}
-			byte[] asd = tsHashString.getBytes(StandardCharsets.UTF_8);
-			
-			String hexHash = new String(hexCharsHash).toUpperCase();
-			String hexTsHash = new String(asd).toUpperCase();
-			if(!hexHash.equals(hexTsHash)) {
-//				timestampCheckResult = 1;
-				return new BadRequest("Invalid request data");
-			}
-//		} catch (NoSuchAlgorithmException e1) {
-//			e1.printStackTrace();
-////			timestampCheckResult = 2;
-//			return new Error("Request processing failed");
-//		}
+		if(hexCharsHash == null) {
+			return new Error("Could not validate request");
+		}
+		byte[] asd = tsHashString.getBytes(StandardCharsets.UTF_8);
+		
+		String hexHash = new String(hexCharsHash).toUpperCase();
+		String hexTsHash = new String(asd).toUpperCase();
+		if(!hexHash.equals(hexTsHash)) {
+			return new BadRequest("Invalid request data");
+		}
 		
 		Long timestamp = Long.parseLong(tsString);
 		Long serverTimestamp = System.currentTimeMillis();
 		Long timestampDiff = serverTimestamp - timestamp;
 		if(timestampDiff <= 0 || timestampDiff > 5000) { // 5 sekundi. mozda treba manje?
-//			timestampCheckResult = 3;
 			return new BadRequest("Request timed out");
 		}
 		
-//		timestampCheckResult = 0;		
 		return null;
 	}
 	
-	@Before(unless={"Login.logIn", "Login.token", "Login.logOut", "Search.doSearch", "Utils.usersByRole",
-					"Acts.latestDocuments", "Acts.inProcedure", "Acts.current"}, priority=5)
+	@Before(unless={"Login.logIn", "Login.token", "Login.logOut", "Login.loginCheck", 
+			"Search.doSearch", "Acts.current", "Acts.inProcedure", "Acts.getAct",
+			"Acts.getActAmendments", "Acts.latestDocuments", "Utils.usersByRole"}, priority=4)
 	static Result jwtCheck() {
 		Header hAuth = request.headers.get("authorization");
 		if(hAuth != null) {
@@ -162,5 +167,30 @@ public class AppController extends Controller {
 		}
 		// nope
 		return new Forbidden("Invalid token");
+	}
+	
+	@Before(unless={"Login.logIn", "Login.token", "Login.logOut", "Login.loginCheck", 
+			"Search.doSearch", "Acts.current", "Acts.inProcedure", "Acts.getAct",
+			"Acts.getActAmendments", "Acts.latestDocuments", "Utils.usersByRole"}, priority=5)
+	static Result actionAuthorization() {
+		Header hUname = request.headers.get("username");
+		String uname = hUname != null ? hUname.value() : null;
+		if(uname == null) {
+			return new BadRequest("Invalid payload data");
+		}
+
+		User caller = User.find("byUsername", uname).first();
+		if(caller == null) {
+			return new BadRequest("No such user");
+		}
+		
+		String action = request.action;
+		List<Permission> callerPerms = Permission.find("byName", action).fetch();
+		for(Permission p: callerPerms) {
+			if(p.name.equals(action) && p.roles.contains(caller.role)) {
+				return null; //ok, imas pristup
+			}
+		}
+		return new Forbidden("Not enough priviledge");
 	}
 }

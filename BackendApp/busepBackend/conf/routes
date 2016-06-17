@@ -9,13 +9,13 @@ POST	/loginCheck										Login.loginCheck
 
 GET		/search/{q}										Search.doSearch
 
-
 GET		/acts/current									Acts.current
 GET		/acts/proc										Acts.inProcedure
+POST	/acts/proc/cancel								Acts.cancelProcedure
 POST	/acts/get										Acts.getAct
+POST	/acts/amdmnt									Acts.getActAmendments
 GET		/acts											Acts.latestDocuments(count:'0')
 GET		/acts/{count}									Acts.latestDocuments
-
 # Slanje XML-a iz editora:
 POST	/xml/submit/proposition							Acts.submitProposition
 POST	/xml/submit/amendment							Acts.submitAmendment
@@ -23,10 +23,8 @@ POST	/xml/submit/final								Acts.submitFinal
 POST	/xml/refuse										Acts.refuseDoc
 # Slanje XML-a arhivu
 POST	/xml/submit/archive								Acts.submitArchive
-
 POST	/xml/submit										Acts.submitXML
-GET		/encry                                      	TransferXML.transfer
-GET		/encry/{doc}/{privateKey}						DecryptXML.decrypt
+
 # unosenje novog korisnika
 POST    /user/create						    		AddUser.addUser
 
@@ -36,12 +34,11 @@ GET		/xml/											staticDir:xml
 # za uzimanje podataka o korisnicima
 GET		/users/highlord									Utils.usersByRole(roleId:'1')
 GET		/users/odbornici								Utils.usersByRole(roleId:'2')
-#GET		/users/list										Utils.usersList
 GET		/users/usersAll									Utils.usersByRole(roleId:'-1')
 
 # Import Secure routes
 #*      	/sec               								module:secure
 GET     /		                                		staticDir:public
 
-# Catch all
-*       /{controller}/{action}                  		{controller}.{action}
+# Catch all - ne zelimo ovo, jer security reasons (crashovanje servera ili tako nesto?)
+#*       /{controller}/{action}                  		{controller}.{action}
