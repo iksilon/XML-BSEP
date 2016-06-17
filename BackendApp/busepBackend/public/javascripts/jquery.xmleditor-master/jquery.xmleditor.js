@@ -2148,6 +2148,9 @@ GUIEditor.prototype.selectNode = function(selected) {
 
 		this.selectedNode = selectedObject;
 		this.selectedElement = selectedObject;
+		if(!this.selectedNode) {
+			return;
+		}
 		this.selectedNode.select();
 		if (selectedObject instanceof XMLElement) {
 			$("*:focus").blur();
