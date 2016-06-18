@@ -2,7 +2,6 @@ package controllers;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -47,7 +46,7 @@ import play.mvc.results.RenderBinary;
 import play.mvc.results.RenderJson;
 import play.mvc.results.RenderText;
 import play.mvc.results.Result;
-import utils.CertificateUtils;
+import utils.Constants;
 import utils.CsrfTokenUtils;
 import utils.GeneralUtils;
 import utils.KeystoreUtils;
@@ -57,7 +56,7 @@ import utils.XMLUtils;
 import utils.xmlEncryption.EncryptXML;
 
 public class Acts extends AppController {
-
+	
 	/**
 	 * Takes over the specific document type submission and handles it.
 	 * This includes checking is the user has a valid certificate, 
@@ -253,13 +252,20 @@ public class Acts extends AppController {
 //		}
 		
 		handleSubmission(MarkLogicUtils.ACT_FINAL);
-		return new Ok();
+		
+		String user = session.get("user");
+		String token = CsrfTokenUtils.generateToken(user);
+		String json = "{\"token\": \"" + token + "\"}";
+		return new RenderText(json);
 	}
 	
 	public static Result refuseDoc() {
 		//refuse stuff
 		
-		return new Ok();
+		String user = session.get("user");
+		String token = CsrfTokenUtils.generateToken(user);
+		String json = "{\"token\": \"" + token + "\"}";
+		return new RenderText(json);
 	}
 	
 	public static Result submitArchive() {
@@ -304,7 +310,10 @@ public class Acts extends AppController {
 			req = req.body(is);
 			req.post();
 			
-			return new Ok();
+			String user = session.get("user");
+			String token = CsrfTokenUtils.generateToken(user);
+			String json = "{\"token\": \"" + token + "\"}";
+			return new RenderText(json);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return new BadRequest("Submission failed.");
@@ -317,20 +326,41 @@ public class Acts extends AppController {
 		
 		ArrayList<JsonObject> uris = MarkLogicUtils.getAllProposalsFromDB();
 		
-		return new RenderJson(uris);
+		String user = session.get("user");
+		String token = CsrfTokenUtils.generateToken(user);
+		
+		JsonObject jo = new JsonObject();
+		jo.addProperty("uris", new Gson().toJson(uris));
+		jo.addProperty("token", token);
+		
+		return new RenderJson(jo);
 	}
 	
 	public static Result inAmendments() {
 		
 		ArrayList<JsonObject> uris = MarkLogicUtils.getAllAmendmentsFromDB();
 		
-		return new RenderJson(uris);
+		String user = session.get("user");
+		String token = CsrfTokenUtils.generateToken(user);
+		
+		JsonObject jo = new JsonObject();
+		jo.addProperty("uris", new Gson().toJson(uris));
+		jo.addProperty("token", token);
+		
+		return new RenderJson(jo);
 	}
 	
 	public static Result inFinals() {
 		ArrayList<JsonObject> uris = MarkLogicUtils.getAllFinalsFromDB();
 		
-		return new RenderJson(uris);
+		String user = session.get("user");
+		String token = CsrfTokenUtils.generateToken(user);
+		
+		JsonObject jo = new JsonObject();
+		jo.addProperty("uris", new Gson().toJson(uris));
+		jo.addProperty("token", token);
+		
+		return new RenderJson(jo);
 	}
 
 	public static Result latestDocuments(int count) {
@@ -414,8 +444,7 @@ public class Acts extends AppController {
 		}
 		
 		try {
-			String publicF = "./public";
-			String fileName = publicF + "/xsltHtmls/" + uri.substring(0, uri.length() - 4) + ".html";
+			String fileName = Constants.FOLDER_PUBLIC + Constants.FOLDER_XSLT_HTMLS + uri.substring(0, uri.length() - 4) + Constants.FILE_HTML;
 			File f = new File(fileName);
 			
 			if(!f.exists()) {
@@ -433,13 +462,13 @@ public class Acts extends AppController {
 				String token = CsrfTokenUtils.generateToken(user);
 				JsonObject jo = new JsonObject();
 				jo.addProperty("token", token);
-				jo.addProperty("path", fileName.substring(publicF.length()));
+				jo.addProperty("path", fileName.substring(Constants.FOLDER_PUBLIC.length()));
 				return new RenderJson(jo);
 			}
 
 			JsonObject jo = new JsonObject();
-			jo.addProperty("path", fileName.substring(publicF.length()));
-			return new RenderJson(jo); // ne treba nam ./public
+			jo.addProperty("path", fileName.substring(Constants.FOLDER_PUBLIC.length()));
+			return new RenderJson(jo);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (IOException e) {
@@ -470,8 +499,9 @@ public class Acts extends AppController {
 		
 		if(MarkLogicUtils.removeDocument(uri)) {
 			String user = session.get("user");
-			String token = CsrfTokenUtils.generateJsonToken(user);
-			return new RenderJson(token);
+			String token = CsrfTokenUtils.generateToken(user);
+			String json = "{\"token\": \"" + token + "\"}";
+			return new RenderText(json);
 		}
 		
 		return new NotModified("Could not find document with given URI");

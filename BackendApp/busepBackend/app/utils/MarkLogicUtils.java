@@ -2,6 +2,7 @@ package utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,7 +29,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.joox.JOOX.*;
 
 import com.google.gson.JsonObject;
 import com.marklogic.client.DatabaseClient;
@@ -503,6 +503,7 @@ public class MarkLogicUtils {
 			}
 			System.out.println("Deleting " + uri);
 			xmlManager.delete(uri);
+			
 			if(!propNodeToDel.trim().equals("")) {
 				xmlPatchBldr.delete(propNodeToDel);
 			}
@@ -510,6 +511,19 @@ public class MarkLogicUtils {
 			xmlManager.patch(DOC_PROPOSAL, handle);
 			
 			client.release();
+			
+			String fileName = uri.substring(0, uri.length() - 4);
+			String filePath = Constants.FOLDER_PUBLIC + Constants.FOLDER_XSLT_HTMLS + fileName + Constants.FILE_HTML;
+			File f = new File(filePath);
+			try {
+				if(f.exists()) {
+					System.out.println("Deleting " + filePath);
+					f.delete();
+				}
+			} catch(SecurityException e) {
+				System.out.println("Deleting " + fileName + " failed");
+				e.printStackTrace();
+			}
 			
 			return true;
 		} catch (IOException | ResourceNotFoundException | ForbiddenUserException | FailedRequestException e) {

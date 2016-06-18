@@ -4,11 +4,11 @@
 	<md-card id="toastParent" class="docList">
 		<md-toolbar layout="row" class="md-hue-3">
 	      <div class="md-toolbar-tools">
-	        <span>Dokumenti u proceduri</span>
+	        <span>Akti u proceduri</span>
 	      </div>
 	    </md-toolbar>
 		<md-list>
-			<md-list-item ng-repeat="doc in acts" class="noright">
+			<md-list-item ng-repeat="doc in acts track by $index" class="noright">
 				<h4>{{ doc.uri }}</h4>
 				<md-content class="md-secondary">
 					<md-button class="sm-btn material-icons" aria-label="Otvori dokument" ng-click="docSelected(doc)">find_in_page<md-tooltip md-direction="left">Otvori dokument</md-tooltip></md-button>
@@ -18,18 +18,18 @@
 		</md-list>
 	</md-card>
 	
-	<md-card id="toastParentAmdm" class="docList" ng-show="showDocAmendments">
+	<md-card id="toastParentAmdm" class="docList" ng-show="acts.length > 0">
 		<md-toolbar layout="row" class="md-hue-3">
 	      <div class="md-toolbar-tools">
-	        <span>Amandmani na odabrani dokument</span>
+	        <span>Amandmani na odabrani akt</span>
 	      </div>
 	    </md-toolbar>
 		<md-list>
-			<md-list-item ng-repeat="amend in amendments" class="noright" ng-if="amend.propis === selectedDoc.uri">
+			<md-list-item ng-repeat="amend in amendments track by $index" class="noright" ng-if="amend.propis === selectedDoc.uri">
 				<h4>{{ amend.uri }}</h4>
 				<md-content class="md-secondary">
-					<md-button class="sm-btn material-icons" aria-label="Otvori dokument" ng-click="docSelected(doc)">find_in_page<md-tooltip md-direction="left">Otvori dokument</md-tooltip></md-button>
-					<md-button class="sm-btn material-icons" aria-label="Ukloni iz procedure" ng-click="docCancelProcedure(doc, 'amdm')" ng-show="amend.username === user.username">clear<md-tooltip md-direction="left">Ukloni iz procedure</md-tooltip></md-button>
+					<md-button class="sm-btn material-icons" aria-label="Otvori dokument" ng-click="docSelected(amend)">find_in_page<md-tooltip md-direction="left">Otvori dokument</md-tooltip></md-button>
+					<md-button class="sm-btn material-icons" aria-label="Ukloni iz procedure" ng-click="docCancelProcedure(amend, 'amdm')" ng-show="amend.username === user.username">clear<md-tooltip md-direction="left">Ukloni iz procedure</md-tooltip></md-button>
 				</md-content>
 			</md-list-item>
 		</md-list>

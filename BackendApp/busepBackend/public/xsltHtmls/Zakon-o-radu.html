@@ -1,0 +1,106 @@
+<md-content xmlns:pro="http://www.ftn.uns.ac.rs/propisi" flex="95" layout-align="center" layout="row">
+<md-content flex="95" layout="column">
+<md-card flex="99">
+<h1>Zakon-o-radu<md-button class="md-raised md-primary" type="button" ng-click="elementEdit('/Propis[1]')" ng-if="user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username">
+						Izmeni
+					</md-button>
+</h1>
+<br>
+<br>
+<h6>
+    		Član 1<br>Taskovi<md-button class="md-raised md-primary" type="button" ng-click="
+					elementEdit('/Propis[1]/Clan[1]')
+				" ng-if="
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
+				">
+				Izmeni
+			</md-button>
+</h6>
+<br>
+<br>
+<md-button class="md-raised md-primary" type="button" ng-click="
+				elementEdit('/Propis[1]/Clan[1]/Stav[1]')
+			" ng-if="
+				user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
+			">
+			Izmeni
+		</md-button>
+<br>Rad je kada neko uzme task i onda ga završi u dogledno vreme.<md-button class="md-raised md-primary" type="button" ng-click="
+				elementEdit('/Propis[1]/Clan[1]/Stav[2]')
+			" ng-if="
+				user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
+			">
+			Izmeni
+		</md-button>
+<br>Kada je neko uzeo task, neće obećavati da će uraditi druge stvari dok ne odradi uzeti task.<md-button class="md-raised md-primary" type="button" ng-click="
+				elementEdit('/Propis[1]/Clan[1]/Stav[3]')
+			" ng-if="
+				user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
+			">
+			Izmeni
+		</md-button>
+<br>Uskoro nije validan odgovor na pitanje "Kada će biti gotovo?"<h6>
+    		Član 2<br>Prokrastinacija<md-button class="md-raised md-primary" type="button" ng-click="
+					elementEdit('/Propis[1]/Clan[2]')
+				" ng-if="
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
+				">
+				Izmeni
+			</md-button>
+</h6>
+<br>
+<br>
+<md-button class="md-raised md-primary" type="button" ng-click="
+				elementEdit('/Propis[1]/Clan[2]/Stav[1]')
+			" ng-if="
+				user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
+			">
+			Izmeni
+		</md-button>
+<br>Svako odugovlačenje u radu rezultiraće oštrim kaznama. Neke od njih su:<md-button class="md-raised md-primary" type="button" ng-click="
+				elementEdit('/Propis[1]/Clan[2]/Stav[2]')
+			" ng-if="
+				user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
+			">
+			Izmeni
+		</md-button>
+<br>
+<p>
+<md-button class="md-raised md-primary" type="button" ng-click="
+					elementEdit('/Propis[1]/Clan[2]/Stav[2]/Tacka[1]')
+				" ng-if="
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
+				">
+				Izmeni
+			</md-button>
+<br>vikanje</p>
+<p>
+<md-button class="md-raised md-primary" type="button" ng-click="
+					elementEdit('/Propis[1]/Clan[2]/Stav[2]/Tacka[2]')
+				" ng-if="
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
+				">
+				Izmeni
+			</md-button>
+<br>interno ponižavanje</p>
+<p>
+<md-button class="md-raised md-primary" type="button" ng-click="
+					elementEdit('/Propis[1]/Clan[2]/Stav[2]/Tacka[3]')
+				" ng-if="
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
+				">
+				Izmeni
+			</md-button>
+<br>javno ponižavanje</p>
+<p>
+<md-button class="md-raised md-primary" type="button" ng-click="
+					elementEdit('/Propis[1]/Clan[2]/Stav[2]/Tacka[4]')
+				" ng-if="
+					user.role &amp;&amp; user.role !== 'Web Admin' &amp;&amp; user.username === selectedDoc.username
+				">
+				Izmeni
+			</md-button>
+<br>nasilje</p>
+</md-card>
+</md-content>
+</md-content>

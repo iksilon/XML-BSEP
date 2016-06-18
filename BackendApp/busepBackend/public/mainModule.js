@@ -137,10 +137,10 @@
 					$http.post('/xml/submit/archive')
 						.then(
 								function(response) {
-									alert("ASD");
+									alert("Sve radi kako treba");
 								},
 								function(reason) {
-									alert("e jebiga ne moze");
+									alert("Nope.");
 								}
 						);
 				}

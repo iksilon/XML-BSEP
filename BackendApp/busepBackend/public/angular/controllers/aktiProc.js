@@ -12,7 +12,7 @@
 		$http.get('/acts/proc')
 			.then(
 					function(response) {
-						$scope.acts = response.data;
+						$scope.acts = JSON.parse(response.data.uris);
 					},
 					function(reason) {
 						$mdToast.show({
@@ -34,7 +34,9 @@
 							$scope.docViewPath = response.data.path;
 							$scope.showDocView = true;
 							amandmanSvc.selectedAct = doc;
-							$scope.selectedDoc = doc;
+							if(!doc.propis) {
+								$scope.selectedDoc = doc;
+							}
 						},
 						function(reason) {
 							$mdToast.show({
@@ -57,7 +59,7 @@
 		$http.get('/acts/amend')
 			.then(
 					function(rspns) {
-						$scope.amendments = rspns.data;
+						$scope.amendments = JSON.parse(rspns.data.uris);
 						$scope.showDocAmendments = true;
 					},
 					function(reason) {

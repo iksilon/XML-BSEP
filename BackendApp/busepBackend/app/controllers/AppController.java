@@ -22,11 +22,7 @@ import play.mvc.results.Result;
 import utils.CsrfTokenUtils;
 import utils.GeneralUtils;
 
-//@With(Secure.class)
 public class AppController extends Controller {
-
-//	protected static int timestampCheckResult = -1;
-//	protected static boolean msgNumOk;
 	
 	@Before(priority=1)
 	static Result csrfOriginRefererCheck() {
@@ -34,24 +30,22 @@ public class AppController extends Controller {
 		boolean refOk = false;
 		Header hOrig = request.headers.get("origin");
 		Header hRef = request.headers.get("referer");
-//		if(hOrig != null || hRef != null) {
 			
 		List<String> origVals = hOrig != null ? hOrig.values : null;
 		List<String> refVals = hRef != null ? hRef.values : null;
-			
-//			if(origVals != null || refVals != null) {
 				
 		String origPageUrl = origVals != null ? origVals.get(0) : null;
-		String refPageUrl = refVals != null ? refVals.get(0) : null;				
-		
-//		if((origPageUrl != null && origPageUrl.length() > 0) 
-//			|| (refPageUrl != null && refPageUrl.length() > 0)) {
+		String refPageUrl = refVals != null ? refVals.get(0) : null;
 			
 		if(origPageUrl != null && origPageUrl.length() > 0 && origPageUrl.contains("https://localhost:9000")) {
 			origOk = true;
-			System.out.print("Request from origin: ");
 			for(String ov: origVals) {
+				if(origVals.indexOf(ov) == 0) {
+					System.out.print("Request from origin: ");
+				}
+				
 				System.out.println("\t" + ov);
+				
 				if(origVals.indexOf(ov) < origVals.size() - 1) {
 					System.out.println("\n\t\t\t");
 				}
@@ -60,9 +54,13 @@ public class AppController extends Controller {
 		
 		if(refPageUrl != null && refPageUrl.length() > 0 && refPageUrl.equals("https://localhost:9000/")) {
 			refOk = true;
-			System.out.print("Request from referer: ");
 			for(String rv: refVals) {
+				if(refVals.indexOf(rv) == 0) {
+					System.out.print("Request from referer: ");
+				}
+				
 				System.out.println("\t" + rv);
+				
 				if(refVals.indexOf(rv) < refVals.size() - 1) {
 					System.out.println("\n\t\t\t");
 				}
@@ -70,16 +68,10 @@ public class AppController extends Controller {
 		}
 		
 		if(origOk || refOk) {
-			return null; //sve je ok, neki od headera je prisutan
+			return null; // ok, neki od headera je prisutan
 		}
-//		}
-//			}
-//		}
 
 		return new BadRequest("Invalid referer or origin");
-		
-		// mozda nije sve Ok, ali nekada polje origin ne postoji
-//		return null;
 	}
 	
 	protected static ConcurrentHashMap<String, Long> userMsgNum = new ConcurrentHashMap<String, Long>();
@@ -91,6 +83,10 @@ public class AppController extends Controller {
 		Header hMsgNum = request.headers.get("msgnum");
 		Header hUname = request.headers.get("username");
 		//ako nema ovog headera, samo prodji, jer su to uglavnom angular requestovi za uzimanje public resursa
+		System.out.println("Path: " + request.path);
+		System.out.println("URL: " + request.url);
+		System.out.println("Query string: " + request.querystring);
+		System.out.println("Route args: " + request.routeArgs);
 		if(hMsgNum == null || hUname == null) {
 			return null;
 		}
@@ -175,7 +171,7 @@ public class AppController extends Controller {
 		// nope
 		return new Forbidden("Invalid token");
 	}
-	/*
+
 	@Before(unless={"Login.logIn", "Login.token", "Login.logOut", "Login.loginCheck", 
 			"Search.doSearch", "Acts.current", "Acts.inProcedure", "Acts.getAct",
 			"Acts.getActAmendments", "Acts.latestDocuments", "Acts.inAmendments",
@@ -205,5 +201,4 @@ public class AppController extends Controller {
 		}
 		return new Forbidden("Not enough priviledge");
 	}
-	*/
 }
