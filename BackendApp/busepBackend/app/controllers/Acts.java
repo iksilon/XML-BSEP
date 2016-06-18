@@ -1,6 +1,6 @@
 package controllers;
 
-import java.io.ByteArrayInputStream;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,8 +13,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 
+import javax.crypto.SecretKey;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,7 +29,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-import org.yaml.snakeyaml.reader.StreamReader;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -34,25 +36,25 @@ import com.google.gson.JsonObject;
 import models.User;
 import play.cache.Cache;
 import play.libs.WS;
+import play.libs.WS.HttpResponse;
 import play.libs.WS.WSRequest;
 import play.mvc.Http.Header;
-import play.mvc.Http.Request;
-import play.mvc.Http.Response;
 import play.mvc.results.BadRequest;
 import play.mvc.results.NotFound;
 import play.mvc.results.NotModified;
 import play.mvc.results.Ok;
 import play.mvc.results.RenderBinary;
-import play.mvc.results.RenderHtml;
 import play.mvc.results.RenderJson;
 import play.mvc.results.RenderText;
 import play.mvc.results.Result;
+import utils.CertificateUtils;
 import utils.CsrfTokenUtils;
 import utils.GeneralUtils;
 import utils.KeystoreUtils;
 import utils.MarkLogicUtils;
 import utils.SecurityUtils;
 import utils.XMLUtils;
+import utils.xmlEncryption.EncryptXML;
 
 public class Acts extends AppController {
 
@@ -264,29 +266,34 @@ public class Acts extends AppController {
 		System.out.println("Archive submission requested, commencing");
 		
 		Document doc = MarkLogicUtils.readDocument("Zakon-o-radu.xml");
-		java.io.ByteArrayOutputStream by = new java.io.ByteArrayOutputStream();
-		XMLUtils.transformPDF(doc, by);
-		
-		response.contentType = "application/pdf";
-		response.print(by);
-		
-		Ok res = new play.mvc.results.Ok();
-		res.apply(request, response);
-		return res;
-		
-		///return new RenderBinary(new ByteArrayInputStream(by.toByteArray()), "asdf.pdf");
 		
 		//TODO: Encrypt here
-		/*EncryptXML encryptXMLutil = new EncryptXML();
-		CertificateUtils certificateUtils = new CertificateUtils();
-
-
+		EncryptXML encryptXMLutil = new EncryptXML();
 		SecretKey secretKey = encryptXMLutil.generateDataEncryptionKey();
-		Certificate cert = certificateUtils.openDERfile("./keystores/arhiv.der");
-
-		doc = encryptXMLutil.encrypt(doc, secretKey, cert, "Propis");   //TODO Akt (naziv taga koji enkriptujemo)*/
+		
+		WSRequest certreq = WS.url("https://localhost:9090/certificate/request");
+		HttpResponse resp = certreq.get();
+		
+		InputStream cis = resp.getStream();
+		BufferedInputStream bis = new BufferedInputStream(cis);			
+		CertificateFactory cf;
+		try {
+			cf = CertificateFactory.getInstance("X.509");
+			Certificate cert = cf.generateCertificate(bis);
+			System.out.println(cert.toString());
+			bis.close();
+			doc = encryptXMLutil.encrypt(doc, secretKey, cert, "Propis");
+			
+		} catch (CertificateException e1) {
+			e1.printStackTrace();
+			return new play.mvc.results.Error("Bad certificate.");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new play.mvc.results.Error("Bad certificate.");
+		} 
+		
 		//---------------------------------------------------------
-		/*
+		
 		Document encrypted = doc;
 		
 		try {			
@@ -297,13 +304,11 @@ public class Acts extends AppController {
 			req = req.body(is);
 			req.post();
 			
-			//http://localhost:9090/xml/submit
 			return new Ok();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return new BadRequest("Submission failed.");
-		}*/
-		return new Ok();
+		}
 	}
 	
 	
