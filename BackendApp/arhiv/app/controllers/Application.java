@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
-import java.security.Certificate;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -15,6 +14,13 @@ import java.security.UnrecoverableKeyException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -34,6 +40,7 @@ public class Application extends Controller {
     	
     	// Extract the document.
 		InputStream is = request.body;
+		System.out.println(is);
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		Document doc = null;
 			DocumentBuilder db;
@@ -42,7 +49,11 @@ public class Application extends Controller {
 				doc = db.parse(is);
 				System.out.println(">> Document parsed.");
 				
-				System.out.println(doc.getNodeValue());
+				TransformerFactory tranFactory = TransformerFactory.newInstance();
+			    Transformer aTransformer = tranFactory.newTransformer();
+			    Source src = new DOMSource(doc);
+			    javax.xml.transform.Result dest = new StreamResult(System.out);
+			    aTransformer.transform(src, dest);
 			
 				DecryptXML decryptXMLutil = new DecryptXML();
 				
@@ -71,6 +82,10 @@ public class Application extends Controller {
 			} catch (KeyStoreException e) {
 				e.printStackTrace();
 			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			} catch (TransformerConfigurationException e) {
+				e.printStackTrace();
+			} catch (TransformerException e) {
 				e.printStackTrace();
 			}
 			
