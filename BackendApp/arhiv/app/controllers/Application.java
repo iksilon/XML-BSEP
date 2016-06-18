@@ -23,7 +23,10 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 
 import play.mvc.Controller;
 import play.mvc.results.BadRequest;
@@ -41,12 +44,15 @@ public class Application extends Controller {
     	// Extract the document.
 		InputStream is = request.body;
 		System.out.println(is);
+		
+		DOMParser dp = new DOMParser();
+		
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		Document doc = null;
+		dbf.setNamespaceAware(true);
 			DocumentBuilder db;
 			try {
 				db = dbf.newDocumentBuilder();
-				doc = db.parse(is);
+				Document doc = db.parse(is);
 				System.out.println(">> Document parsed.");
 				
 				TransformerFactory tranFactory = TransformerFactory.newInstance();
@@ -64,7 +70,6 @@ public class Application extends Controller {
 				// Ook!Ook! -> crypt | localhost -> crypt | Pogledaj i metodu getCertificat()
 				KeyStore ks = KeyStoreUtils.loadKeyStore(filepath, "Ook!Ook!".toCharArray());
 				PrivateKey pk = (PrivateKey) ks.getKey("localhost", "Ook!Ook!".toCharArray());
-				java.security.cert.Certificate cert = ks.getCertificate("localhost");
 				
 				System.out.println(pk);
 				doc = decryptXMLutil.decrypt(doc, pk);

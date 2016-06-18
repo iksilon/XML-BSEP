@@ -168,7 +168,12 @@ public class MarkLogicUtils {
 				documentID = documentID.concat(user).concat(String.valueOf(Calendar.getInstance().getTimeInMillis()));
 			}
 			doc.getDocumentElement().setAttribute("Naziv", documentID);
-			documentID = documentID.concat(".xml");
+			if(!documentID.endsWith(".xml")) {
+				documentID = documentID.concat(".xml");
+			}
+			
+			documentID = "archive-" + Calendar.getInstance().getTimeInMillis() + documentID;
+			
 			System.out.println("Inserting: " + documentID);
 			InputStreamHandle ish = new InputStreamHandle(createInputStream(doc, false));
 			

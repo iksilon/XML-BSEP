@@ -128,7 +128,6 @@ public class XMLUtils {
 	        }
 	    }
 		
-		
 		DOMSource source = new DOMSource(doc);
 		
 		File xsltFile = new File(xslFilepath);

@@ -265,7 +265,7 @@ public class Acts extends AppController {
 	public static Result submitArchive() {
 		System.out.println("Archive submission requested, commencing");
 		
-		Document doc = MarkLogicUtils.readDocument("Zakon-o-radu.xml");
+		Document doc = MarkLogicUtils.readDocument("poceo-je-aktotizam-to-je-nova-umetnost.xml");
 		
 		//TODO: Encrypt here
 		EncryptXML encryptXMLutil = new EncryptXML();
@@ -298,7 +298,7 @@ public class Acts extends AppController {
 		
 		try {			
 			InputStream is = MarkLogicUtils.createInputStream(encrypted, true);
-			
+			System.out.println(encrypted);
 			WSRequest req = WS.url("https://localhost:9090/xml/submit");
 			req = req.setHeader("Content-Type", "application/xml");
 			req = req.body(is);
