@@ -108,6 +108,7 @@ public class Acts extends AppController {
 					System.out.println(">>error");
 					System.out.println(">>Validation failed!");
 					exception.printStackTrace();
+					throw new SAXException();
 				}
 
 				@Override
@@ -165,7 +166,8 @@ public class Acts extends AppController {
 			return new BadRequest("XML parser setup failure");
 		} catch (SAXException e) {
 			e.printStackTrace();
-			return new BadRequest("Bad XML data");
+			System.out.println("<< Invalid XML");
+			return new BadRequest("Bad XML data or not valid");
 		} catch (IOException e) {
 			e.printStackTrace();
 			return new BadRequest("Bad XML data");
@@ -301,6 +303,7 @@ public class Acts extends AppController {
 			e.printStackTrace();
 			return new BadRequest("Submission failed.");
 		}*/
+		return new Ok();
 	}
 	
 	
