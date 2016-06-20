@@ -21,6 +21,7 @@ import play.mvc.results.RenderJson;
 import play.mvc.results.Result;
 import utils.CsrfTokenUtils;
 import utils.GeneralUtils;
+import utils.JWTUtils;
 
 public class AppController extends Controller {
 	
@@ -152,17 +153,19 @@ public class AppController extends Controller {
 			"Utils.usersByRole"}, priority=4)
 	static Result csrfTokenCheck() {
 		Header hAuth = request.headers.get("authorization");
-		if(hAuth != null) {
+		Header hUser = request.headers.get("username");
+		if(hAuth != null || hUser != null) {
 			List<String> authVals = hAuth.values;
 			if(authVals != null) {
 				String authString = authVals.get(0);
 				if(authString != null && authString.length() > 0) {
 					String token =  authString.split(" ")[1];
 					
-					User user = User.find("byUsername", request.headers.get("username").value()).first();
+					User user = User.find("byUsername", hUser.value()).first();
 					Cache.set(user.username, user);
-					String username = session.get("user");
-					if(CsrfTokenUtils.checkToken(username, token)) {
+//					String username = session.get("user");
+//					String username = hUser.value();
+					if(JWTUtils.getAudience(token, user).equals(user.username)) {
 						return null;
 					}
 				}

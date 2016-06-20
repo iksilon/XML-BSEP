@@ -73,8 +73,7 @@ public class Login extends AppController {
 		session.put("userRole", loggedUser.role.name);
 		session.put("userMsgNum", loggedUser.msgNum);
 		
-//		String jwt = JWTUtils.generateJWT(loggedUser);
-		String token = CsrfTokenUtils.generateToken(loggedUser.username);
+		String token = JWTUtils.generateJWT(loggedUser.username);
 		Cache.set(loggedUser.username, loggedUser);
 		String json = "{\"role\": \"" + loggedUser.role.name
 						+ "\", \"username\": \"" + loggedUser.username
@@ -135,7 +134,7 @@ public class Login extends AppController {
 		session.put("userRole", loggedUser.role.name);
 		session.put("userMsgNum", loggedUser.msgNum);
 		
-		token = CsrfTokenUtils.generateToken(loggedUser.username);
+		token = JWTUtils.generateJWT(loggedUser.username);
 		String json = "{\"role\": \"" + loggedUser.role.name
 						+ "\", \"username\": \"" + loggedUser.username
 						+ "\", \"msgNum\": " + loggedUser.msgNum

@@ -49,6 +49,7 @@ import play.mvc.results.Result;
 import utils.Constants;
 import utils.CsrfTokenUtils;
 import utils.GeneralUtils;
+import utils.JWTUtils;
 import utils.KeystoreUtils;
 import utils.MarkLogicUtils;
 import utils.SecurityUtils;
@@ -157,7 +158,7 @@ public class Acts extends AppController {
 			System.out.println("\n------------- PROPOSITION submission FINISHED ----------------");		
 			
 			String user = session.get("user");
-			String token = CsrfTokenUtils.generateToken(user);
+			String token = JWTUtils.generateJWT(user);
 			String json = "{\"token\": \"" + token + "\"}";
 			return new RenderText(json);
 
@@ -254,7 +255,7 @@ public class Acts extends AppController {
 		handleSubmission(MarkLogicUtils.ACT_FINAL);
 		
 		String user = session.get("user");
-		String token = CsrfTokenUtils.generateToken(user);
+		String token = JWTUtils.generateJWT(user);
 		String json = "{\"token\": \"" + token + "\"}";
 		return new RenderText(json);
 	}
@@ -263,7 +264,7 @@ public class Acts extends AppController {
 		//refuse stuff
 		
 		String user = session.get("user");
-		String token = CsrfTokenUtils.generateToken(user);
+		String token = JWTUtils.generateJWT(user);
 		String json = "{\"token\": \"" + token + "\"}";
 		return new RenderText(json);
 	}
@@ -311,7 +312,7 @@ public class Acts extends AppController {
 			req.post();
 			
 			String user = session.get("user");
-			String token = CsrfTokenUtils.generateToken(user);
+			String token = JWTUtils.generateJWT(user);
 			String json = "{\"token\": \"" + token + "\"}";
 			return new RenderText(json);
 		} catch (IOException e) {
@@ -327,7 +328,7 @@ public class Acts extends AppController {
 		ArrayList<JsonObject> uris = MarkLogicUtils.getAllProposalsFromDB();
 		
 		String user = session.get("user");
-		String token = CsrfTokenUtils.generateToken(user);
+		String token = JWTUtils.generateJWT(user);
 		
 		JsonObject jo = new JsonObject();
 		jo.addProperty("uris", new Gson().toJson(uris));
@@ -341,7 +342,7 @@ public class Acts extends AppController {
 		ArrayList<JsonObject> uris = MarkLogicUtils.getAllAmendmentsFromDB();
 		
 		String user = session.get("user");
-		String token = CsrfTokenUtils.generateToken(user);
+		String token = JWTUtils.generateJWT(user);
 		
 		JsonObject jo = new JsonObject();
 		jo.addProperty("uris", new Gson().toJson(uris));
@@ -354,7 +355,7 @@ public class Acts extends AppController {
 		ArrayList<JsonObject> uris = MarkLogicUtils.getAllFinalsFromDB();
 		
 		String user = session.get("user");
-		String token = CsrfTokenUtils.generateToken(user);
+		String token = JWTUtils.generateJWT(user);
 		
 		JsonObject jo = new JsonObject();
 		jo.addProperty("uris", new Gson().toJson(uris));
@@ -459,7 +460,7 @@ public class Acts extends AppController {
 			
 			String user = session.get("user");
 			if(user != null) {
-				String token = CsrfTokenUtils.generateToken(user);
+				String token = JWTUtils.generateJWT(user);
 				JsonObject jo = new JsonObject();
 				jo.addProperty("token", token);
 				jo.addProperty("path", fileName.substring(Constants.FOLDER_PUBLIC.length()));
@@ -499,7 +500,7 @@ public class Acts extends AppController {
 		
 		if(MarkLogicUtils.removeDocument(uri)) {
 			String user = session.get("user");
-			String token = CsrfTokenUtils.generateToken(user);
+			String token = JWTUtils.generateJWT(user);
 			String json = "{\"token\": \"" + token + "\"}";
 			return new RenderText(json);
 		}

@@ -85,7 +85,7 @@ public class AddUser extends AppController {
 		}
 		
 		String user = session.get("user");
-		String token = CsrfTokenUtils.generateToken(user);
+		String token = JWTUtils.generateJWT(user);
 		String json = "{\"token\": \"" + token + "\"}";
 		return new RenderText(json);
 

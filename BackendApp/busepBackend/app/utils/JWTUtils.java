@@ -1,6 +1,5 @@
 package utils;
 
-import java.security.SecureRandom;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jose4j.jwk.RsaJsonWebKey;
@@ -21,8 +20,13 @@ public class JWTUtils {
 
 	private static ConcurrentHashMap<String, RsaJsonWebKey> userJwk = new ConcurrentHashMap<String, RsaJsonWebKey>();
 	
-	public static String generateJWT(User user) {
+	public static String generateJWT(String username) {
 		try {
+			User user = User.find("byUsername", username).first();
+			if(user == null) {
+				return null;
+			}
+			
 			RsaJsonWebKey jwk = RsaJwkGenerator.generateJwk(2048);			
 			jwk.setKeyId(user.id.toString());
 			
@@ -56,6 +60,11 @@ public class JWTUtils {
 	}
 	
 	public static String getAudience(String jwt, User user) {
+//		User user = User.find("byUsername", username).first();
+		if(user == null) {
+			return null;
+		}
+		
 		JwtConsumer jwtConsumer = getConsumer(user);
 		if(jwtConsumer == null) {
 			return null;
@@ -77,7 +86,8 @@ public class JWTUtils {
 					&& claims.getClaimValue("lastname").equals(user.lastName))) {
 					return null;
 				}
-				
+
+				System.out.println("JWT validation succeeded! User " + user.username);
 				return claims.getAudience().get(0);
 			} catch (MalformedClaimException e) {
 		        System.out.println("Invalid Claim! " + e);
@@ -87,11 +97,19 @@ public class JWTUtils {
 	    {
 	        System.out.println("Invalid JWT! " + e);
 	    }
+		catch(Exception e) {
+	        System.out.println("JWT validation error! " + e);
+		}
 		
 		return "";
 	}
 	
 	public static boolean checkJWT(String jwt, User user) {
+//		User user = User.find("byUsername", username).first();
+		if(user == null) {
+			return false;
+		}
+		
 		JwtConsumer jwtConsumer = getConsumer(user);
 		if(jwtConsumer == null) {
 			return false;
@@ -112,8 +130,8 @@ public class JWTUtils {
 					&& claims.getClaimValue("lastname").equals(user.lastName))) {
 					return false;
 				}
-				
-				System.out.println("JWT validation succeeded! " + claims);
+
+				System.out.println("JWT validation succeeded! User " + user.username);
 				return true;
 			} catch (MalformedClaimException e) {
 		        System.out.println("Invalid Claim! " + e);
@@ -123,6 +141,9 @@ public class JWTUtils {
 	    {
 	        System.out.println("Invalid JWT! " + e);
 	    }
+		catch(Exception e) {
+	        System.out.println("JWT validation error! " + e);
+		}
 		
 		return false;
 	}

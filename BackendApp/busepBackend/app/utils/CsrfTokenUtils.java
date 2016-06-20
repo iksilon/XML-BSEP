@@ -3,10 +3,10 @@ package utils;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import com.google.gson.JsonObject;
 
+@Deprecated
 public class CsrfTokenUtils {
 
 	private static SecureRandom srand;
