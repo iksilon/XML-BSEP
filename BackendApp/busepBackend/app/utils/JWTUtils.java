@@ -24,6 +24,7 @@ public class JWTUtils {
 		try {
 			User user = User.find("byUsername", username).first();
 			if(user == null) {
+			    System.out.println("Token generation fail 1");
 				return null;
 			}
 			
@@ -31,7 +32,8 @@ public class JWTUtils {
 			jwk.setKeyId(user.id.toString());
 			
 			userJwk.put(user.username, jwk);
-			
+
+		    System.out.println("Token generation start");
 			JwtClaims claims = new JwtClaims();
 			claims.setIssuer("SGNS");
 			claims.setAudience(user.username);
@@ -43,47 +45,76 @@ public class JWTUtils {
 		    claims.setClaim("lastname",user.lastName);
 		    claims.setIssuedAtToNow();
 		    
+
+		    
+		    System.out.println("Token generation ok 1");
 		    JsonWebSignature jws = new JsonWebSignature();
 		    jws.setPayload(claims.toJson());
 		    jws.setKey(jwk.getPrivateKey());
 		    jws.setKeyIdHeaderValue(jwk.getKeyId());
 		    jws.setAlgorithmHeaderValue(AlgorithmIdentifiers.RSA_USING_SHA256);
 
+		    System.out.println("Token generation ok 2");
 		    String jwt = jws.getCompactSerialization();
+		    
+		    System.out.println("Token succesfuly generated");
+		    System.out.println("Token expirty: " + claims.getExpirationTime());
+		    System.out.println("Token issued at: " + claims.getIssuedAt());
 		    
 		    return jwt;
 		} catch (JoseException e) {
 			e.printStackTrace();
+		} catch (MalformedClaimException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
+
+	    System.out.println("Token generation failed");
 		return null;
 	}
 	
 	public static String getAudience(String jwt, User user) {
 //		User user = User.find("byUsername", username).first();
+		System.out.println("JWT validation start! User " + user.username);
+		
 		if(user == null) {
+			System.out.println("JWT validation fail 1! User " + user.username);
 			return null;
 		}
-		
+
+		System.out.println("JWT validation ok 1! User " + user.username);
 		JwtConsumer jwtConsumer = getConsumer(user);
 		if(jwtConsumer == null) {
+			System.out.println("JWT validation fail 2! User " + user.username);
 			return null;
 		}
-		
+
+		System.out.println("JWT validation ok 2! User " + user.username);
 		try
 	    {
 			JwtClaims claims = jwtConsumer.processToClaims(jwt);
 	        try {
-	        	if(claims.getIssuedAt().isOnOrAfter(NumericDate.now())
-	        			|| claims.getExpirationTime().isOnOrAfter(NumericDate.now())) {
+	        	NumericDate now = NumericDate.now();
+	        	System.out.println("NOW: " + now);
+	        	System.out.println("TOKEN ISSUED AT: " + claims.getIssuedAt());
+	        	System.out.println("ISSUED AT OK: " + !claims.getIssuedAt().isOnOrAfter(now));
+	        	System.out.println("TOKEN EXPIRY: " + claims.getExpirationTime());
+	        	System.out.println("EXPIRY OK: " + claims.getExpirationTime().isOnOrAfter(now));
+	        	boolean asd = claims.getIssuedAt().isOnOrAfter(now) && !claims.getExpirationTime().isOnOrAfter(now);
+	        	System.out.println("SHIT BOOL: " + asd);
+	        	if(claims.getIssuedAt().isOnOrAfter(now) && !claims.getExpirationTime().isOnOrAfter(now)) {
+					System.out.println("JWT validation fail 3! User " + user.username);
 	        		return null;
 	        	}
-	        	
+
+				System.out.println("JWT validation ok 3! User " + user.username);
+				
 				if(!(claims.getAudience().get(0).equals(user.username)
 					&& claims.getIssuer().equals("SGNS")
 					&& claims.getSubject().equals(user.username + "_form")
 					&& claims.getClaimValue("name").equals(user.name)
 					&& claims.getClaimValue("lastname").equals(user.lastName))) {
+					System.out.println("JWT validation fail 4! User " + user.username);
 					return null;
 				}
 
@@ -119,7 +150,8 @@ public class JWTUtils {
 	    {
 	        JwtClaims claims = jwtConsumer.processToClaims(jwt);
 	        try {
-	        	if(claims.getIssuedAt().isOnOrAfter(NumericDate.now())) {
+	        	NumericDate now = NumericDate.now();
+	        	if(claims.getIssuedAt().isOnOrAfter(now) && !claims.getExpirationTime().isOnOrAfter(now)) {
 	        		return false;
 	        	}
 	        	

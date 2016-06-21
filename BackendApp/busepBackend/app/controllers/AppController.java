@@ -163,9 +163,14 @@ public class AppController extends Controller {
 					
 					User user = User.find("byUsername", hUser.value()).first();
 					Cache.set(user.username, user);
+					System.out.println("hUser " + hUser.value());
+					System.out.println("token " + token);
+					System.out.println("user " + user.username);
 //					String username = session.get("user");
 //					String username = hUser.value();
-					if(JWTUtils.getAudience(token, user).equals(user.username)) {
+					String audience = JWTUtils.getAudience(token, user); 
+					if(audience != null && audience.equals(user.username)) {
+//					if(JWTUtils.checkJWT(token, user)) {
 						return null;
 					}
 				}
